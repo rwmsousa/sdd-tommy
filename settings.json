@@ -1,0 +1,29 @@
+{
+  "effortLevel": "xhigh",
+  "theme": "dark",
+  "language": "pt-BR",
+  "attribution": {
+    "commit": "",
+    "pr": ""
+  },
+  "permissions": {
+    "allow": [
+      "mcp__playwright"
+    ],
+    "deny": []
+  },
+  "hooks": {
+    "PostToolUse": [
+      {
+        "matcher": "Edit|Write",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "~/.claude/hooks/format-on-edit.sh",
+            "async": true
+          }
+        ]
+      }
+    ]
+  }
+}
