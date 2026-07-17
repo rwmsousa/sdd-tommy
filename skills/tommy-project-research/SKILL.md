@@ -20,6 +20,8 @@ Every Tommy agent reads `TOMMY.md`, `.tommy/project-context/`, and `.tommy/codeb
 
 ## GAP Detection
 
+**Step -1 — root scaffolding**: If `.tommy/` does not exist at the project root at all, create it now. This is the very first action of a first-time setup — every other file/folder below lives inside it.
+
 Before any Tommy workflow begins, check for these files:
 
 ```
@@ -61,17 +63,23 @@ If any required directory or file is missing, trigger this skill to research and
 
 ### Step 0: Build Product Context Layer
 
-Before mapping technical codebase details, ensure `.tommy/project-context/` is complete and up to date with the current project reality. Validate and (re)generate:
+Before mapping technical codebase details, ensure `.tommy/project-context/` is complete and up to date with the current project reality. Validate and (re)generate, each following its reference template:
 
-- `project_goal_context.md`
-- `scope_features_context.md`
-- `glossary_context.md`
-- `tech_stack_context.md`
-- `architecture_definition_context.md`
-- `tech_restrictions_context.md`
-- `project_management_context.md`
+| File | Reference template |
+|---|---|
+| `project_goal_context.md` | [references/project-goal-context-reference.md](references/project-goal-context-reference.md) |
+| `scope_features_context.md` | [references/scope-features-context-reference.md](references/scope-features-context-reference.md) |
+| `glossary_context.md` | [references/glossary-context-reference.md](references/glossary-context-reference.md) |
+| `tech_stack_context.md` | [references/tech-stack-context-reference.md](references/tech-stack-context-reference.md) |
+| `architecture_definition_context.md` | [references/architecture-definition-context-reference.md](references/architecture-definition-context-reference.md) |
+| `tech_restrictions_context.md` | [references/tech-restrictions-context-reference.md](references/tech-restrictions-context-reference.md) |
+| `project_management_context.md` | [references/project-management-context-reference.md](references/project-management-context-reference.md) |
 
 This step establishes product boundaries and ubiquitous language before technical mapping.
+
+**This layer is not purely derivable from code.** Unlike `.tommy/codebase/` (Steps 1-7 below), which is reconstructed from evidence in the repository, several fields here are business decisions that only exist in someone's head — business objective, target users, market positioning, roadmap priority, ceremonies, and "decisions not to revert" cannot be reverse-engineered from source code with confidence. Each reference template marks which fields are evidence-derivable and which must be confirmed with the user/product owner. **Never fabricate a business fact to avoid asking a question** — an empty `[NEEDS CONFIRMATION]` placeholder is correct output; a guessed answer presented as fact is not. This mirrors the `tommy-business-analyst` principle of never assuming rules without evidence.
+
+Once `.tommy/project-context/` exists, do not re-ask the user for facts it already answers in later Tommy workflows (specify, architecture, codegen) — read the file instead. Only re-open a question with the user when the file is silent, contradicts the current request, or is stale relative to the codebase.
 
 ## Research Workflow
 
@@ -217,6 +225,20 @@ When investigating a codebase, use these approaches:
 - Keep each codebase file focused on its domain — avoid duplicating information across files.
 - Use consistent markdown formatting across all generated files.
 
+## Selective Reading by Other Agents
+
+`.tommy/project-context/` is written once (and refreshed occasionally) but read constantly — every Tommy agent that makes a technical or requirements decision consults it. Reading all 7 files on every invocation wastes context for no benefit: most tasks only need 1-3 of them. Agents must read only the files relevant to what they are currently doing, per this table:
+
+| File | Read by | When |
+|---|---|---|
+| `project_goal_context.md` | `tommy-business-analyst`, `tommy-specify` | Always, before eliciting or writing requirements — establishes problem, objective, users, and business context. |
+| `scope_features_context.md` | `tommy-business-analyst`, `tommy-specify` | Always — check the requested feature against the existing roadmap and the "Fora do Escopo" list before treating it as new. |
+| `glossary_context.md` | `tommy-business-analyst`, `tommy-specify`, `tommy-architect`, `tommy-codegen` | Always — domain terms and their EN mapping must stay consistent; pairs with `tommy-ubiquitous-language`. |
+| `tech_stack_context.md` | `tommy-architect`, `tommy-prompt`, `tommy-codegen` | When the feature touches a specific technology, integration, or infrastructure decision. For exhaustive dependency versions, prefer `.tommy/codebase/stack.md` and `.tommy/codebase/integrations.md` — this file is the narrative summary, not the inventory. |
+| `tech_restrictions_context.md` | `tommy-architect`, `tommy-prompt`, `tommy-codegen` | Always, before proposing any technical approach — this is the one file with hard constraints (forbidden tech, locked decisions) that override generic best practice. |
+| `architecture_definition_context.md` | `tommy-architect` | Always when designing architecture for a feature. Captures the "why" behind decisions; `.tommy/codebase/architecture.md` captures the current structural "how." |
+| `project_management_context.md` | `tommy-specify`, `tommy-prompt` | When sizing a spec into stories/PBIs or a plan into steps — this file may define project-specific sizing/DoD conventions that override generic defaults (e.g. `tommy-prompt`'s "5-10 files per plan" rule). |
+
 ## References
 
 Detailed templates and field descriptions for each codebase file:
@@ -228,3 +250,13 @@ Detailed templates and field descriptions for each codebase file:
 - [references/integrations-reference.md](references/integrations-reference.md) — How to document integrations
 - [references/concerns-reference.md](references/concerns-reference.md) — How to document cross-cutting concerns
 - [references/testing-reference.md](references/testing-reference.md) — How to document testing
+
+Detailed templates and field descriptions for each product-context file:
+
+- [references/project-goal-context-reference.md](references/project-goal-context-reference.md) — How to document the project's goal and business context
+- [references/scope-features-context-reference.md](references/scope-features-context-reference.md) — How to document the feature roadmap and scope
+- [references/glossary-context-reference.md](references/glossary-context-reference.md) — How to document the domain glossary
+- [references/tech-stack-context-reference.md](references/tech-stack-context-reference.md) — How to document the business-relevant stack narrative
+- [references/tech-restrictions-context-reference.md](references/tech-restrictions-context-reference.md) — How to document forbidden tech and locked decisions
+- [references/architecture-definition-context-reference.md](references/architecture-definition-context-reference.md) — How to document architecture decisions and rationale
+- [references/project-management-context-reference.md](references/project-management-context-reference.md) — How to document the work management model

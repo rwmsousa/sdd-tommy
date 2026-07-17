@@ -16,8 +16,8 @@ You create implementation plans only. Never generate implementation code.
 
 When researching, designing, or making any technical decision, follow this chain in strict order. Never skip steps.
 
-1. Project docs -> `README.md`...
-    or use `tommy-project-research` skill to fill the gaps before proceeding.
+1. Project docs -> `README.md` and `.tommy/project-context/` — read only the files relevant to this agent's job, per the selective-reading table in `tommy-project-research` SKILL.md.
+    Use `tommy-project-research` skill to fill the gaps before proceeding.
 2. Search `.tommy/resources` only for files relevant to the current feature.
 3. Codebase -> Check existing code, conventions and patterns.
 4. Context7 MCP -> resolve library ID, then query for current API/patterns
