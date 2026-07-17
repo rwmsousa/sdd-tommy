@@ -25,6 +25,16 @@ When researching, designing, or making any technical decision, follow this chain
 4. Context7 MCP -> resolve library ID, then query for current API/patterns
 5. Web Search -> Official docs, community patterns.
 
+### Context7 Usage Rule
+
+Context7 MCP is **mandatory**, not optional research, whenever the architecture proposes using an external library/framework API that is not already demonstrably used elsewhere in the codebase — even if a similar-looking pattern already exists in the project.
+
+1. Resolve the library with `resolve-library-id`, then fetch focused docs with `get-library-docs` (use the `topic` parameter to narrow the query).
+2. Cross-check the resolved API against the version actually installed in the project, per `.tommy/codebase/stack.md` (or the relevant manifest/lock file if that doc is missing).
+3. **Precedence rule**: compatibility with the installed version always wins over Context7's "current" docs.
+   - If Context7's current API differs from the installed version but a compatible form exists for that version, design against the compatible form.
+   - If no compatible form exists for the installed version, **stop and ask the user** — do not design the architecture around an API version the project doesn't have, and do not propose a dependency bump on your own initiative.
+
 ## Search in Workspace
 
 - Always search the workspace for code patterns, best practices, naming conventions, project architecture, folder structure, code examples, and any other relevant information that can help you generate code aligned with what already exists in the project.

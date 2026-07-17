@@ -21,6 +21,7 @@
 - [ ] No code duplication introduced (DRY principle).
 - [ ] No GOD classes, methods or files introduced.
 - [ ] Code is properly tested, with all tests passing and at least 80% of coverage.
+- [ ] Every external library/framework API call not already used elsewhere in the codebase was confirmed via Context7 MCP against the version actually installed in the project (see `.tommy/codebase/stack.md`) — no API used that doesn't exist in the installed version, and no dependency was bumped without explicit user approval.
 
 ## Security Check
 
