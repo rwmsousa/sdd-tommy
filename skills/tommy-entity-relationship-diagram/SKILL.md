@@ -50,7 +50,7 @@ When creating or reviewing an ERD, apply these standards from "Product Design & 
 5. Model relationships with correct cardinality.
 6. Use an associative entity to resolve `N:N` when necessary.
 7. Review naming, key usage, and cardinality consistency.
-8. Generate the final Mermaid diagram.
+8. Generate the final PlantUML diagram.
 
 ## Naming Standards (Detailed)
 
@@ -67,6 +67,8 @@ When creating or reviewing an ERD, apply these standards from "Product Design & 
 - Use `PascalCase` for regular entities (for example: `Product`, `TaxInvoice`, `CustomerOrder`).
 - For part-whole associative entities, use underscore to make composition explicit (for example: `Order_Item`, `Order_Payment`).
 - For aggregation-like associative entities, use `Entity1_Entity2`, placing the stronger/more relevant entity first.
+
+> **Note**: This is the canonical naming standard for associative/part-whole entities (data model level). `tommy-ubiquitous-language`'s "Aggregates" section defers to this standard rather than defining its own — do not introduce a second naming rule for the same concept.
 
 ### Attribute Naming
 
@@ -134,7 +136,7 @@ If project infrastructure already enforces another auditing standard, document a
     - `OrderItem_FK_Product`
     - `Product_FK_Category`
 
-Note: In Mermaid ER, relationship labels should remain business-readable. Use technical FK naming in modeling notes when needed.
+Note: In the PlantUML ER diagram, relationship labels should remain business-readable. Use technical FK naming in modeling notes when needed.
 
 ## Domain and Type Consistency
 

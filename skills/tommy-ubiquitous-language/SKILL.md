@@ -44,8 +44,9 @@ Utilize it when defining terms, concepts, entities, actions, and other elements 
 ### Aggregates (Grouping of related entities)
 
 - Always singular.
-- Pascal_Case + Snake_Case
-- Ex: Order_Item, FreightContract, Product_Catalog.
+- Part-whole and associative aggregates use `Entity_Entity` (Pascal_Case + underscore): `Order_Item`, `Product_Catalog`.
+- Standalone aggregate roots that are not associative use plain PascalCase, like any other entity: `FreightContract`.
+- For the full naming standard of associative/part-whole entities (including PK/FK conventions), defer to the `tommy-entity-relationship-diagram` skill — do not redefine the rule here.
 
 ### Attributes
 

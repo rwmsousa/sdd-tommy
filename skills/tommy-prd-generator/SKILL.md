@@ -7,6 +7,8 @@ description: "Generate a Product Requirements Document (PRD) for a new feature. 
 
 Create detailed Product Requirements Documents that are clear, actionable, and suitable for implementation.
 
+> **Scope note**: This skill is for standalone, ad-hoc PRD requests outside the Tommy Specify → Prompt → Codegen pipeline. Inside that pipeline, `tommy-business-analyst` does NOT invoke this skill — it returns structured requirements directly to `tommy-specify`, which writes the single canonical `spec.md` using `.tommy/templates/spec-template.md`. Do not create a competing `prd-*.md` file for a feature that already has a `spec.md`.
+
 ---
 
 ## The Job
@@ -66,10 +68,11 @@ Brief description of the feature and the problem it solves.
 Specific, measurable objectives (bullet list).
 
 ### 3. User Stories
-Each story needs:
+Each story needs to pass the same value/testability/independence filter used by `tommy-business-analyst` before being included:
 - **Title:** Short descriptive name
 - **Description:** "As a [user], I want [feature] so that [benefit]"
 - **Acceptance Criteria:** Verifiable checklist of what "done" means
+- **Out of scope for this story:** Explicitly state what is NOT covered by this story
 
 Each story should be small enough to implement in one focused session.
 
@@ -82,12 +85,14 @@ Each story should be small enough to implement in one focused session.
 - [ ] Specific verifiable criterion
 - [ ] Another criterion
 - [ ] Typecheck/lint passes
-- [ ] **[UI stories only]** Verify in browser using dev-browser skill
+- [ ] **[UI stories only]** Verify manually in the browser (visual check, keyboard navigation, empty/loading/error states)
+
+**Out of scope for this story:** [What is explicitly NOT covered]
 ```
 
 **Important:** 
 - Acceptance criteria must be verifiable, not vague. "Works correctly" is bad. "Button shows confirmation dialog before deleting" is good.
-- **For any story with UI changes:** Always include "Verify in browser using dev-browser skill" as acceptance criteria. This ensures visual verification of frontend work.
+- **For any story with UI changes:** Always include a manual browser verification step as acceptance criteria. This ensures visual verification of frontend work.
 
 ### 4. Functional Requirements
 Numbered list of specific functionalities:
@@ -172,7 +177,7 @@ Add priority levels to tasks so users can focus on what matters most. Tasks can 
 - [ ] Each task card shows colored priority badge (red=high, yellow=medium, gray=low)
 - [ ] Priority visible without hovering or clicking
 - [ ] Typecheck passes
-- [ ] Verify in browser using dev-browser skill
+- [ ] Verify manually in the browser (rendering, interactions, empty/loading/error states)
 
 ### US-003: Add priority selector to task edit
 **Description:** As a user, I want to change a task's priority when editing it.
@@ -182,7 +187,7 @@ Add priority levels to tasks so users can focus on what matters most. Tasks can 
 - [ ] Shows current priority as selected
 - [ ] Saves immediately on selection change
 - [ ] Typecheck passes
-- [ ] Verify in browser using dev-browser skill
+- [ ] Verify manually in the browser (rendering, interactions, empty/loading/error states)
 
 ### US-004: Filter tasks by priority
 **Description:** As a user, I want to filter the task list to see only high-priority items when I'm focused.
@@ -192,7 +197,7 @@ Add priority levels to tasks so users can focus on what matters most. Tasks can 
 - [ ] Filter persists in URL params
 - [ ] Empty state message when no tasks match filter
 - [ ] Typecheck passes
-- [ ] Verify in browser using dev-browser skill
+- [ ] Verify manually in the browser (rendering, interactions, empty/loading/error states)
 
 ## Functional Requirements
 

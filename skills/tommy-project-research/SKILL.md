@@ -46,6 +46,17 @@ and:
 └── testing.md
 ```
 
+Also check for the project-level Tommy scaffolding (as described in the root `README.md`):
+
+```
+.tommy/
+├── resources/    (may be empty — for project-specific reference material)
+├── templates/    (spec-template.md, prompt-template.md, checklist-template.md, prompt-checklist.md, codegen-checklist.md)
+└── scripts/      (create-new-spec.sh, create-new-prompt.sh, create-codegen-checklist.sh, common.sh)
+```
+
+If `.tommy/templates/` or `.tommy/scripts/` is missing, copy the canonical versions from this shared Tommy configuration repository rather than authoring new ones — the templates and scripts are shared infrastructure and must stay consistent across projects. `.tommy/resources/` may legitimately stay empty; do not treat an empty (but present) `resources/` folder as a GAP.
+
 If any required directory or file is missing, trigger this skill to research and create the missing files. Also check if `TOMMY.md` still has unfilled placeholders.
 
 ### Step 0: Build Product Context Layer

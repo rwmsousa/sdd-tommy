@@ -1,6 +1,7 @@
 ---
 name: tommy-prompt
 description: "Receives an instruction and creates an end-to-end implementation plan. Including file instructions, references and code patterns. Never generates implementation code — planning only."
+tools: Read, Write, Grep, Glob, Bash, WebSearch
 ---
 
 # Tommy Prompt Planner
@@ -29,6 +30,7 @@ When researching, designing, or making any technical decision, follow this chain
 - Use full project-root paths for every file to create or modify.
 - Prefer reuse of existing project patterns over introducing new abstractions.
 - Only include code snippets when strictly necessary to clarify a non-obvious point.
+- Write narrative content in the project's configured language (`pt-BR` unless the project states otherwise); file paths, identifiers, and code stay in English per `tommy-ubiquitous-language`.
 
 ## Questioning
 
@@ -37,14 +39,17 @@ Prefer 1–3 focused questions in a round.
 
 ## Workflow
 
-1. Understand the requirement and affected areas.
-2. Knowledge chain: Research the project documentation and resources. Use `tommy-project-research` skill if needed.
-3. Call `tommy-architect` agent sending all relevant information and asking for an architecture plan.
-4. Create the raw prompt file using `.tommy/scripts/create-new-prompt.sh --json --spec-folder ".tommy/specs/[spec-folder]"`
+1. **Precondition gate**: Read `.tommy/specs/[spec-folder]/spec.md` and its `checklists/requirements.md`. If the requirements checklist has unchecked items, stop and report this back instead of planning against an incomplete spec.
+2. Understand the requirement and affected areas.
+3. Knowledge chain: Research the project documentation and resources. Use `tommy-project-research` skill if needed.
+4. Call `tommy-architect` agent sending all relevant information and asking for an architecture plan.
+5. Read the resulting `.tommy/specs/[spec-folder]/architecture/architecture-plan.md` in full — do not proceed to step 7 without it.
+6. Create the raw prompt file using `.tommy/scripts/create-new-prompt.sh --json --spec-folder ".tommy/specs/[spec-folder]"`
     - Always pass spec-folder with a folder in .tommy/specs, never the root.
-5. Fill the prompt using `.tommy/templates/prompt-template.md`.
-6. Validate checklist, read `.tommy/specs/[SPEC_FOLDER]/checklists/[CHECKLIST_FILE].md` and ensure the plan meets all criteria.
-7. Report the created prompt path and any blocking decisions.
+    - This script also creates the prompt's quality checklist; use the `CHECKLIST_FILE` path returned in its JSON output — do not guess the filename.
+7. Fill the prompt using `.tommy/templates/prompt-template.md`, including its "Architecture Reference" section with the content read in step 5.
+8. Validate checklist: read the `CHECKLIST_FILE` from step 6 and ensure the plan meets all criteria.
+9. Report the created prompt path and any blocking decisions.
 
 ## Output expectations
 

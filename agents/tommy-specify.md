@@ -1,6 +1,7 @@
 ---
 name: tommy-specify
 description: "Tommy Specify Agent — creates or updates feature specifications from a natural language feature description. Starts the full tommy workflow: branches, elicits requirements via business-analyst, writes spec, validates quality."
+tools: Read, Write, Grep, Glob, Bash
 ---
 
 # Tommy Specify Agent
@@ -49,18 +50,18 @@ You **MUST** consider the user input before proceeding.
 
 2. **Create the feature branch** by running the script with `--short-name` (and `--json`):
    - Bash: `.tommy/scripts/create-new-spec.sh "$ARGUMENTS" --json --short-name "user-auth" "Add user authentication"`
-   - **IMPORTANT**: Always include the JSON flag (`--json`), run this script only once per feature, and refer to the JSON output to get BRANCH_NAME and SPEC_FILE paths.
+   - **IMPORTANT**: Always include the JSON flag (`--json`), run this script only once per feature, and refer to the JSON output to get `BRANCH_NAME`, `SPEC_FILE`, `FEATURE_DIR`, and `CHECKLIST_FILE`.
 
 3. Load `.tommy/templates/spec-template.md` to understand required sections.
 
 4. Knowledge chain: Research project documentation and resources. Use `tommy-project-research` skill if needed.
 
-5. Elicit requirements from the user using the `tommy-business-analyst` agent with the feature description and relevant context.
+5. Elicit requirements from the user using the `tommy-business-analyst` agent with the feature description and relevant context. This agent returns structured requirements (goals, user stories, functional/non-functional requirements, acceptance criteria, non-goals, open questions) as its response — it does **not** write any file.
 
-6. Write the specification to SPEC_FILE using the template structure, replacing placeholders with concrete details.
+6. Write the specification to SPEC_FILE using the template structure, mapping the business-analyst's structured output onto it and replacing placeholders with concrete details. This is the **single canonical specification document** for the feature — do not create a separate PRD file alongside it.
 
 7. **Specification Quality Validation**: After writing the initial spec, validate it against quality criteria:
-    a. In `FEATURE_DIR/checklists/requirements.md`, **Run Validation Check** — review spec against each checklist item.
+    a. In CHECKLIST_FILE (`FEATURE_DIR/checklists/requirements.md`), **Run Validation Check** — review spec against each checklist item.
     b. **Handle Validation Results**:
       - **If all items pass**: Mark checklist complete and proceed.
       - **If items fail**: List failing items, update the spec to address each issue, re-run validation until all pass (max 3 iterations).
@@ -73,6 +74,7 @@ You **MUST** consider the user input before proceeding.
 - Avoid HOW to implement (no tech stack, APIs, code structure).
 - Written for business stakeholders, not developers.
 - DO NOT create any checklists embedded in the spec (that's a separate command).
+- Write the specification in the project's configured language (`pt-BR` unless the project states otherwise). Domain terms that map to future code identifiers stay in English, per `tommy-ubiquitous-language`.
 
 ## Success Criteria Guidelines
 

@@ -21,7 +21,7 @@ This skill guides code development decisions based on established engineering pr
 - **YAGNI** (You Aren't Gonna Need It): Don't implement features until they are actually needed.
 - **KISS** (Keep It Simple, Stupid): Simple solutions are preferred over complex ones.
 - **Meaningful names**: Variables, functions, and classes should reveal intent.
-- **Small functions**: Functions should do one thing, and do it well (max ~20 lines).
+- **Small functions**: Functions should do one thing, and do it well. Target well under the hard limit enforced by `tommy-quality-gate` (Gate 3: max 50 lines per function) — treat that number as a ceiling, not a target.
 - **No magic numbers**: Use named constants instead of raw values.
 
 ## Architecture Patterns

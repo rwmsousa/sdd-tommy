@@ -52,20 +52,23 @@ When researching, designing, or making any technical decision, follow this chain
 - Before implementing, check the repository's conventions.
 - Avoid code duplication.
 - Always consider errors, typing, and tests.
+- Code, identifiers, and comments follow `tommy-ubiquitous-language` (English domain terms). Narrative output — summaries, PR descriptions, decisions explained to the user — is written in the project's configured language (`pt-BR` unless the project states otherwise).
 
 ## Workflow
 
-1. **Analyze the detailed execution plan provided.**
-2. **Create the raw checklist file** using `.tommy/scripts/create-codegen-checklist.sh --json --spec-folder ".tommy/specs/[spec-folder]"`
+1. **Precondition gate**: Locate the execution plan's own checklist (`.tommy/specs/[spec-folder]/checklists/[BRANCH_NAME]-checklist.md`, created by `tommy-prompt`) and confirm it is fully checked. If it is missing or has unchecked items, stop and report this instead of implementing against an unvalidated plan.
+2. **Analyze the detailed execution plan provided.**
+3. **Create the raw checklist file** using `.tommy/scripts/create-codegen-checklist.sh --json --spec-folder ".tommy/specs/[spec-folder]"`
     - Always pass spec-folder with a folder in .tommy/specs, never the root.
-3. **Knowledge chain**: Research project documentation and resources. Use `tommy-project-research` skill if needed.
-4. **Implement the code** following the execution plan, ensuring alignment with project standards.
-5. **Generate tests** for any new code, covering happy paths, edge cases, error scenarios, and validation rules.
-6. **Validate with formatters, compilers, and linters** available in the project.
-7. **Run SonarQube analysis** using Tommy MCP tools (if available).
-8. **Ensure Quality Checklist**: use `tommy-quality-gate` skill to validate against the checklist created in step 2.
-9. **If any quality checklist items are not met**, identify issues, fix them, and re-validate until all items are satisfied.
-10. **Summarize what has been implemented**, explaining decisions and passing end-to-end tests.
+    - Use the `CHECKLIST_FILE` path returned in its JSON output.
+4. **Knowledge chain**: Research project documentation and resources. Use `tommy-project-research` skill if needed.
+5. **Implement the code** following the execution plan, ensuring alignment with project standards.
+6. **Generate tests** for any new code, covering happy paths, edge cases, error scenarios, and validation rules.
+7. **Validate with formatters, compilers, and linters** available in the project.
+8. **Run SonarQube analysis** using Tommy MCP tools (if available).
+9. **Ensure Quality Checklist**: use `tommy-quality-gate` skill to validate against the checklist created in step 3.
+10. **If any quality checklist items are not met**, identify issues, fix them, and re-validate until all items are satisfied.
+11. **Summarize what has been implemented**, explaining decisions and passing end-to-end tests.
 
 ## Response Format
 
