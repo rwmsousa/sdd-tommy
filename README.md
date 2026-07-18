@@ -74,9 +74,21 @@ This configuration is specific to Claude Code — see [`claude-code/README.md`](
    - **Manual installation (advanced/offline)**: if you'd rather not use npm/npx, copy your tool's folder (`claude-code/`, `github-copilot/`, or `cursor/`) manually — see each one's `README.md` for the exact destination.
 2. If you'd like, add resources to `.tommy/resources` so agents can learn and adapt to your project.
 3. Run Tommy's bootstrap (`/tommy-start` in Claude Code and Copilot Chat, `@tommy-start` in Cursor) — it creates `.tommy/` (including `.tommy/TOMMY.md`) and `AGENTS.md` at the root, based on the existing code.
-4. Trigger the **Specify** phase: describe the feature clearly and in detail (what needs to be done, what the goal is, what the constraints are). This phase creates the specification in `.tommy/specs/`.
-5. Trigger the **Prompt** phase, referencing the specification created, to generate the detailed execution plan.
-6. Trigger the **Codegen** phase, referencing one part (one plan file) at a time, to generate the code.
+4. Trigger the **Specify** phase — describe the feature clearly and in detail (what needs to be done, what the goal is, what the constraints are):
+   - **Claude Code**: say "Use the tommy-specify agent: `<feature description>`" in the chat (or select the `tommy-specify` agent directly).
+   - **Cursor**: `@tommy-specify <feature description>`
+   - **Copilot Chat**: `/tommy-specify`, then describe the feature when asked.
+
+   This phase creates the specification in `.tommy/specs/`.
+5. Trigger the **Prompt** phase, referencing the specification created in step 4:
+   - **Claude Code**: "Use the tommy-prompt agent: `<path to spec.md>`" (or select the `tommy-prompt` agent directly).
+   - **Cursor**: `@tommy-prompt <path to spec.md>`
+   - **Copilot Chat**: `/tommy-prompt`, then reference the spec.
+6. Trigger the **Codegen** phase, referencing one plan file at a time:
+   - **Claude Code**: `/tommy-run-codegen <path to plan file>` (or select the `tommy-codegen` agent directly).
+   - **Cursor**: `@tommy-codegen <path to plan file>`
+   - **Copilot Chat**: `/tommy-codegen`, then reference the plan file.
+7. When ready to version what was generated: commit with `/tommy-commit` (Claude Code and Copilot Chat) or `@tommy-commit` (Cursor), then open the PR/MR with `/tommy-open-pr` or `@tommy-open-pr` — see "Agents" above for details.
 
 ## Best Practices
 
@@ -89,11 +101,12 @@ This configuration is specific to Claude Code — see [`claude-code/README.md`](
 
 1. Create a clear, detailed general task for the Specify phase.
     - This can be in a .md file or directly in the chat.
+    - To start it: "Use the tommy-specify agent: `<task description>`" in Claude Code, `@tommy-specify` in Cursor, or `/tommy-specify` in Copilot Chat — see "How to Use It?" above for the full per-tool syntax.
 2. The Specify phase creates the specification, broken down into requirements and acceptance criteria, to fulfill the general task.
     - Review the requirements created — this part is essential to ensure the execution plan stays aligned with the project's needs.
     - The specification is the key piece for ensuring delivery quality, since it's what the next phase works from.
-3. Reference the specification in the Prompt phase, to create the detailed execution plan (including architecture).
-4. For each plan file generated, reference it in the Codegen phase to generate the code.
+3. Reference the specification in the Prompt phase (the `tommy-prompt` agent in Claude Code, `@tommy-prompt` in Cursor, `/tommy-prompt` in Copilot), to create the detailed execution plan (including architecture).
+4. For each plan file generated, reference it in the Codegen phase (`/tommy-run-codegen <plan>` or the `tommy-codegen` agent in Claude Code, `@tommy-codegen` in Cursor, `/tommy-codegen` in Copilot) to generate the code.
 5. Review the generated code, test it, and validate that it meets the requirements defined in the specification.
 6. If validation fails, fix the requirements in the specification and repeat the plan and code generation process until every step is completed successfully.
 
@@ -175,9 +188,21 @@ Essa configuração é específica do Claude Code — ver [`claude-code/README.m
    - **Instalação manual (avançado/offline)**: se preferir não usar npm/npx, copie a pasta da sua ferramenta (`claude-code/`, `github-copilot/` ou `cursor/`) manualmente — ver o `README.md` de cada uma para o destino exato.
 2. Se desejar, adicione recursos em `.tommy/resources` para que os agentes possam aprender e se adaptar ao seu projeto.
 3. Rode o bootstrap do Tommy (`/tommy-start` no Claude Code e no Copilot Chat, `@tommy-start` no Cursor) — ele cria `.tommy/` (incluindo `.tommy/TOMMY.md`) e o `AGENTS.md` na raiz, a partir do código existente.
-4. Acione a fase **Specify**: descreva a feature de forma clara e detalhada (o que deve ser feito, qual é o objetivo, quais são as restrições). A fase cria a especificação em `.tommy/specs/`.
-5. Acione a fase **Prompt**, referenciando a especificação criada, para gerar o plano de execução detalhado.
-6. Acione a fase **Codegen**, referenciando uma parte (um arquivo de plano) por vez, para gerar o código.
+4. Acione a fase **Specify** — descreva a feature de forma clara e detalhada (o que deve ser feito, qual é o objetivo, quais são as restrições):
+   - **Claude Code**: digite "Use the tommy-specify agent: `<descrição da feature>`" no chat (ou selecione o agente `tommy-specify` diretamente).
+   - **Cursor**: `@tommy-specify <descrição da feature>`
+   - **Copilot Chat**: `/tommy-specify` e descreva a feature quando solicitado.
+
+   A fase cria a especificação em `.tommy/specs/`.
+5. Acione a fase **Prompt**, referenciando a especificação criada no passo 4:
+   - **Claude Code**: "Use the tommy-prompt agent: `<caminho do spec.md>`" (ou selecione o agente `tommy-prompt` diretamente).
+   - **Cursor**: `@tommy-prompt <caminho do spec.md>`
+   - **Copilot Chat**: `/tommy-prompt` e referencie a spec.
+6. Acione a fase **Codegen**, referenciando uma parte (um arquivo de plano) por vez:
+   - **Claude Code**: `/tommy-run-codegen <caminho do arquivo de plano>` (ou selecione o agente `tommy-codegen` diretamente).
+   - **Cursor**: `@tommy-codegen <caminho do arquivo de plano>`
+   - **Copilot Chat**: `/tommy-codegen` e referencie o arquivo de plano.
+7. Quando quiser versionar o que foi gerado: commite com `/tommy-commit` (Claude Code e Copilot Chat) ou `@tommy-commit` (Cursor), depois abra o PR/MR com `/tommy-open-pr` ou `@tommy-open-pr` — ver "Agentes" acima para detalhes.
 
 ## Boas práticas
 
@@ -190,10 +215,11 @@ Essa configuração é específica do Claude Code — ver [`claude-code/README.m
 
 1. Crie uma tarefa geral clara e detalhada para a fase Specify.
     - Podendo ser em um arquivo .md ou diretamente no chat.
+    - Para iniciar: "Use the tommy-specify agent: `<descrição da tarefa>`" no Claude Code, `@tommy-specify` no Cursor, ou `/tommy-specify` no Copilot Chat — ver "Como utilizar?" acima para a sintaxe completa por ferramenta.
 2. A fase Specify cria a especificação, dividida em requisitos e critérios de aceite, para atender à tarefa geral.
     - Revise os requisitos criados, essa parte é fundamental para garantir que o plano de execução esteja alinhado com as necessidades do projeto.
     - A especificação é peça fundamental para garantir a qualidade das entregas, pois é a partir dela que a fase seguinte trabalha.
-3. Referencie a especificação na fase Prompt, para criar o plano de execução detalhado (incluindo arquitetura).
-4. Para cada arquivo de plano gerado, referencie-o na fase Codegen para gerar o código.
+3. Referencie a especificação na fase Prompt (o agente `tommy-prompt` no Claude Code, `@tommy-prompt` no Cursor, `/tommy-prompt` no Copilot), para criar o plano de execução detalhado (incluindo arquitetura).
+4. Para cada arquivo de plano gerado, referencie-o na fase Codegen (`/tommy-run-codegen <plano>` ou o agente `tommy-codegen` no Claude Code, `@tommy-codegen` no Cursor, `/tommy-codegen` no Copilot) para gerar o código.
 5. Revise o código gerado, teste e valide se ele atende aos requisitos definidos na especificação.
 6. Caso haja falhas na validação, corrija os requisitos na especificação e repita o processo de geração de plano e código até que todas as etapas sejam concluídas com sucesso.
