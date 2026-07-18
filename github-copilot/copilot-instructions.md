@@ -18,6 +18,15 @@ Tommy work happens in three explicit phases, each with its own prompt file — u
 
 **Do not skip phases.** Do not write implementation code from a bare feature request without a spec and a plan behind it, even if the request looks small.
 
+## Versioning (independent of the three phases)
+
+Committing and opening a Pull/Merge Request are not a fourth phase — they're actions available at any point via `/tommy-commit` and `/tommy-open-pr`, always under explicit user request:
+
+- **`/tommy-commit`** — turns local changes into Conventional Commits, one or more per branch/plan.
+- **`/tommy-open-pr`** — detects the project's Git provider (GitHub, GitLab, Azure DevOps), pushes the branch, opens the PR/MR.
+
+Never commit or push on your own initiative — only when the user explicitly asks. `/tommy-codegen` may mention that changes are ready to commit, but must never trigger `/tommy-commit` automatically.
+
 ## Known limitation — read this before assuming otherwise
 
 Claude Code's version of Tommy enforces phase separation with per-agent tool restrictions (the "specify" and "prompt" phases technically cannot write/edit source files). Copilot has no equivalent mechanism — every phase runs with full workspace access in the same chat session. Phase separation here is a **discipline you must self-enforce**, not a technical guarantee: when running `/tommy-specify` or `/tommy-prompt`, do not edit source files even though nothing stops you from doing so.
