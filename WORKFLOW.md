@@ -2,7 +2,7 @@
 
 This diagram maps the possible flows of the Spec-Driven Development (SDD) technique as implemented by Tommy: **Specify → Prompt → Codegen**, plus the Bootstrap step that precedes it and the two independent Versioning actions (Commit, Open PR/MR) that sit outside the three-phase backbone. It includes the conditionals that branch each flow and the observations that explain *why* — see the note boxes (yellow) inline.
 
-The diagram below is drawn as a [Mermaid](https://mermaid.js.org) flowchart so it renders directly on GitHub and in most Markdown viewers. The same flow is also available as PlantUML source at [`tommy-workflow.puml`](./tommy-workflow.puml), generated with the [`tommy-plantuml-diagram`](./claude-code/skills/tommy-plantuml-diagram/SKILL.md) skill, for anyone who prefers rendering it through PlantUML tooling instead.
+The diagram below is drawn as a [Mermaid](https://mermaid.js.org) flowchart so it renders directly on GitHub and in most Markdown viewers.
 
 ```mermaid
 flowchart TD
