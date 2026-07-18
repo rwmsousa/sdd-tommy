@@ -1,6 +1,111 @@
 # Tommy
 
+**English** | [Português](#tommy-pt-br)
+
+Tommy is a framework for AI-assisted development, designed to structure the specification, planning, and coding phases while focusing on delivery quality.
+
+See [`WORKFLOW.md`](./WORKFLOW.md) for a diagram of the possible Spec-Driven Development flows through Tommy, including conditionals and observations.
+
+## Supported Tools
+
+Tommy works across three tools — **Claude Code**, **GitHub Copilot**, and **Cursor** — each with a different instruction-loading mechanism. That's why this repository is organized per tool, so an installer can copy just the right set:
+
+```
+sdd_configs/
+├── common/            Tool-agnostic — installed inside .tommy/ of each project, any tool
+│   ├── scripts/        create-new-spec.sh, create-new-prompt.sh, create-codegen-checklist.sh, common.sh
+│   └── templates/       spec-template.md, prompt-template.md, checklists, agents-md-template.md,
+│                        and project-research/ (reference templates used during bootstrap)
+│
+├── claude-code/        Installs into ~/.claude/ (global — applies to every project opened in Claude Code)
+│   ├── agents/, commands/, skills/, hooks/, mcp.json, settings.json
+│
+├── github-copilot/     Installs into .github/ of each project (per project)
+│   ├── copilot-instructions.md, prompts/*.prompt.md
+│
+└── cursor/             Installs into .cursor/ of each project (per project)
+    └── rules/*.mdc
+```
+
+Each tool folder has its own `README.md` with step-by-step installation instructions and that tool's specific differences from the full Claude Code flow — the most relevant one being that only Claude Code can restrict tool access per phase (the specify/prompt phases can't edit source code); in Copilot and Cursor that phase separation is discipline, not a technical guarantee.
+
+## TOMMY.md
+
+The `.tommy/TOMMY.md` file holds the project's core instructions, information, architecture, and rules, so Tommy's agents can learn and adapt to the project — ensuring deliverables stay aligned with the project's standards and needs.
+
+It lives **inside** `.tommy/`, not at the root — just like `.tommy/project-context/` and `.tommy/codebase/`, it's content generated and maintained by Tommy, not something every project contributor needs to see (not everyone uses Tommy) or version-control (`.tommy/` is usually in `.gitignore`).
+
+## AGENTS.md
+
+The `./AGENTS.md` file is the **one exception** — it lives at the project root, outside `.tommy/`, because it only has value if it's natively discovered there by Cursor and Copilot (and it's connectable to Claude Code via an `@AGENTS.md` import inside the project's `CLAUDE.md`, or a symlink). It's a short pointer (10-20 lines, no business content) to `.tommy/TOMMY.md` and `.tommy/` — it doesn't duplicate content. If the project usually ignores `.tommy/` in git, consider version-controlling `AGENTS.md` normally (it doesn't expose anything sensitive, just navigation guidance).
+
+## `.tommy` Structure (inside each project)
+
+- **TOMMY.md**: the project's core instructions for the agents — see the section above.
+- **resources**: folder for resource files that agents can use to learn and adapt to the project.
+    These files can hold information about code patterns, best practices, naming conventions, project architecture, folder structure,
+    code examples, and any other relevant knowledge that helps agents generate code aligned with the project's standards.
+- **templates**: folder with templates so agents can generate files following a predefined format, ensuring consistency and adherence to the project's best practices. Copied from `common/templates/` on first run.
+- **scripts**: folder with automation scripts. Copied from `common/scripts/` on first run.
+- **project-context** and **codebase**: generated during bootstrap (see `common/templates/project-research/`).
+- **specs**: one folder per feature, with `spec.md`, `plans/*.md`, and `checklists/*.md`.
+
+## Agents
+
+- **Tommy Specify**: takes a general task (feature) and creates the specification (`spec.md`), eliciting requirements from the user.
+- **Tommy Prompt**: takes an approved specification and creates the detailed execution plan, including the feature's architecture.
+- **Tommy Codegen**: takes a detailed execution plan and generates the code following it, drawing on the project's best practices and code patterns.
+
+In Claude Code these three agents have dedicated helper personas (`tommy-business-analyst`, `tommy-architect`) with role-restricted tool access — see `claude-code/README.md`. In Copilot and Cursor, the same responsibilities are condensed into 3 files per tool (see `github-copilot/README.md` and `cursor/README.md`).
+
+**Versioning (commit and PR/MR)**: available across all 3 tools — not a fourth phase of the Specify → Prompt → Codegen flow, but something actionable at any point, with detection of the project's Git provider (GitHub, GitLab, Azure DevOps) and Conventional Commits. In Claude Code it's the `tommy-git` agent (`/tommy-commit`, `/tommy-open-pr`) with 4 dedicated skills (one per provider, plus Conventional Commits); in Copilot and Cursor, the same logic is condensed into 2 files per tool (`tommy-commit` and `tommy-open-pr`), with the 3 provider adapters as sections inside the PR/MR-opening file. Details in `claude-code/README.md`, `cursor/README.md`, and `github-copilot/README.md`.
+
+## Per-Project Template Customization
+
+The scripts in `.tommy/scripts` resolve templates with a priority stack: first `.tommy/templates/overrides/<template-name>.md`, then `.tommy/templates/<template-name>.md` (the default template, copied from `common/templates/`). If a project (or business unit) needs a variation of `spec-template.md`, `prompt-template.md`, `checklist-template.md`, `prompt-checklist.md`, or `codegen-checklist.md`, create the corresponding file in `.tommy/templates/overrides/` — the default in `.tommy/templates/` keeps serving as the base for everything else.
+
+## MCP and SonarQube Configuration (Claude Code)
+
+This configuration is specific to Claude Code — see [`claude-code/README.md`](./claude-code/README.md#configuração-tommy-mcp-e-sonarqube).
+
+## How to Use It?
+
+1. Run `npx sdd-tommy@latest` in your project's folder (or anywhere, to install just Claude Code globally) — the interactive installer asks which tool(s) to install (Claude Code, Cursor, GitHub Copilot — you can pick more than one) and puts the right files in the right place on its own: Claude Code goes to `~/.claude/` (global, once, applies to every project), Cursor and Copilot go to `.cursor/`/`.github/` of the current project. Claude Code's `settings.json`/`mcp.json` are merged with what you already have — never blindly overwritten, always with an automatic backup before any change. Running it again later is safe (it updates without duplicating or losing your customization).
+   - **Manual installation (advanced/offline)**: if you'd rather not use npm/npx, copy your tool's folder (`claude-code/`, `github-copilot/`, or `cursor/`) manually — see each one's `README.md` for the exact destination.
+2. If you'd like, add resources to `.tommy/resources` so agents can learn and adapt to your project.
+3. Run Tommy's bootstrap (`/tommy-start` in Claude Code and Copilot Chat, `@tommy-start` in Cursor) — it creates `.tommy/` (including `.tommy/TOMMY.md`) and `AGENTS.md` at the root, based on the existing code.
+4. Trigger the **Specify** phase: describe the feature clearly and in detail (what needs to be done, what the goal is, what the constraints are). This phase creates the specification in `.tommy/specs/`.
+5. Trigger the **Prompt** phase, referencing the specification created, to generate the detailed execution plan.
+6. Trigger the **Codegen** phase, referencing one part (one plan file) at a time, to generate the code.
+
+## Best Practices
+
+- Provide as much detail as possible when creating the general task in the Specify phase, so the execution plan comes out detailed and aligned with the project's needs.
+- Review the requirements created in the Specify phase and adjust them if needed, to make sure they're clear, complete, and aligned with the project's needs.
+- Use one conversation/chat per plan generated in the Prompt phase, to ensure an adequate context window during the Codegen phase.
+- If you're using Copilot in VS Code, start a new chat and reload the editor after each code generation — VS Code keeps a cached memory of Copilot across sessions, which can cause it to lose the project's up-to-date context.
+
+## Recommended Workflow - Spec-Driven Development
+
+1. Create a clear, detailed general task for the Specify phase.
+    - This can be in a .md file or directly in the chat.
+2. The Specify phase creates the specification, broken down into requirements and acceptance criteria, to fulfill the general task.
+    - Review the requirements created — this part is essential to ensure the execution plan stays aligned with the project's needs.
+    - The specification is the key piece for ensuring delivery quality, since it's what the next phase works from.
+3. Reference the specification in the Prompt phase, to create the detailed execution plan (including architecture).
+4. For each plan file generated, reference it in the Codegen phase to generate the code.
+5. Review the generated code, test it, and validate that it meets the requirements defined in the specification.
+6. If validation fails, fix the requirements in the specification and repeat the plan and code generation process until every step is completed successfully.
+
+---
+
+# Tommy (PT-BR)
+
+[English](#tommy) | **Português**
+
 O Tommy é um framework para desenvolvimento assistido por IA, projetado para facilitar fases de especificação, planejamento e codificação, focando em qualidade das entregas.
+
+Veja [`WORKFLOW.md`](./WORKFLOW.md) para um diagrama dos possíveis fluxos de Spec-Driven Development pelo Tommy, incluindo condicionais e observações.
 
 ## Ferramentas suportadas
 
