@@ -55,8 +55,9 @@ The `./AGENTS.md` file is the **one exception** — it lives at the project root
 - **Tommy Specify**: takes a general task (feature) and creates the specification (`spec.md`), eliciting requirements from the user.
 - **Tommy Prompt**: takes an approved specification and creates the detailed execution plan, including the feature's architecture.
 - **Tommy Codegen**: takes a detailed execution plan and generates the code following it, drawing on the project's best practices and code patterns.
+- **Tommy Git**: reviews local changes and creates Conventional Commits, and detects the project's Git provider (GitHub, GitLab, or Azure DevOps) to push the branch and open a Pull/Merge Request. Not a phase of the Specify → Prompt → Codegen flow — available at any point, only ever on explicit request. See "How to Use It?" below for the exact command per tool, and the paragraph below for how it differs between Claude Code, Cursor, and Copilot.
 
-In Claude Code these three agents have dedicated helper personas (`tommy-business-analyst`, `tommy-architect`) with role-restricted tool access — see `claude-code/README.md`. In Copilot and Cursor, the same responsibilities are condensed into 3 files per tool (see `github-copilot/README.md` and `cursor/README.md`).
+In Claude Code the Specify/Prompt/Codegen agents have dedicated helper personas (`tommy-business-analyst`, `tommy-architect`) with role-restricted tool access — see `claude-code/README.md`. In Copilot and Cursor, the same responsibilities are condensed into 3 files per tool (see `github-copilot/README.md` and `cursor/README.md`).
 
 **Versioning (commit and PR/MR)**: available across all 3 tools — not a fourth phase of the Specify → Prompt → Codegen flow, but something actionable at any point, with detection of the project's Git provider (GitHub, GitLab, Azure DevOps) and Conventional Commits. In Claude Code it's the `tommy-git` agent (`/tommy-commit`, `/tommy-open-pr`) with 4 dedicated skills (one per provider, plus Conventional Commits); in Copilot and Cursor, the same logic is condensed into 2 files per tool (`tommy-commit` and `tommy-open-pr`), with the 3 provider adapters as sections inside the PR/MR-opening file. Details in `claude-code/README.md`, `cursor/README.md`, and `github-copilot/README.md`.
 
@@ -88,7 +89,12 @@ This configuration is specific to Claude Code — see [`claude-code/README.md`](
    - **Claude Code**: `/tommy-run-codegen <path to plan file>` (or select the `tommy-codegen` agent directly).
    - **Cursor**: `@tommy-codegen <path to plan file>`
    - **Copilot Chat**: `/tommy-codegen`, then reference the plan file.
-7. When ready to version what was generated: commit with `/tommy-commit` (Claude Code and Copilot Chat) or `@tommy-commit` (Cursor), then open the PR/MR with `/tommy-open-pr` or `@tommy-open-pr` — see "Agents" above for details.
+7. When ready to version what was generated, use the **Tommy Git** agent — committing and opening a PR/MR are two separate actions, each only triggered when you explicitly ask for it:
+   - **Claude Code**: `/tommy-commit` to commit, then `/tommy-open-pr` to push the branch and open the PR/MR.
+   - **Cursor**: `@tommy-commit`, then `@tommy-open-pr`.
+   - **Copilot Chat**: `/tommy-commit`, then `/tommy-open-pr`.
+
+   See "Agents" above for how Conventional Commits and Git-provider detection work.
 
 ## Best Practices
 
@@ -169,8 +175,9 @@ O arquivo `./AGENTS.md` é a **única exceção** — fica na raiz do projeto, f
 - **Tommy Specify**: recebe uma tarefa geral (feature) e cria a especificação (`spec.md`), elicitando requisitos do usuário.
 - **Tommy Prompt**: recebe uma especificação aprovada e cria o plano de execução detalhado, incluindo a arquitetura da feature.
 - **Tommy Codegen**: recebe um plano de execução detalhado e gera o código seguindo o plano, buscando por melhores práticas e padrões de código do projeto.
+- **Tommy Git**: analisa as mudanças locais e cria commits em Conventional Commits, e detecta o provedor Git do projeto (GitHub, GitLab ou Azure DevOps) para subir a branch e abrir um Pull/Merge Request. Não é uma fase do fluxo Specify → Prompt → Codegen — acionável a qualquer momento, só sob pedido explícito. Ver "Como utilizar?" abaixo para o comando exato por ferramenta, e o parágrafo abaixo para como isso muda entre Claude Code, Cursor e Copilot.
 
-No Claude Code esses três agentes têm personas auxiliares dedicadas (`tommy-business-analyst`, `tommy-architect`) com acesso a ferramentas restrito por papel — ver `claude-code/README.md`. No Copilot e no Cursor, as mesmas responsabilidades ficam condensadas em 3 arquivos por ferramenta (ver `github-copilot/README.md` e `cursor/README.md`).
+No Claude Code os agentes Specify/Prompt/Codegen têm personas auxiliares dedicadas (`tommy-business-analyst`, `tommy-architect`) com acesso a ferramentas restrito por papel — ver `claude-code/README.md`. No Copilot e no Cursor, as mesmas responsabilidades ficam condensadas em 3 arquivos por ferramenta (ver `github-copilot/README.md` e `cursor/README.md`).
 
 **Versionamento (commit e PR/MR)**: disponível nas 3 ferramentas — não é uma quarta fase do fluxo Specify → Prompt → Codegen, e sim algo acionável a qualquer momento, com detecção do provedor Git do projeto (GitHub, GitLab, Azure DevOps) e commits em Conventional Commits. No Claude Code é o agente `tommy-git` (`/tommy-commit`, `/tommy-open-pr`) com 4 skills dedicadas (uma por provedor, mais Conventional Commits); no Copilot e no Cursor, a mesma lógica fica condensada em 2 arquivos por ferramenta (`tommy-commit` e `tommy-open-pr`), com os 3 adaptadores de provedor como seções dentro do arquivo de abertura de PR/MR. Detalhes em `claude-code/README.md`, `cursor/README.md` e `github-copilot/README.md`.
 
@@ -202,7 +209,12 @@ Essa configuração é específica do Claude Code — ver [`claude-code/README.m
    - **Claude Code**: `/tommy-run-codegen <caminho do arquivo de plano>` (ou selecione o agente `tommy-codegen` diretamente).
    - **Cursor**: `@tommy-codegen <caminho do arquivo de plano>`
    - **Copilot Chat**: `/tommy-codegen` e referencie o arquivo de plano.
-7. Quando quiser versionar o que foi gerado: commite com `/tommy-commit` (Claude Code e Copilot Chat) ou `@tommy-commit` (Cursor), depois abra o PR/MR com `/tommy-open-pr` ou `@tommy-open-pr` — ver "Agentes" acima para detalhes.
+7. Quando quiser versionar o que foi gerado, use o agente **Tommy Git** — commitar e abrir PR/MR são duas ações separadas, cada uma só acionada quando você pede explicitamente:
+   - **Claude Code**: `/tommy-commit` para commitar, depois `/tommy-open-pr` para subir a branch e abrir o PR/MR.
+   - **Cursor**: `@tommy-commit`, depois `@tommy-open-pr`.
+   - **Copilot Chat**: `/tommy-commit`, depois `/tommy-open-pr`.
+
+   Ver "Agentes" acima para como funcionam os Conventional Commits e a detecção do provedor Git.
 
 ## Boas práticas
 
