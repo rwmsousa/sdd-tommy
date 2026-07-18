@@ -5,7 +5,7 @@
   "type": "module",
   "private": true,
   "bin": {
-    "sdd-tommy": "./bin/cli.mjs"
+    "sdd-tommy": "bin/cli.mjs"
   },
   "files": [
     "bin",
