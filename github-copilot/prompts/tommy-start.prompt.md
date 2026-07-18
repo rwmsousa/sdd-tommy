@@ -9,10 +9,9 @@ Run this once per project (or whenever `.tommy/` is missing/incomplete). Do all 
 
 ## Step 0 — Scaffold `.tommy/`
 
-If `.tommy/` does not exist at the project root, create it. Ensure these exist, copying from this Tommy installation's `common/` folder if missing (never author new scripts/templates from scratch — they must stay identical across every project using Tommy):
+If `.tommy/` does not exist at the project root, create it. Ensure these exist — never author new scripts/templates from scratch, they must stay identical across every project using Tommy:
 
-- `.tommy/scripts/` ← `common/scripts/` (`common.sh`, `create-new-spec.sh`, `create-new-prompt.sh`, `create-codegen-checklist.sh`)
-- `.tommy/templates/` ← `common/templates/` (`spec-template.md`, `prompt-template.md`, `checklist-template.md`, `prompt-checklist.md`, `codegen-checklist.md`, `agents-md-template.md`, `project-research/`)
+- `.tommy/scripts/` and `.tommy/templates/` — if either is missing, run `npx -y sdd-tommy@latest --sync-runtime` at the project root to populate them (`common.sh`, `create-new-spec.sh`, `create-new-prompt.sh`, `create-codegen-checklist.sh`, `spec-template.md`, `prompt-template.md`, `checklist-template.md`, `prompt-checklist.md`, `codegen-checklist.md`, `agents-md-template.md`, `project-research/`)
 - `.tommy/resources/` — may stay empty
 - `.tommy/project-context/` and `.tommy/codebase/` — built by the steps below
 

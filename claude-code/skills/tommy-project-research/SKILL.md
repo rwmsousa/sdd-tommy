@@ -61,7 +61,7 @@ Also check for the project-level Tommy scaffolding (as described in the root `RE
 └── scripts/      (create-new-spec.sh, create-new-prompt.sh, create-codegen-checklist.sh, common.sh)
 ```
 
-If `.tommy/templates/` or `.tommy/scripts/` is missing, copy the canonical versions from this shared Tommy configuration repository's `common/` folder (`common/templates/`, `common/scripts/`) rather than authoring new ones — this content is tool-agnostic shared infrastructure (also consumed by the GitHub Copilot and Cursor variants of Tommy) and must stay consistent across projects and tools. `.tommy/resources/` may legitimately stay empty; do not treat an empty (but present) `resources/` folder as a GAP.
+If `.tommy/templates/` or `.tommy/scripts/` is missing, restore it by running `npx -y sdd-tommy@latest --sync-runtime` at the project root — do not try to locate or reconstruct these files yourself. This content is tool-agnostic shared infrastructure (also consumed by the GitHub Copilot and Cursor variants of Tommy) and must stay consistent across projects and tools, which is exactly what the installer guarantees. `.tommy/resources/` may legitimately stay empty; do not treat an empty (but present) `resources/` folder as a GAP.
 
 If any required directory or file is missing, trigger this skill to research and create the missing files. Also check if `.tommy/TOMMY.md` still has unfilled placeholders.
 

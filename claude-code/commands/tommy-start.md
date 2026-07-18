@@ -5,7 +5,7 @@ description: "Cria a base de conhecimento inicial do projeto para o Tommy. Lê o
 Create the initial project knowledge base for Tommy. Read the skill `tommy-project-research` (~/.claude/skills/tommy-project-research/SKILL.md) and, in order:
 
 1. If `.tommy/` does not exist at the project root, create it.
-2. Ensure the shared scaffolding is present: `.tommy/scripts/` and `.tommy/templates/` (copy the canonical versions from this shared Tommy configuration repository if missing), and `.tommy/resources/` (may be created empty).
+2. Ensure the shared scaffolding is present: `.tommy/scripts/` and `.tommy/templates/` (if missing, run `npx -y sdd-tommy@latest --sync-runtime` at the project root to populate them — do not try to locate or reconstruct these files yourself), and `.tommy/resources/` (may be created empty).
 3. Create or refresh `.tommy/project-context/` (the 7 product-context files, per each file's reference template) and `.tommy/codebase/` (the 7 technical files).
 4. Fill `.tommy/TOMMY.md`.
 5. Create or refresh `AGENTS.md` **at the project root** — the one deliberate exception; every other file this command creates lives inside `.tommy/`.
