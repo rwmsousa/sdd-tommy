@@ -17,7 +17,7 @@ Read the plan's own checklist (`.tommy/specs/[spec-folder]/checklists/[plan-id]-
 
 Run: `.tommy/scripts/create-codegen-checklist.sh --json --spec-folder ".tommy/specs/[spec-folder]"`. Use the `CHECKLIST_FILE` from its JSON output — this is the checklist you validate against in step 4, not the plan's own checklist from step 0.
 
-Read `TOMMY.md` and the relevant `.tommy/codebase/*.md` / `.tommy/project-context/tech_restrictions_context.md` files before touching code — never assume the stack or architecture.
+Read `.tommy/TOMMY.md` and the relevant `.tommy/codebase/*.md` / `.tommy/project-context/tech_restrictions_context.md` files before touching code — never assume the stack or architecture.
 
 ## 2. Implement
 

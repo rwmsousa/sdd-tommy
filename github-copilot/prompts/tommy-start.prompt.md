@@ -34,13 +34,13 @@ For each file below, follow its reference template under `.tommy/templates/proje
 6. `concerns.md` — auth, logging, error handling, validation, caching, i18n, security, performance.
 7. `testing.md` — test framework, test types, location/naming conventions, coverage tools, scripts.
 
-## Step 3 — Fill `TOMMY.md`
+## Step 3 — Fill `.tommy/TOMMY.md`
 
-Update `TOMMY.md` at the project root (create it if absent) with a synthesis: project name/purpose, tech stack, architecture entry points and key patterns, 5-10 critical code rules from `conventions.md`, design system if applicable. Keep it under 80 lines — it's a summary, not a dump; the detail lives in `.tommy/codebase/`.
+Update `.tommy/TOMMY.md` (create it if absent — **inside `.tommy/`, never at the project root**: `.tommy/` is usually gitignored and not everyone on the project uses Tommy) with a synthesis: project name/purpose, tech stack, architecture entry points and key patterns, 5-10 critical code rules from `conventions.md`, design system if applicable. Keep it under 80 lines — it's a summary, not a dump; the detail lives in `.tommy/codebase/`.
 
 ## Step 4 — Create `AGENTS.md`
 
-Create or refresh `AGENTS.md` at the project root from `.tommy/templates/agents-md-template.md`. This is what Cursor and Copilot itself read as the universal entry point on future sessions.
+Create or refresh `AGENTS.md` **at the project root** — the one deliberate exception to "everything lives inside `.tommy/`", because that's the only location Copilot (and Cursor) discover it natively. Generate it from `.tommy/templates/agents-md-template.md`. Keep it short (10-20 lines) and free of anything project-sensitive — it's navigation to `.tommy/TOMMY.md`, not a copy of it.
 
 ## Report
 

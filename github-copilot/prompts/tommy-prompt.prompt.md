@@ -13,7 +13,7 @@ Read `.tommy/specs/[spec-folder]/spec.md` and its `checklists/requirements.md`. 
 
 ## 1. Research (in this order, every time)
 
-1. Project docs — `TOMMY.md`, plus only the relevant files in `.tommy/project-context/` (`tech_stack_context.md`, `tech_restrictions_context.md`, `architecture_definition_context.md` for this phase — see the selective-reading guidance in `.tommy/templates/project-research/`).
+1. Project docs — `.tommy/TOMMY.md`, plus only the relevant files in `.tommy/project-context/` (`tech_stack_context.md`, `tech_restrictions_context.md`, `architecture_definition_context.md` for this phase — see the selective-reading guidance in `.tommy/templates/project-research/`).
 2. `.tommy/resources/` — only files relevant to this feature.
 3. Codebase — existing patterns, conventions, and reusable components. Search deeply along the real dependency path (e.g. Page → Service → Route → Controller → Model), not just the first file that matches.
 4. External library/framework APIs — **before proposing use of any API not already demonstrably used elsewhere in the codebase**, verify it against the version actually installed (`.tommy/codebase/stack.md` or the manifest/lock file). If the installed version can't do what's needed, stop and ask the user — never design around a newer API than what's installed, and never propose a dependency bump yourself.

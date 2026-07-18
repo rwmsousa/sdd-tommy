@@ -4,7 +4,7 @@ This project uses **Tommy**, a spec-driven development workflow: **Specify → P
 
 ## Before doing anything else
 
-1. Read `AGENTS.md` and `TOMMY.md` at the project root if they exist.
+1. Read `AGENTS.md` (project root) and `.tommy/TOMMY.md` if they exist.
 2. If `.tommy/` does not exist at the project root, or `.tommy/scripts/`, `.tommy/templates/`, or `.tommy/project-context/` are missing, this project has never been bootstrapped for Tommy. Tell the user to run `/tommy-start` first (see `.github/prompts/tommy-start.prompt.md`) — do not attempt to guess project context or invent architecture/conventions instead.
 3. Otherwise, read `.tommy/project-context/` selectively (only the files relevant to the current request — see the table in `.tommy/templates/project-research/project-context/` for guidance) and `.tommy/codebase/` for technical detail.
 

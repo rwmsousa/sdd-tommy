@@ -2,7 +2,7 @@
 
 This project uses **Tommy**, a spec-driven development workflow: **Specify → Prompt → Codegen**.
 
-- Full project orientation: see `TOMMY.md` (tech stack, architecture, code rules, key patterns).
+- Full project orientation: see `.tommy/TOMMY.md` (tech stack, architecture, code rules, key patterns).
 - Business/product context: see `.tommy/project-context/` (goal, scope, glossary, tech restrictions, architecture rationale, work management).
 - Technical codebase map: see `.tommy/codebase/` (stack, structure, architecture, conventions, integrations, concerns, testing).
 - Feature specs, plans, and quality checklists live under `.tommy/specs/`.

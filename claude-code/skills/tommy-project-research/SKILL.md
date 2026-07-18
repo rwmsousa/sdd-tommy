@@ -1,6 +1,6 @@
 ---
 name: 'tommy-project-research'
-description: 'Tommy Project Research Skill — researches and maps a project codebase into structured knowledge files under .tommy/codebase/. Creates architecture.md, concerns.md, conventions.md, integrations.md, stack.md, structure.md, and testing.md. Also fills TOMMY.md with essential project information. Use this skill whenever .tommy/codebase/ files are missing or incomplete, when onboarding to an existing project, when the user asks to map or research a codebase, when setting up Tommy for a new project, or when a GAP is detected in codebase knowledge files. Triggers on: project research, map codebase, codebase analysis, missing codebase files, fill TOMMY.md, onboard project, setup tommy, analyze project structure, detect project stack.'
+description: 'Tommy Project Research Skill — researches and maps a project codebase into structured knowledge files under .tommy/codebase/. Creates architecture.md, concerns.md, conventions.md, integrations.md, stack.md, structure.md, and testing.md. Also fills .tommy/TOMMY.md with essential project information. Use this skill whenever .tommy/codebase/ files are missing or incomplete, when onboarding to an existing project, when the user asks to map or research a codebase, when setting up Tommy for a new project, or when a GAP is detected in codebase knowledge files. Triggers on: project research, map codebase, codebase analysis, missing codebase files, fill TOMMY.md, onboard project, setup tommy, analyze project structure, detect project stack.'
 ---
 
 # Tommy Project Research
@@ -9,14 +9,14 @@ This skill guides the systematic research and mapping of an existing project's c
 
 ## Why This Matters
 
-Every Tommy agent reads `TOMMY.md`, `.tommy/project-context/`, and `.tommy/codebase/` files to understand the project's goals, scope boundaries, technology, patterns, and constraints. When these files are missing or incomplete (a "GAP"), agents produce generic outputs that don't match the project's reality. This skill exists to close that gap systematically.
+Every Tommy agent reads `.tommy/TOMMY.md`, `.tommy/project-context/`, and `.tommy/codebase/` files to understand the project's goals, scope boundaries, technology, patterns, and constraints. When these files are missing or incomplete (a "GAP"), agents produce generic outputs that don't match the project's reality. This skill exists to close that gap systematically.
 
 ## When to Use
 
 - **GAP Detection**: When `.tommy/project-context/` or `.tommy/codebase/` directory is missing, or when expected context/codebase files are absent.
 - **Onboarding**: When Tommy is being set up for an existing project for the first time.
 - **Refresh**: When the project has changed significantly and codebase files are outdated.
-- **TOMMY.md is empty or has placeholders**: When the main guidance file still contains template placeholders like `[Project Name]` or `[brief description]`.
+- **`.tommy/TOMMY.md` is empty or has placeholders**: When the main guidance file still contains template placeholders like `[Project Name]` or `[brief description]`.
 
 ## GAP Detection
 
@@ -52,6 +52,7 @@ Also check for the project-level Tommy scaffolding (as described in the root `RE
 
 ```
 .tommy/
+├── TOMMY.md      (created/refreshed in Step 8 below — never at the project root; AGENTS.md is the only file this skill writes outside .tommy/)
 ├── resources/    (may be empty — for project-specific reference material)
 ├── templates/
 │   ├── spec-template.md, prompt-template.md, checklist-template.md, prompt-checklist.md, codegen-checklist.md
@@ -62,7 +63,7 @@ Also check for the project-level Tommy scaffolding (as described in the root `RE
 
 If `.tommy/templates/` or `.tommy/scripts/` is missing, copy the canonical versions from this shared Tommy configuration repository's `common/` folder (`common/templates/`, `common/scripts/`) rather than authoring new ones — this content is tool-agnostic shared infrastructure (also consumed by the GitHub Copilot and Cursor variants of Tommy) and must stay consistent across projects and tools. `.tommy/resources/` may legitimately stay empty; do not treat an empty (but present) `resources/` folder as a GAP.
 
-If any required directory or file is missing, trigger this skill to research and create the missing files. Also check if `TOMMY.md` still has unfilled placeholders.
+If any required directory or file is missing, trigger this skill to research and create the missing files. Also check if `.tommy/TOMMY.md` still has unfilled placeholders.
 
 ### Step 0: Build Product Context Layer
 
@@ -193,11 +194,11 @@ Research the testing approach and infrastructure:
 
 Write findings to `.tommy/codebase/testing.md` following the reference template: [.tommy/templates/project-research/codebase/testing-reference.md](.tommy/templates/project-research/codebase/testing-reference.md)
 
-### Step 8: Fill TOMMY.md
+### Step 8: Fill `.tommy/TOMMY.md`
 
-After completing all research, update `TOMMY.md` at the project root with a synthesis of the findings. This file should be concise and serve as the primary guidance for all Tommy agents.
+After completing all research, update `.tommy/TOMMY.md` with a synthesis of the findings (create the file if it doesn't exist yet — inside `.tommy/`, never at the project root). This file should be concise and serve as the primary guidance for all Tommy agents.
 
-Read the current `TOMMY.md` and replace placeholder sections with real data gathered from the previous steps:
+Read the current `.tommy/TOMMY.md` and replace placeholder sections with real data gathered from the previous steps:
 
 - **What is [Project Name]?** → Actual project name and purpose (from README, package.json description, or code analysis)
 - **Tech Stack** → Key technologies from `stack.md`
@@ -206,11 +207,11 @@ Read the current `TOMMY.md` and replace placeholder sections with real data gath
 - **Design System** → UI component library or design system if applicable
 - **Key Patterns** → Notable patterns discovered across all research
 
-Keep `TOMMY.md` under 80 lines. It's a summary, not a dump of everything — the detailed files in `.tommy/codebase/` hold the full picture.
+Keep `.tommy/TOMMY.md` under 80 lines. It's a summary, not a dump of everything — the detailed files in `.tommy/codebase/` hold the full picture.
 
 ### Step 9: Create or Refresh AGENTS.md
 
-Create or refresh `AGENTS.md` at the project root from `.tommy/templates/agents-md-template.md`. This is a short (10-20 line), tool-agnostic entry point read natively by Cursor and GitHub Copilot — it exists so a teammate opening this same project in one of those tools (instead of Claude Code) still lands on Tommy's workflow instead of generic, ungrounded suggestions. It is not a replacement for `TOMMY.md`: `AGENTS.md` stays short and points to `TOMMY.md` and `.tommy/` for detail; do not duplicate `TOMMY.md`'s content into it.
+Create or refresh `AGENTS.md` **at the project root** (this is the one deliberate exception to "everything Tommy creates lives inside `.tommy/`") from `.tommy/templates/agents-md-template.md`. It has to live at the root because that's the only location Cursor and GitHub Copilot discover it natively — it exists so a teammate opening this same project in one of those tools (instead of Claude Code), possibly without any Tommy-specific config installed, still lands on Tommy's workflow instead of generic, ungrounded suggestions. It is not a replacement for `.tommy/TOMMY.md`: `AGENTS.md` stays short (10-20 lines, no business content) and points to `.tommy/TOMMY.md` and `.tommy/` for detail; do not duplicate `.tommy/TOMMY.md`'s content into it. Since `.tommy/` is typically gitignored while `AGENTS.md` is not, keep `AGENTS.md` free of anything project-sensitive — it's navigation, not context.
 
 ## Research Techniques
 

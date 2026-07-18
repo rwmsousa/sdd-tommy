@@ -27,14 +27,17 @@ Cada pasta de ferramenta tem seu próprio `README.md` com o passo a passo de ins
 
 ## TOMMY.md
 
-O arquivo `./TOMMY.md`, na raiz de cada projeto que usa o Tommy, é onde ficam as instruções principais, informações, arquitetura e regras do projeto, para que os agentes do Tommy possam aprender e se adaptar ao projeto, garantindo que as entregas estejam alinhadas com os padrões do projeto e atendam às necessidades do projeto.
+O arquivo `.tommy/TOMMY.md` é onde ficam as instruções principais, informações, arquitetura e regras do projeto, para que os agentes do Tommy possam aprender e se adaptar ao projeto, garantindo que as entregas estejam alinhadas com os padrões do projeto e atendam às necessidades do projeto.
+
+Fica **dentro** de `.tommy/`, não na raiz — assim como `.tommy/project-context/` e `.tommy/codebase/`, é conteúdo gerado e mantido pelo Tommy, não algo que todo colaborador do projeto precisa ver (nem todos usam o Tommy) ou versionar (`.tommy/` costuma estar no `.gitignore`).
 
 ## AGENTS.md
 
-O arquivo `./AGENTS.md`, também na raiz de cada projeto, é um ponteiro curto e agnóstico de ferramenta — lido nativamente pelo Cursor e pelo Copilot, e conectável ao Claude Code via import (`@AGENTS.md` dentro do `CLAUDE.md` do projeto) ou symlink. Ele não substitui o `TOMMY.md`: só aponta para ele e para `.tommy/`.
+O arquivo `./AGENTS.md` é a **única exceção** — fica na raiz do projeto, fora de `.tommy/`, porque só tem valor se for descoberto nativamente ali pelo Cursor e pelo Copilot (e conectável ao Claude Code via import `@AGENTS.md` dentro do `CLAUDE.md` do projeto, ou symlink). É um ponteiro curto (10-20 linhas, sem conteúdo de negócio) para `.tommy/TOMMY.md` e para `.tommy/` — não duplica conteúdo. Se o projeto costuma ignorar `.tommy/` no git, avalie versionar o `AGENTS.md` normalmente (ele não expõe nada sensível, só orientação de navegação).
 
 ## Estrutura `.tommy` (dentro de cada projeto)
 
+- **TOMMY.md**: instruções principais do projeto para os agentes — ver seção acima.
 - **resources**: Pasta destinada a armazenar arquivos de recursos que os agentes podem utilizar para aprender e se adaptar ao projeto.
     Esses arquivos podem conter informações sobre padrões de código, melhores práticas, convenções de nomenclatura, arquitetura do projeto, estrutura de pastas,
     exemplos de código e qualquer outro conhecimento relevante que possa ajudar os agentes a gerar código alinhado com os padrões do projeto.
@@ -63,7 +66,7 @@ Essa configuração é específica do Claude Code — ver [`claude-code/README.m
 
 1. Instale a pasta da sua ferramenta (`claude-code/`, `github-copilot/` ou `cursor/`) — ver o `README.md` de cada uma para o destino exato.
 2. Se desejar, adicione recursos em `.tommy/resources` para que os agentes possam aprender e se adaptar ao seu projeto.
-3. Rode o bootstrap do Tommy (`/tommy-start` no Claude Code e no Copilot Chat, `@tommy-start` no Cursor) — ele cria `.tommy/`, `TOMMY.md` e `AGENTS.md` a partir do código existente.
+3. Rode o bootstrap do Tommy (`/tommy-start` no Claude Code e no Copilot Chat, `@tommy-start` no Cursor) — ele cria `.tommy/` (incluindo `.tommy/TOMMY.md`) e o `AGENTS.md` na raiz, a partir do código existente.
 4. Acione a fase **Specify**: descreva a feature de forma clara e detalhada (o que deve ser feito, qual é o objetivo, quais são as restrições). A fase cria a especificação em `.tommy/specs/`.
 5. Acione a fase **Prompt**, referenciando a especificação criada, para gerar o plano de execução detalhado.
 6. Acione a fase **Codegen**, referenciando uma parte (um arquivo de plano) por vez, para gerar o código.

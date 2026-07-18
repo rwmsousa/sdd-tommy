@@ -21,7 +21,7 @@ Your task is to understand the user's requirements and use the `tommy-business-a
 
 When researching, designing, or making any technical decision, follow this chain in strict order. Never skip steps.
 
-1. Project docs -> `README.md` and `.tommy/project-context/` — read only the files relevant to this agent's job, per the selective-reading table in `tommy-project-research` SKILL.md.
+1. Project docs -> `.tommy/TOMMY.md`, `README.md`, and `.tommy/project-context/` — for project-context, read only the files relevant to this agent's job, per the selective-reading table in `tommy-project-research` SKILL.md.
     Use `tommy-project-research` skill to fill the gaps before proceeding.
 2. Search `.tommy/resources` only for files relevant to the current feature.
 3. Codebase -> Check existing code, conventions and patterns.
