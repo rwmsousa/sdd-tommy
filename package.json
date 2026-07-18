@@ -1,0 +1,47 @@
+{
+  "name": "sdd-tommy",
+  "version": "0.1.0",
+  "description": "Interactive installer for Tommy, a spec-driven development workflow (Specify -> Prompt -> Codegen) for Claude Code, Cursor, and GitHub Copilot.",
+  "type": "module",
+  "private": true,
+  "bin": {
+    "sdd-tommy": "./bin/cli.mjs"
+  },
+  "files": [
+    "bin",
+    "src",
+    "common",
+    "claude-code",
+    "cursor",
+    "github-copilot"
+  ],
+  "engines": {
+    "node": ">=18.20.0"
+  },
+  "license": "MIT",
+  "author": "Ricardo Sousa <rwmsousa@gmail.com>",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/rwmsousa/sdd-configs.git"
+  },
+  "bugs": {
+    "url": "https://github.com/rwmsousa/sdd-configs/issues"
+  },
+  "homepage": "https://github.com/rwmsousa/sdd-configs#readme",
+  "keywords": [
+    "tommy",
+    "spec-driven-development",
+    "claude-code",
+    "cursor",
+    "github-copilot",
+    "ai-agents",
+    "cli",
+    "installer"
+  ],
+  "scripts": {
+    "start": "node bin/cli.mjs"
+  },
+  "dependencies": {
+    "prompts": "^2.4.2"
+  }
+}
