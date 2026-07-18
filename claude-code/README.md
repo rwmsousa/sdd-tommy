@@ -14,6 +14,10 @@ Este é o conjunto de arquivos mais completo do Tommy — os únicos com subagen
 
 O `.tommy/` de cada projeto (scripts, templates, specs) continua vindo de `../common/`, igual às outras ferramentas — nada disso muda por estar no Claude Code.
 
+## Instalação
+
+Rode `npx sdd-tommy@latest` e escolha "Claude Code" no prompt (pode combinar com Cursor/Copilot na mesma execução) — o instalador copia `agents/`, `commands/`, `skills/`, `hooks/` para `~/.claude/` e mescla `mcp.json`/`settings.json` com o que você já tiver (nunca sobrescreve às cegas, sempre com backup automático antes de qualquer mudança real). Ver a seção "Como utilizar?" do README raiz para o fluxo completo. Alternativa manual: copiar esta pasta para `~/.claude/` você mesmo.
+
 ## Agentes
 
 - `tommy-specify` — cria/atualiza a especificação, orquestrando `tommy-business-analyst` para elicitar requisitos.

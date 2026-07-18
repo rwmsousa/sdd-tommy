@@ -1,6 +1,6 @@
 # Tommy for Cursor
 
-This folder is installed **per project**, not globally — copy its contents into the target repository's `.cursor/` folder:
+This folder is installed **per project**, not globally — into the target repository's `.cursor/` folder:
 
 ```
 <seu-projeto>/.cursor/
@@ -14,7 +14,9 @@ This folder is installed **per project**, not globally — copy its contents int
     └── tommy-open-pr.mdc
 ```
 
-The project also needs the tool-agnostic Tommy runtime — copy `../common/scripts/` and `../common/templates/` into the project's `.tommy/scripts/` and `.tommy/templates/`, or let `@tommy-start` do it for you the first time it runs.
+## Installation
+
+Run `npx sdd-tommy@latest` at the project root and pick "Cursor" in the prompt (can be combined with Claude Code/Copilot in the same run) — it copies `rules/` into `.cursor/rules/` and also populates `.tommy/scripts/`/`.tommy/templates/` for you (the tool-agnostic Tommy runtime, otherwise `@tommy-start` does it the first time it runs). Manual alternative: copy this folder's contents into `.cursor/` yourself, and `../common/scripts/`/`../common/templates/` into `.tommy/scripts/`/`.tommy/templates/`.
 
 ## Usage
 

@@ -66,7 +66,8 @@ Essa configuração é específica do Claude Code — ver [`claude-code/README.m
 
 ## Como utilizar?
 
-1. Instale a pasta da sua ferramenta (`claude-code/`, `github-copilot/` ou `cursor/`) — ver o `README.md` de cada uma para o destino exato.
+1. Rode `npx sdd-tommy@latest` na pasta do seu projeto (ou em qualquer lugar, para instalar só o Claude Code globalmente) — o instalador interativo pergunta para qual(is) ferramenta(s) instalar (Claude Code, Cursor, GitHub Copilot — pode escolher mais de uma) e coloca os arquivos certos no lugar certo sozinho: Claude Code vai para `~/.claude/` (global, uma vez só, vale pra todos os projetos), Cursor e Copilot vão para `.cursor/`/`.github/` do projeto atual. `settings.json`/`mcp.json` do Claude Code são mesclados com o que você já tem — nunca sobrescritos às cegas, sempre com backup automático antes de qualquer mudança. Rodar de novo mais tarde é seguro (atualiza sem duplicar nem perder customização sua).
+   - **Instalação manual (avançado/offline)**: se preferir não usar npm/npx, copie a pasta da sua ferramenta (`claude-code/`, `github-copilot/` ou `cursor/`) manualmente — ver o `README.md` de cada uma para o destino exato.
 2. Se desejar, adicione recursos em `.tommy/resources` para que os agentes possam aprender e se adaptar ao seu projeto.
 3. Rode o bootstrap do Tommy (`/tommy-start` no Claude Code e no Copilot Chat, `@tommy-start` no Cursor) — ele cria `.tommy/` (incluindo `.tommy/TOMMY.md`) e o `AGENTS.md` na raiz, a partir do código existente.
 4. Acione a fase **Specify**: descreva a feature de forma clara e detalhada (o que deve ser feito, qual é o objetivo, quais são as restrições). A fase cria a especificação em `.tommy/specs/`.
