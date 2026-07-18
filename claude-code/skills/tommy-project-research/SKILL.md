@@ -25,19 +25,6 @@ Every Tommy agent reads `.tommy/TOMMY.md`, `.tommy/project-context/`, and `.tomm
 Before any Tommy workflow begins, check for these files:
 
 ```
-.tommy/project-context/
-├── architecture_definition_context.md
-├── glossary_context.md
-├── project_goal_context.md
-├── project_management_context.md
-├── scope_features_context.md
-├── tech_restrictions_context.md
-└── tech_stack_context.md
-```
-
-and:
-
-```
 .tommy/codebase/
 ├── architecture.md
 ├── concerns.md
@@ -48,11 +35,24 @@ and:
 └── testing.md
 ```
 
+and:
+
+```
+.tommy/project-context/
+├── architecture_definition_context.md
+├── glossary_context.md
+├── project_goal_context.md
+├── project_management_context.md
+├── scope_features_context.md
+├── tech_restrictions_context.md
+└── tech_stack_context.md
+```
+
 Also check for the project-level Tommy scaffolding (as described in the root `README.md`, sourced from this repository's `common/` folder):
 
 ```
 .tommy/
-├── TOMMY.md      (created/refreshed in Step 8 below — never at the project root; AGENTS.md is the only file this skill writes outside .tommy/)
+├── TOMMY.md      (created/refreshed in Step 9 below — never at the project root; AGENTS.md is the only file this skill writes outside .tommy/)
 ├── resources/    (may be empty — for project-specific reference material)
 ├── templates/
 │   ├── spec-template.md, prompt-template.md, checklist-template.md, prompt-checklist.md, codegen-checklist.md
@@ -65,29 +65,9 @@ If `.tommy/templates/` or `.tommy/scripts/` is missing, restore it by running `n
 
 If any required directory or file is missing, trigger this skill to research and create the missing files. Also check if `.tommy/TOMMY.md` still has unfilled placeholders.
 
-### Step 0: Build Product Context Layer
-
-Before mapping technical codebase details, ensure `.tommy/project-context/` is complete and up to date with the current project reality. Validate and (re)generate, each following its reference template:
-
-| File | Reference template |
-|---|---|
-| `project_goal_context.md` | [.tommy/templates/project-research/project-context/project-goal-context-reference.md](.tommy/templates/project-research/project-context/project-goal-context-reference.md) |
-| `scope_features_context.md` | [.tommy/templates/project-research/project-context/scope-features-context-reference.md](.tommy/templates/project-research/project-context/scope-features-context-reference.md) |
-| `glossary_context.md` | [.tommy/templates/project-research/project-context/glossary-context-reference.md](.tommy/templates/project-research/project-context/glossary-context-reference.md) |
-| `tech_stack_context.md` | [.tommy/templates/project-research/project-context/tech-stack-context-reference.md](.tommy/templates/project-research/project-context/tech-stack-context-reference.md) |
-| `architecture_definition_context.md` | [.tommy/templates/project-research/project-context/architecture-definition-context-reference.md](.tommy/templates/project-research/project-context/architecture-definition-context-reference.md) |
-| `tech_restrictions_context.md` | [.tommy/templates/project-research/project-context/tech-restrictions-context-reference.md](.tommy/templates/project-research/project-context/tech-restrictions-context-reference.md) |
-| `project_management_context.md` | [.tommy/templates/project-research/project-context/project-management-context-reference.md](.tommy/templates/project-research/project-context/project-management-context-reference.md) |
-
-This step establishes product boundaries and ubiquitous language before technical mapping.
-
-**This layer is not purely derivable from code.** Unlike `.tommy/codebase/` (Steps 1-7 below), which is reconstructed from evidence in the repository, several fields here are business decisions that only exist in someone's head — business objective, target users, market positioning, roadmap priority, ceremonies, and "decisions not to revert" cannot be reverse-engineered from source code with confidence. Each reference template marks which fields are evidence-derivable and which must be confirmed with the user/product owner. **Never fabricate a business fact to avoid asking a question** — an empty `[NEEDS CONFIRMATION]` placeholder is correct output; a guessed answer presented as fact is not. This mirrors the `tommy-business-analyst` principle of never assuming rules without evidence.
-
-Once `.tommy/project-context/` exists, do not re-ask the user for facts it already answers in later Tommy workflows (specify, architecture, codegen) — read the file instead. Only re-open a question with the user when the file is silent, contradicts the current request, or is stale relative to the codebase.
-
 ## Research Workflow
 
-Follow this order — each step builds on the previous one. Do not skip steps even if a file seems obvious; the goal is evidence-based mapping, not assumptions. Read [code-analysis.md](.tommy/templates/project-research/code-analysis.md) for techniques on how to analyze the codebase effectively.
+Follow this order — each step builds on the previous one, and later steps deliberately depend on earlier ones (see Step 8). Do not skip steps even if a file seems obvious; the goal is evidence-based mapping, not assumptions. Read [code-analysis.md](.tommy/templates/project-research/code-analysis.md) for techniques on how to analyze the codebase effectively.
 
 ### Step 1: Identify the Stack
 
@@ -195,7 +175,34 @@ Research the testing approach and infrastructure:
 
 Write findings to `.tommy/codebase/testing.md` following the reference template: [.tommy/templates/project-research/codebase/testing-reference.md](.tommy/templates/project-research/codebase/testing-reference.md)
 
-### Step 8: Fill `.tommy/TOMMY.md`
+### Step 8: Build the Product Context Layer
+
+With `.tommy/codebase/` now complete, build or refresh `.tommy/project-context/`, each file following its reference template:
+
+| File | Reference template |
+|---|---|
+| `project_goal_context.md` | [.tommy/templates/project-research/project-context/project-goal-context-reference.md](.tommy/templates/project-research/project-context/project-goal-context-reference.md) |
+| `scope_features_context.md` | [.tommy/templates/project-research/project-context/scope-features-context-reference.md](.tommy/templates/project-research/project-context/scope-features-context-reference.md) |
+| `glossary_context.md` | [.tommy/templates/project-research/project-context/glossary-context-reference.md](.tommy/templates/project-research/project-context/glossary-context-reference.md) |
+| `tech_stack_context.md` | [.tommy/templates/project-research/project-context/tech-stack-context-reference.md](.tommy/templates/project-research/project-context/tech-stack-context-reference.md) |
+| `architecture_definition_context.md` | [.tommy/templates/project-research/project-context/architecture-definition-context-reference.md](.tommy/templates/project-research/project-context/architecture-definition-context-reference.md) |
+| `tech_restrictions_context.md` | [.tommy/templates/project-research/project-context/tech-restrictions-context-reference.md](.tommy/templates/project-research/project-context/tech-restrictions-context-reference.md) |
+| `project_management_context.md` | [.tommy/templates/project-research/project-context/project-management-context-reference.md](.tommy/templates/project-research/project-context/project-management-context-reference.md) |
+
+**This step runs after Steps 1-7 on purpose, not incidentally.** Two of these files are explicitly narrative summaries of codebase files that must already exist for them to summarize instead of re-research:
+
+- `tech_stack_context.md` summarizes `.tommy/codebase/stack.md` and `.tommy/codebase/integrations.md` (Steps 1 and 5) — read those two files and condense them into the business-relevant narrative the template asks for. **Do not re-derive the dependency list from `package.json` again** — that research is already done; re-running it is how the two files drift out of sync and end up duplicating the same exhaustive table under two different headings.
+- `architecture_definition_context.md` summarizes `.tommy/codebase/architecture.md` and `.tommy/codebase/structure.md` (Steps 3 and 2) — read those two files for the "how," then add the "why" (rationale, trade-offs, evolution guideline) on top. Don't re-trace the codebase from scratch to restate the "how" a second time.
+
+If either target codebase file is somehow still missing when you reach this step, go back and complete the corresponding earlier step first — never write the narrative version as a substitute for the evidence-derivable one.
+
+The other five files (`project_goal_context.md`, `scope_features_context.md`, `glossary_context.md`, `tech_restrictions_context.md`, `project_management_context.md`) have no codebase-file counterpart to duplicate — they capture product/business boundaries and ubiquitous language that live outside the code.
+
+**This layer is not purely derivable from code.** Several fields are business decisions that only exist in someone's head — business objective, target users, market positioning, roadmap priority, ceremonies, and "decisions not to revert" cannot be reverse-engineered from source code with confidence. Each reference template marks which fields are evidence-derivable and which must be confirmed with the user/product owner. **Never fabricate a business fact to avoid asking a question** — an empty `[NEEDS CONFIRMATION]` placeholder is correct output; a guessed answer presented as fact is not. This mirrors the `tommy-business-analyst` principle of never assuming rules without evidence.
+
+Once `.tommy/project-context/` exists, do not re-ask the user for facts it already answers in later Tommy workflows (specify, architecture, codegen) — read the file instead. Only re-open a question with the user when the file is silent, contradicts the current request, or is stale relative to the codebase.
+
+### Step 9: Fill `.tommy/TOMMY.md`
 
 After completing all research, update `.tommy/TOMMY.md` with a synthesis of the findings (create the file if it doesn't exist yet — inside `.tommy/`, never at the project root). This file should be concise and serve as the primary guidance for all Tommy agents.
 
@@ -210,7 +217,7 @@ Read the current `.tommy/TOMMY.md` and replace placeholder sections with real da
 
 Keep `.tommy/TOMMY.md` under 80 lines. It's a summary, not a dump of everything — the detailed files in `.tommy/codebase/` hold the full picture.
 
-### Step 9: Create or Refresh AGENTS.md
+### Step 10: Create or Refresh AGENTS.md
 
 Create or refresh `AGENTS.md` **at the project root** (this is the one deliberate exception to "everything Tommy creates lives inside `.tommy/`") from `.tommy/templates/agents-md-template.md`. It has to live at the root because that's the only location Cursor and GitHub Copilot discover it natively — it exists so a teammate opening this same project in one of those tools (instead of Claude Code), possibly without any Tommy-specific config installed, still lands on Tommy's workflow instead of generic, ungrounded suggestions. It is not a replacement for `.tommy/TOMMY.md`: `AGENTS.md` stays short (10-20 lines, no business content) and points to `.tommy/TOMMY.md` and `.tommy/` for detail; do not duplicate `.tommy/TOMMY.md`'s content into it. Since `.tommy/` is typically gitignored while `AGENTS.md` is not, keep `AGENTS.md` free of anything project-sensitive — it's navigation, not context.
 
@@ -231,7 +238,7 @@ When investigating a codebase, use these approaches:
 - Every claim must be backed by evidence found in the codebase (file paths, configurations, code patterns).
 - If something is ambiguous or cannot be determined, state it explicitly rather than guessing.
 - Use relative paths from the project root when referencing files.
-- Keep each codebase file focused on its domain — avoid duplicating information across files.
+- Keep each codebase file focused on its domain — avoid duplicating information across files. This applies with extra force to the two pairs that intentionally overlap in subject: `.tommy/codebase/stack.md` + `.tommy/codebase/integrations.md` vs. `.tommy/project-context/tech_stack_context.md`, and `.tommy/codebase/architecture.md` + `.tommy/codebase/structure.md` vs. `.tommy/project-context/architecture_definition_context.md`. The `.tommy/codebase/` side is the exhaustive, evidence-derivable inventory; the `.tommy/project-context/` side is a narrative summary written from it (see Step 8) — never two independently-researched versions of the same table. If they ever disagree, `.tommy/codebase/` is the source of truth.
 - Use consistent markdown formatting across all generated files.
 
 ## Selective Reading by Other Agents
