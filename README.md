@@ -54,7 +54,7 @@ O arquivo `./AGENTS.md` é a **única exceção** — fica na raiz do projeto, f
 
 No Claude Code esses três agentes têm personas auxiliares dedicadas (`tommy-business-analyst`, `tommy-architect`) com acesso a ferramentas restrito por papel — ver `claude-code/README.md`. No Copilot e no Cursor, as mesmas responsabilidades ficam condensadas em 3 arquivos por ferramenta (ver `github-copilot/README.md` e `cursor/README.md`).
 
-**Versionamento (commit e PR/MR)**: hoje é um agente específico do Claude Code (`tommy-git`, acionado por `/tommy-commit` e `/tommy-open-pr`) — não uma quarta fase do fluxo Specify → Prompt → Codegen, e sim algo acionável a qualquer momento, com detecção do provedor Git do projeto (GitHub, GitLab, Azure DevOps) e commits em Conventional Commits. Detalhes em `claude-code/README.md`; ainda não há equivalente no Copilot/Cursor.
+**Versionamento (commit e PR/MR)**: disponível nas 3 ferramentas — não é uma quarta fase do fluxo Specify → Prompt → Codegen, e sim algo acionável a qualquer momento, com detecção do provedor Git do projeto (GitHub, GitLab, Azure DevOps) e commits em Conventional Commits. No Claude Code é o agente `tommy-git` (`/tommy-commit`, `/tommy-open-pr`) com 4 skills dedicadas (uma por provedor, mais Conventional Commits); no Copilot e no Cursor, a mesma lógica fica condensada em 2 arquivos por ferramenta (`tommy-commit` e `tommy-open-pr`), com os 3 adaptadores de provedor como seções dentro do arquivo de abertura de PR/MR. Detalhes em `claude-code/README.md`, `cursor/README.md` e `github-copilot/README.md`.
 
 ## Customização de templates por projeto
 
