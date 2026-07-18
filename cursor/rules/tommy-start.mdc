@@ -31,7 +31,7 @@ For each file below, follow its reference template under `.tommy/templates/proje
 2. `structure.md` — top-level directories, entry points, path aliases, monorepo layout.
 3. `architecture.md` — pattern, layer boundaries, data flow, domain boundaries.
 4. `conventions.md` — linting/formatting, naming, file organization, import patterns, commit conventions.
-5. `integrations.md` — databases, external APIs, message brokers, cloud services, CI/CD.
+5. `integrations.md` — databases, external APIs, message brokers, cloud services, CI/CD, and **Git hosting**: run `git remote -v` and match the `origin` hostname (`github.com` → GitHub, `gitlab.com`/self-hosted host containing `gitlab` → GitLab, `dev.azure.com`/`visualstudio.com` → Azure DevOps). If the hostname doesn't match any known pattern, ask the user which provider/tool to use instead of guessing — record the answer here so `@tommy-commit`/`@tommy-open-pr` don't ask again.
 6. `concerns.md` — auth, logging, error handling, validation, caching, i18n, security, performance.
 7. `testing.md` — test framework, test types, location/naming conventions, coverage tools, scripts.
 
