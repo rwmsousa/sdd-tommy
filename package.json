@@ -3,7 +3,7 @@
   "version": "0.1.0",
   "description": "Interactive installer for Tommy, a spec-driven development workflow (Specify -> Prompt -> Codegen) for Claude Code, Cursor, and GitHub Copilot.",
   "type": "module",
-  "private": true,
+  "private": "false",
   "bin": {
     "sdd-tommy": "bin/cli.mjs"
   },
