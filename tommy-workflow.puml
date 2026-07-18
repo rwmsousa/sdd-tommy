@@ -1,0 +1,126 @@
+@startuml tommy-workflow
+' Tommy — Spec-Driven Development workflow: possible flows, conditionals, and observations.
+title Tommy — Spec-Driven Development Workflow
+
+skinparam backgroundColor white
+skinparam activity {
+  BackgroundColor #F0F4FF
+  BorderColor #4A6FA5
+}
+skinparam note {
+  BackgroundColor #FFF9C4
+  BorderColor #C9B458
+}
+
+|Bootstrap|
+start
+if (.tommy/ scaffolding complete?\nscripts + templates + project-context + codebase, all present) then (yes)
+else (no)
+  :Tommy Start\n(scaffold .tommy/, research codebase\n& product context, fill TOMMY.md,\ncreate AGENTS.md);
+  note right
+    Every Tommy agent self-checks for this
+    scaffolding and self-triggers Tommy Start
+    if it is missing — the workflow never
+    hard-fails just because /tommy-start
+    was skipped.
+  end note
+endif
+
+|Specify|
+:Describe the feature in natural language;
+:Create feature branch "NNN-short-name" and spec.md;
+:Business Analyst elicits requirements\n(targeted questions, 3-5 at a time);
+repeat
+  :Write / refine spec.md\n(goals, user stories, acceptance criteria, non-goals);
+repeat while (Passes the spec quality checklist?) is (no — fix and retry, up to 3x) not (yes)
+note right
+  If still failing after 3 iterations, escalate
+  the open questions to the user instead of
+  looping forever.
+end note
+
+|Prompt|
+:Reference the approved spec;
+:Architect designs implementation architecture,\nbounded contexts, data model;
+:Write detailed implementation plan + its own checklist;
+:Plan file ready in .tommy/specs/.../plans/;
+
+|Codegen|
+:Pick one plan file to implement;
+if (Plan's own checklist fully checked?) then (yes)
+else (no)
+  :Stop and report the plan\nas not yet validated;
+  stop
+endif
+repeat
+  :Implement / fix code and tests;
+repeat while (Quality gate passes?\nlint, tests, complexity, pattern\ncompliance, Sonar, checklist) is (no) not (yes)
+:Code ready — report to user;
+
+|Versioning|
+note right
+  Not a fourth phase — two independent
+  actions available at any point, each only
+  ever triggered by an EXPLICIT user request.
+  No Tommy agent commits or opens a PR/MR
+  on its own initiative.
+end note
+
+fork
+  if (User explicitly asks to commit?) then (yes)
+    :Tommy Commit — review diff,\npropose Conventional Commit message(s);
+    if (User confirms message & files?) then (yes)
+      :git commit\n(one or more commits per branch/plan,\ne.g. one per finished checklist item);
+    else (no)
+      :Revise the proposed message;
+    endif
+  else (not yet)
+  endif
+fork again
+  if (User explicitly asks to open a PR/MR?) then (yes)
+    if (Provider already known in\n.tommy/codebase/integrations.md?) then (yes)
+    else (no)
+      if (Remote hostname matches a known pattern —\ngithub.com, gitlab*, dev.azure.com or visualstudio.com?) then (yes)
+      else (no)
+        :Ask the user which\nprovider/tool to use;
+        note right
+          Self-hosted hostnames are not
+          reliable evidence — never guess.
+          The answer is recorded in
+          integrations.md so this is not
+          asked again next time.
+        end note
+      endif
+    endif
+    switch (Detected provider?)
+    case ( GitHub )
+      :gh pr create;
+    case ( GitLab )
+      :glab mr create;
+      note right: GitLab calls this a\nMerge Request, not a Pull Request.
+    case ( Azure DevOps )
+      :az repos pr create;
+    case ( Unsupported host — e.g. GCP\nCloud Source Repositories )
+      :Push the branch only,\nreport that PR/MR is not\nsupported for this host;
+    endswitch
+    :Report the PR/MR URL to the user;
+  else (not yet)
+  endif
+end fork
+
+note right
+  Never adds a "Co-authored-by:" trailer or any
+  AI-attribution footer to a commit or PR/MR body.
+  Commit author is always the local git identity
+  (git config user.name / user.email).
+end note
+
+stop
+
+legend right
+  | Note | Meaning |
+  | Claude Code | Full flow above: 5 dedicated agents\n(Specify, Business Analyst, Architect,\nPrompt, Codegen) + tommy-git with 4 skills\n(Conventional Commits + one adapter per provider). |
+  | Cursor / GitHub Copilot | Same flow, condensed: Specify absorbs\nBusiness Analyst, Prompt absorbs Architect;\nCommit/Open-PR condensed into 2 files instead\nof 1 agent + 4 skills. Phase separation is\nself-enforced discipline, not tool-restricted. |
+endlegend
+
+@enduml
