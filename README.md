@@ -54,6 +54,8 @@ O arquivo `./AGENTS.md` é a **única exceção** — fica na raiz do projeto, f
 
 No Claude Code esses três agentes têm personas auxiliares dedicadas (`tommy-business-analyst`, `tommy-architect`) com acesso a ferramentas restrito por papel — ver `claude-code/README.md`. No Copilot e no Cursor, as mesmas responsabilidades ficam condensadas em 3 arquivos por ferramenta (ver `github-copilot/README.md` e `cursor/README.md`).
 
+**Versionamento (commit e PR/MR)**: hoje é um agente específico do Claude Code (`tommy-git`, acionado por `/tommy-commit` e `/tommy-open-pr`) — não uma quarta fase do fluxo Specify → Prompt → Codegen, e sim algo acionável a qualquer momento, com detecção do provedor Git do projeto (GitHub, GitLab, Azure DevOps) e commits em Conventional Commits. Detalhes em `claude-code/README.md`; ainda não há equivalente no Copilot/Cursor.
+
 ## Customização de templates por projeto
 
 Os scripts em `.tommy/scripts` resolvem templates com uma pilha de prioridade: primeiro `.tommy/templates/overrides/<nome-do-template>.md`, depois `.tommy/templates/<nome-do-template>.md` (o template padrão, copiado de `common/templates/`). Se um projeto (ou unidade de negócio) precisar de uma variação de `spec-template.md`, `prompt-template.md`, `checklist-template.md`, `prompt-checklist.md` ou `codegen-checklist.md`, crie o arquivo correspondente em `.tommy/templates/overrides/` — o padrão em `.tommy/templates/` continua servindo como base para todo o resto.

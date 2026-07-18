@@ -21,6 +21,34 @@ O `.tommy/` de cada projeto (scripts, templates, specs) continua vindo de `../co
 - `tommy-architect` — desenho de arquitetura da feature (chamado por `tommy-prompt`).
 - `tommy-prompt` — cria o plano de execução detalhado a partir da especificação.
 - `tommy-codegen` — implementa o plano, gera testes e roda o quality gate.
+- `tommy-git` — commita mudanças locais (Conventional Commits) e abre Pull/Merge Request no provedor detectado do projeto. Ver seção [Versionamento (commit e PR/MR)](#versionamento-commit-e-prmr) abaixo.
+
+## Versionamento (commit e PR/MR)
+
+O `tommy-git` é orquestrado por dois comandos independentes — commit e abertura de PR/MR são confirmações separadas, nunca encadeadas automaticamente:
+
+- `/tommy-commit` — analisa `git status`/`git diff`, propõe mensagem(ns) no padrão Conventional Commits (skill `tommy-conventional-commits`) e só commita após confirmação. Múltiplos commits por branch/plano são esperados (um por item de checklist concluído, por exemplo) — o agente nunca força um único commit gigante por feature.
+- `/tommy-open-pr` — detecta o provedor Git do projeto, sobe a branch e abre o PR/MR, confirmando antes de cada ação visível (push e criação do PR/MR).
+
+**Nenhum outro agente do Tommy dispara `tommy-git` automaticamente** — `tommy-codegen`, por exemplo, só sugere o próximo passo, para respeitar a regra de nunca commitar sem pedido explícito do usuário.
+
+### Detecção do provedor (GitHub, GitLab, Azure DevOps)
+
+1. `tommy-git` lê primeiro a seção "Git Hosting (VCS Provider)" de `.tommy/codebase/integrations.md` — preenchida no bootstrap (`tommy-project-research`, Step 5) a partir do hostname do remote `origin`, ou perguntada ao usuário quando o hostname é ambíguo (self-hosted, sem remote, múltiplos remotes). Depois que essa seção existe, o agente não pergunta de novo.
+2. Se a seção estiver ausente/vazia, cai para detecção ao vivo via `git remote get-url origin`.
+3. Cada provedor tem uma skill adaptadora dedicada, carregada só quando aplicável:
+   - `tommy-git-github` (`gh pr create`)
+   - `tommy-git-gitlab` (`glab mr create` — GitLab chama de **Merge Request**, não Pull Request)
+   - `tommy-git-azure-devops` (`az repos pr create`, requer `az extension add --name azure-devops`)
+4. Google Cloud Source Repositories (e hosts sem conceito de PR/MR) não são suportados para abertura de PR — o agente permite commit/push e avisa explicitamente que a etapa de PR não se aplica, em vez de simular um fluxo inexistente.
+
+### Pré-requisitos por provedor
+
+Cada skill adaptadora assume que a CLI correspondente já está instalada e autenticada na máquina do usuário (`gh auth status`, `glab auth status`, `az account show`) — o agente verifica isso antes de tentar qualquer push/PR e reporta o gap em vez de tentar contornar. Nenhuma credencial nova precisa ser cadastrada em `mcp.json`; o fluxo usa a sessão de CLI já autenticada localmente.
+
+### Regra de atribuição
+
+Reforçando a regra global do Tommy: `tommy-git` **nunca** adiciona `Co-authored-by:` ou qualquer rodapé de atribuição de IA a commits ou descrições de PR/MR — a autoria é sempre a identidade local (`git config user.name`/`user.email`). Isso é reforçado explicitamente nas instruções do agente e da skill `tommy-conventional-commits`, além do `attribution` já zerado em [`settings.json`](./settings.json).
 
 ## Configuração Tommy (MCP e SonarQube)
 
@@ -45,3 +73,4 @@ O [mcp.json](./mcp.json) deste repositório só registra o servidor `context7` p
     - Você pode solicitar via chat o requisito, ou criar um arquivo explicando a tarefa geral e colocar o caminho do arquivo no campo de input de dados do agente.
 2. Selecione o agente `tommy-prompt`, referenciando a especificação criada, para gerar o plano de execução.
 3. Rode `/tommy-run-codegen <caminho do plano>` (ou selecione `tommy-codegen` diretamente), uma parte do plano por vez.
+4. Quando quiser versionar o que foi gerado, rode `/tommy-commit` (um ou mais commits, sob confirmação) e, quando pronto, `/tommy-open-pr` (sobe a branch e abre o PR/MR) — ver [Versionamento (commit e PR/MR)](#versionamento-commit-e-prmr).
