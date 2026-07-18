@@ -1,5 +1,5 @@
 ---
-mode: agent
+agent: agent
 description: Detect the project's VCS provider (GitHub, GitLab, or Azure DevOps), push the current branch, and open a Pull/Merge Request.
 ---
 

@@ -1,5 +1,5 @@
 ---
-mode: agent
+agent: agent
 description: Bootstrap Tommy for this project — scaffold .tommy/, research the codebase, and produce the initial knowledge base.
 ---
 

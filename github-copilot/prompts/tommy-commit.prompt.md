@@ -1,5 +1,5 @@
 ---
-mode: agent
+agent: agent
 description: Review local changes and create commit(s) following Conventional Commits — format, scope, granularity, and attribution rules.
 ---
 

@@ -1,5 +1,5 @@
 ---
-mode: agent
+agent: agent
 description: Turn an approved Tommy spec into a detailed implementation plan, including architecture design — planning only, no implementation code.
 ---
 

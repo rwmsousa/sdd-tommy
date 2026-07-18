@@ -1,5 +1,5 @@
 ---
-mode: agent
+agent: agent
 description: Turn a feature description into a Tommy specification (spec.md) — requirements elicitation and business-language spec writing, no implementation detail.
 ---
 

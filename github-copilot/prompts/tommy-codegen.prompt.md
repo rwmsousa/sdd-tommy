@@ -1,5 +1,5 @@
 ---
-mode: agent
+agent: agent
 description: Implement a Tommy plan file — generate code, tests, and run it through the full quality gate before reporting done.
 ---
 
