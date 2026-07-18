@@ -155,6 +155,7 @@ Map all external dependencies and integrations:
 - **Monitoring & observability**: Sentry, Datadog, New Relic, Prometheus, Grafana
 - **CI/CD**: GitHub Actions, GitLab CI, Azure DevOps, Jenkins
 - **Infrastructure as code**: Terraform, Pulumi, CloudFormation
+- **Git hosting / VCS provider**: run `git remote -v` (or read `.git/config`) and match the `origin` hostname against known patterns — `github.com` → GitHub, `gitlab.com` or a self-hosted host containing `gitlab` → GitLab, `dev.azure.com`/`visualstudio.com` → Azure DevOps. If the hostname doesn't match any known pattern (self-hosted instance, no remote configured yet, or ambiguous/multiple remotes), **ask the user** which provider/tool to use instead of guessing — self-hosted hostnames aren't reliable evidence. Record the answer in the Git Hosting section of `integrations.md` so `tommy-git` can read it later without asking again.
 
 Look for:
 - Environment variables (`.env.example`, `.env.sample`)

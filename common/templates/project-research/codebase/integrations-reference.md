@@ -42,6 +42,16 @@ Template and guidance for documenting project integrations in `.tommy/codebase/i
 | S3 | @aws-sdk/client-s3 | File storage |
 | CloudWatch | @aws-sdk/client-cloudwatch | Monitoring |
 
+## Git Hosting (VCS Provider)
+
+| Field | Value |
+|-------|-------|
+| Provider | GitHub / GitLab / Azure DevOps / Other |
+| Remote host | e.g. github.com, gitlab.company.com, dev.azure.com |
+| Self-hosted | Yes/No |
+| PR/MR CLI | gh / glab / az repos |
+| Default branch | main / master / develop |
+
 ## CI/CD
 
 | Platform | Config File | Key Stages |
@@ -74,6 +84,7 @@ List the key environment variables that configure integrations (from .env.exampl
 - **Base URL Env Var**: For external APIs, note which environment variable holds the URL — this prevents hardcoded values.
 - **Environment Variables**: Only list variables related to integrations. General app config (PORT, NODE_ENV) belongs in conventions.
 - **Required**: Mark whether the integration is required for the app to start or optional (graceful degradation).
+- **Git Hosting**: Unlike the rest of this file, the provider isn't always safely derivable from evidence alone — a self-hosted GitLab or Azure DevOps instance won't necessarily have a recognizable hostname. If the remote hostname doesn't unambiguously match a known provider, confirm it with the user instead of guessing. This field exists so `tommy-git` can read it once here instead of asking on every commit/PR.
 
 ## Where to Find This Information
 
@@ -85,3 +96,4 @@ List the key environment variables that configure integrations (from .env.exampl
 | `src/config/`, `src/infra/` | Integration configuration code |
 | CI/CD pipeline files | Build and deployment integrations |
 | Import statements for SDKs | Which services are actually used in code |
+| `git remote -v` / `.git/config` | Git hosting provider and remote host |
