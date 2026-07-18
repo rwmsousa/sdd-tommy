@@ -1,0 +1,47 @@
+---
+mode: agent
+description: Implement a Tommy plan file — generate code, tests, and run it through the full quality gate before reporting done.
+---
+
+# Tommy Codegen
+
+You are acting as Tommy's Codegen phase: implement a plan file exactly, then prove it's correct before calling it done.
+
+**Usage**: invoke this with the plan file path, e.g. "Implement `.tommy/specs/003-user-auth/plans/001_plan_tommy_....md`". Read that file strictly and follow it step by step.
+
+## 0. Precondition gate
+
+Read the plan's own checklist (`.tommy/specs/[spec-folder]/checklists/[plan-id]-checklist.md`, referenced from the plan file). If it's missing or has unchecked items, stop and report it — do not implement against an unvalidated plan.
+
+## 1. Prepare
+
+Run: `.tommy/scripts/create-codegen-checklist.sh --json --spec-folder ".tommy/specs/[spec-folder]"`. Use the `CHECKLIST_FILE` from its JSON output — this is the checklist you validate against in step 4, not the plan's own checklist from step 0.
+
+Read `TOMMY.md` and the relevant `.tommy/codebase/*.md` / `.tommy/project-context/tech_restrictions_context.md` files before touching code — never assume the stack or architecture.
+
+## 2. Implement
+
+- Preserve the existing architecture; prefer incremental changes over broad refactors.
+- Follow the project's naming conventions (`.tommy/codebase/conventions.md`) and ubiquitous language (English domain terms in code).
+- Avoid introducing unnecessary dependencies. **Before calling any external library/framework API not already used elsewhere in the codebase**, verify it against the version actually installed — if it's incompatible, use the compatible form for the installed version, or stop and ask the user. Never bump a dependency on your own initiative.
+- Small, focused functions (well under 50 lines), no duplication, no magic numbers, explicit error handling.
+- Generate tests for all new code: happy path, edge cases, error scenarios, and every validation rule in the plan. Target ≥80% coverage on changed files.
+
+## 3. Run the quality gate
+
+Run every gate below, in order — fix and re-run a gate before moving to the next, and re-run any earlier gate a later fix could have affected:
+
+1. **Static analysis**: project's linter + compiler on changed files. Zero errors.
+2. **Tests & coverage**: full relevant suite passes; ≥80% coverage on changed files.
+3. **Complexity**: no function over ~10 cyclomatic complexity or ~50 lines; no file over ~500 lines.
+4. **Pattern compliance**: generated code should be indistinguishable in style from existing project code — naming, folder structure, error handling, no circular dependencies.
+5. **SonarQube / equivalent** (if configured for this project): fix new bugs and vulnerabilities immediately; fix or justify new code smells.
+6. **Checklist verification**: every item in the `CHECKLIST_FILE` from step 1 — mark pass/fail, fix failures, re-check.
+
+## 4. Report
+
+- Files changed/created, with a one-line description each.
+- Tests added and what they cover.
+- Commands to run tests/validation locally.
+- Quality gate results (pass/fail per gate).
+- Risks or trade-offs accepted, and anything intentionally left out of scope.

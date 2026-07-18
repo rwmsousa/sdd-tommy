@@ -48,16 +48,19 @@ and:
 └── testing.md
 ```
 
-Also check for the project-level Tommy scaffolding (as described in the root `README.md`):
+Also check for the project-level Tommy scaffolding (as described in the root `README.md`, sourced from this repository's `common/` folder):
 
 ```
 .tommy/
 ├── resources/    (may be empty — for project-specific reference material)
-├── templates/    (spec-template.md, prompt-template.md, checklist-template.md, prompt-checklist.md, codegen-checklist.md)
+├── templates/
+│   ├── spec-template.md, prompt-template.md, checklist-template.md, prompt-checklist.md, codegen-checklist.md
+│   ├── agents-md-template.md
+│   └── project-research/    (this skill's own reference templates — code-analysis.md, codebase/*.md, project-context/*.md)
 └── scripts/      (create-new-spec.sh, create-new-prompt.sh, create-codegen-checklist.sh, common.sh)
 ```
 
-If `.tommy/templates/` or `.tommy/scripts/` is missing, copy the canonical versions from this shared Tommy configuration repository rather than authoring new ones — the templates and scripts are shared infrastructure and must stay consistent across projects. `.tommy/resources/` may legitimately stay empty; do not treat an empty (but present) `resources/` folder as a GAP.
+If `.tommy/templates/` or `.tommy/scripts/` is missing, copy the canonical versions from this shared Tommy configuration repository's `common/` folder (`common/templates/`, `common/scripts/`) rather than authoring new ones — this content is tool-agnostic shared infrastructure (also consumed by the GitHub Copilot and Cursor variants of Tommy) and must stay consistent across projects and tools. `.tommy/resources/` may legitimately stay empty; do not treat an empty (but present) `resources/` folder as a GAP.
 
 If any required directory or file is missing, trigger this skill to research and create the missing files. Also check if `TOMMY.md` still has unfilled placeholders.
 
@@ -67,13 +70,13 @@ Before mapping technical codebase details, ensure `.tommy/project-context/` is c
 
 | File | Reference template |
 |---|---|
-| `project_goal_context.md` | [references/project-goal-context-reference.md](references/project-goal-context-reference.md) |
-| `scope_features_context.md` | [references/scope-features-context-reference.md](references/scope-features-context-reference.md) |
-| `glossary_context.md` | [references/glossary-context-reference.md](references/glossary-context-reference.md) |
-| `tech_stack_context.md` | [references/tech-stack-context-reference.md](references/tech-stack-context-reference.md) |
-| `architecture_definition_context.md` | [references/architecture-definition-context-reference.md](references/architecture-definition-context-reference.md) |
-| `tech_restrictions_context.md` | [references/tech-restrictions-context-reference.md](references/tech-restrictions-context-reference.md) |
-| `project_management_context.md` | [references/project-management-context-reference.md](references/project-management-context-reference.md) |
+| `project_goal_context.md` | [.tommy/templates/project-research/project-context/project-goal-context-reference.md](.tommy/templates/project-research/project-context/project-goal-context-reference.md) |
+| `scope_features_context.md` | [.tommy/templates/project-research/project-context/scope-features-context-reference.md](.tommy/templates/project-research/project-context/scope-features-context-reference.md) |
+| `glossary_context.md` | [.tommy/templates/project-research/project-context/glossary-context-reference.md](.tommy/templates/project-research/project-context/glossary-context-reference.md) |
+| `tech_stack_context.md` | [.tommy/templates/project-research/project-context/tech-stack-context-reference.md](.tommy/templates/project-research/project-context/tech-stack-context-reference.md) |
+| `architecture_definition_context.md` | [.tommy/templates/project-research/project-context/architecture-definition-context-reference.md](.tommy/templates/project-research/project-context/architecture-definition-context-reference.md) |
+| `tech_restrictions_context.md` | [.tommy/templates/project-research/project-context/tech-restrictions-context-reference.md](.tommy/templates/project-research/project-context/tech-restrictions-context-reference.md) |
+| `project_management_context.md` | [.tommy/templates/project-research/project-context/project-management-context-reference.md](.tommy/templates/project-research/project-context/project-management-context-reference.md) |
 
 This step establishes product boundaries and ubiquitous language before technical mapping.
 
@@ -83,7 +86,7 @@ Once `.tommy/project-context/` exists, do not re-ask the user for facts it alrea
 
 ## Research Workflow
 
-Follow this order — each step builds on the previous one. Do not skip steps even if a file seems obvious; the goal is evidence-based mapping, not assumptions. Read [code-analysis.md](references/code-analysis.md) for techniques on how to analyze the codebase effectively.
+Follow this order — each step builds on the previous one. Do not skip steps even if a file seems obvious; the goal is evidence-based mapping, not assumptions. Read [code-analysis.md](.tommy/templates/project-research/code-analysis.md) for techniques on how to analyze the codebase effectively.
 
 ### Step 1: Identify the Stack
 
@@ -95,7 +98,7 @@ Research the project's technology stack by examining:
 - **Build configs**: `tsconfig.json`, `webpack.config.*`, `vite.config.*`, `esbuild.*`, `rollup.config.*`, `tsup.config.*`
 - **Container configs**: `Dockerfile`, `docker-compose.yml`, `.dockerignore`
 
-Write findings to `.tommy/codebase/stack.md` following the reference template: [references/stack-reference.md](references/stack-reference.md)
+Write findings to `.tommy/codebase/stack.md` following the reference template: [.tommy/templates/project-research/codebase/stack-reference.md](.tommy/templates/project-research/codebase/stack-reference.md)
 
 ### Step 2: Map the Structure
 
@@ -107,7 +110,7 @@ Analyze the project's directory layout and understand how code is organized:
 - Identify monorepo structure if applicable (workspaces, packages)
 - Note any code generation or scaffolding patterns
 
-Write findings to `.tommy/codebase/structure.md` following the reference template: [references/structure-reference.md](references/structure-reference.md)
+Write findings to `.tommy/codebase/structure.md` following the reference template: [.tommy/templates/project-research/codebase/structure-reference.md](.tommy/templates/project-research/codebase/structure-reference.md)
 
 ### Step 3: Discover the Architecture
 
@@ -125,7 +128,7 @@ Look for these clues:
 - Dependency injection patterns
 - Middleware chains or pipelines
 
-Write findings to `.tommy/codebase/architecture.md` following the reference template: [references/architecture-reference.md](references/architecture-reference.md)
+Write findings to `.tommy/codebase/architecture.md` following the reference template: [.tommy/templates/project-research/codebase/architecture-reference.md](.tommy/templates/project-research/codebase/architecture-reference.md)
 
 ### Step 4: Map Conventions
 
@@ -138,7 +141,7 @@ Identify the coding conventions enforced or adopted by the project:
 - **Commit conventions**: Conventional commits, branch naming, PR templates
 - **Code style**: Functional vs OOP, immutability preferences, error handling patterns
 
-Write findings to `.tommy/codebase/conventions.md` following the reference template: [references/conventions-reference.md](references/conventions-reference.md)
+Write findings to `.tommy/codebase/conventions.md` following the reference template: [.tommy/templates/project-research/codebase/conventions-reference.md](.tommy/templates/project-research/codebase/conventions-reference.md)
 
 ### Step 5: Catalog Integrations
 
@@ -158,7 +161,7 @@ Look for:
 - SDK imports and client instantiations
 - Docker compose services
 
-Write findings to `.tommy/codebase/integrations.md` following the reference template: [references/integrations-reference.md](references/integrations-reference.md)
+Write findings to `.tommy/codebase/integrations.md` following the reference template: [.tommy/templates/project-research/codebase/integrations-reference.md](.tommy/templates/project-research/codebase/integrations-reference.md)
 
 ### Step 6: Identify Concerns
 
@@ -173,7 +176,7 @@ Map cross-cutting concerns — aspects that affect the entire application rather
 - **Security**: CORS, CSP, rate limiting, input sanitization, HTTPS enforcement
 - **Performance**: Lazy loading, code splitting, pagination strategies
 
-Write findings to `.tommy/codebase/concerns.md` following the reference template: [references/concerns-reference.md](references/concerns-reference.md)
+Write findings to `.tommy/codebase/concerns.md` following the reference template: [.tommy/templates/project-research/codebase/concerns-reference.md](.tommy/templates/project-research/codebase/concerns-reference.md)
 
 ### Step 7: Map Testing
 
@@ -188,7 +191,7 @@ Research the testing approach and infrastructure:
 - **E2E tools**: Cypress, Playwright, Selenium, Detox
 - **Test scripts**: Available npm/make/gradle tasks for running tests
 
-Write findings to `.tommy/codebase/testing.md` following the reference template: [references/testing-reference.md](references/testing-reference.md)
+Write findings to `.tommy/codebase/testing.md` following the reference template: [.tommy/templates/project-research/codebase/testing-reference.md](.tommy/templates/project-research/codebase/testing-reference.md)
 
 ### Step 8: Fill TOMMY.md
 
@@ -204,6 +207,10 @@ Read the current `TOMMY.md` and replace placeholder sections with real data gath
 - **Key Patterns** → Notable patterns discovered across all research
 
 Keep `TOMMY.md` under 80 lines. It's a summary, not a dump of everything — the detailed files in `.tommy/codebase/` hold the full picture.
+
+### Step 9: Create or Refresh AGENTS.md
+
+Create or refresh `AGENTS.md` at the project root from `.tommy/templates/agents-md-template.md`. This is a short (10-20 line), tool-agnostic entry point read natively by Cursor and GitHub Copilot — it exists so a teammate opening this same project in one of those tools (instead of Claude Code) still lands on Tommy's workflow instead of generic, ungrounded suggestions. It is not a replacement for `TOMMY.md`: `AGENTS.md` stays short and points to `TOMMY.md` and `.tommy/` for detail; do not duplicate `TOMMY.md`'s content into it.
 
 ## Research Techniques
 
@@ -243,20 +250,20 @@ When investigating a codebase, use these approaches:
 
 Detailed templates and field descriptions for each codebase file:
 
-- [references/stack-reference.md](references/stack-reference.md) — How to document the technology stack
-- [references/structure-reference.md](references/structure-reference.md) — How to document project structure
-- [references/architecture-reference.md](references/architecture-reference.md) — How to document architecture
-- [references/conventions-reference.md](references/conventions-reference.md) — How to document conventions
-- [references/integrations-reference.md](references/integrations-reference.md) — How to document integrations
-- [references/concerns-reference.md](references/concerns-reference.md) — How to document cross-cutting concerns
-- [references/testing-reference.md](references/testing-reference.md) — How to document testing
+- [.tommy/templates/project-research/codebase/stack-reference.md](.tommy/templates/project-research/codebase/stack-reference.md) — How to document the technology stack
+- [.tommy/templates/project-research/codebase/structure-reference.md](.tommy/templates/project-research/codebase/structure-reference.md) — How to document project structure
+- [.tommy/templates/project-research/codebase/architecture-reference.md](.tommy/templates/project-research/codebase/architecture-reference.md) — How to document architecture
+- [.tommy/templates/project-research/codebase/conventions-reference.md](.tommy/templates/project-research/codebase/conventions-reference.md) — How to document conventions
+- [.tommy/templates/project-research/codebase/integrations-reference.md](.tommy/templates/project-research/codebase/integrations-reference.md) — How to document integrations
+- [.tommy/templates/project-research/codebase/concerns-reference.md](.tommy/templates/project-research/codebase/concerns-reference.md) — How to document cross-cutting concerns
+- [.tommy/templates/project-research/codebase/testing-reference.md](.tommy/templates/project-research/codebase/testing-reference.md) — How to document testing
 
 Detailed templates and field descriptions for each product-context file:
 
-- [references/project-goal-context-reference.md](references/project-goal-context-reference.md) — How to document the project's goal and business context
-- [references/scope-features-context-reference.md](references/scope-features-context-reference.md) — How to document the feature roadmap and scope
-- [references/glossary-context-reference.md](references/glossary-context-reference.md) — How to document the domain glossary
-- [references/tech-stack-context-reference.md](references/tech-stack-context-reference.md) — How to document the business-relevant stack narrative
-- [references/tech-restrictions-context-reference.md](references/tech-restrictions-context-reference.md) — How to document forbidden tech and locked decisions
-- [references/architecture-definition-context-reference.md](references/architecture-definition-context-reference.md) — How to document architecture decisions and rationale
-- [references/project-management-context-reference.md](references/project-management-context-reference.md) — How to document the work management model
+- [.tommy/templates/project-research/project-context/project-goal-context-reference.md](.tommy/templates/project-research/project-context/project-goal-context-reference.md) — How to document the project's goal and business context
+- [.tommy/templates/project-research/project-context/scope-features-context-reference.md](.tommy/templates/project-research/project-context/scope-features-context-reference.md) — How to document the feature roadmap and scope
+- [.tommy/templates/project-research/project-context/glossary-context-reference.md](.tommy/templates/project-research/project-context/glossary-context-reference.md) — How to document the domain glossary
+- [.tommy/templates/project-research/project-context/tech-stack-context-reference.md](.tommy/templates/project-research/project-context/tech-stack-context-reference.md) — How to document the business-relevant stack narrative
+- [.tommy/templates/project-research/project-context/tech-restrictions-context-reference.md](.tommy/templates/project-research/project-context/tech-restrictions-context-reference.md) — How to document forbidden tech and locked decisions
+- [.tommy/templates/project-research/project-context/architecture-definition-context-reference.md](.tommy/templates/project-research/project-context/architecture-definition-context-reference.md) — How to document architecture decisions and rationale
+- [.tommy/templates/project-research/project-context/project-management-context-reference.md](.tommy/templates/project-research/project-context/project-management-context-reference.md) — How to document the work management model

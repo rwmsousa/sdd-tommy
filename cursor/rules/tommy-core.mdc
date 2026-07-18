@@ -1,0 +1,38 @@
+---
+description: Tommy — always-on project orientation and workflow gate
+globs:
+alwaysApply: true
+---
+
+# Tommy — Core Orientation
+
+This project uses **Tommy**, a spec-driven development workflow: **Specify → Prompt → Codegen**.
+
+## Before doing anything else
+
+1. Read `AGENTS.md` and `TOMMY.md` at the project root if they exist.
+2. If `.tommy/` does not exist at the project root, or `.tommy/scripts/`, `.tommy/templates/`, or `.tommy/project-context/` are missing, this project has never been bootstrapped for Tommy — pull in `@tommy-start` (see `tommy-start.mdc`) before doing anything else. Do not guess project context or invent architecture/conventions instead.
+3. Otherwise, read `.tommy/project-context/` selectively (only the files relevant to the current request — see `.tommy/templates/project-research/project-context/` for guidance on which file matters when) and `.tommy/codebase/` for technical detail.
+
+## The three phases
+
+Tommy work happens in three explicit phases — pull in the matching rule (`@tommy-specify`, `@tommy-prompt`, `@tommy-codegen`) rather than improvising the workflow inline:
+
+1. **Specify** (`tommy-specify.mdc`) — feature idea → `.tommy/specs/[NNN-feature]/spec.md`, business language only.
+2. **Prompt** (`tommy-prompt.mdc`) — approved spec → detailed implementation plan with architecture decisions. Still no code.
+3. **Codegen** (`tommy-codegen.mdc`) — implements a plan file, generates tests, validates against a quality checklist.
+
+**Do not skip phases.** Do not write implementation code from a bare feature request without a spec and a plan behind it.
+
+## Known limitation — read this before assuming otherwise
+
+Claude Code's version of Tommy enforces phase separation with per-agent tool restrictions (the "specify" and "prompt" phases technically cannot write/edit source files). Cursor has no equivalent mechanism — every phase runs with full workspace access in the same agent session. Phase separation here is a **discipline you must self-enforce**, not a technical guarantee.
+
+## Core rules (condensed from Tommy's quality skills)
+
+- **Ubiquitous language**: domain terms in code are always English, mapped from `.tommy/project-context/glossary_context.md`. Never introduce a synonym for a term that already has a name there.
+- **Reuse over invention**: search the codebase for existing patterns before writing new ones. Check `.tommy/codebase/` and `.tommy/project-context/tech_restrictions_context.md` first — the latter has hard constraints that override generic best practice.
+- **External library APIs**: before calling a library/framework API not already used elsewhere in the codebase, verify it against the version actually installed (`.tommy/codebase/stack.md` or the manifest/lock file). Never assume the latest documented API matches what's installed, and never bump a dependency on your own initiative — ask the user.
+- **Small, testable units**: functions do one thing, well under 50 lines. Files under ~500 lines. No duplication, no magic numbers.
+- **Tests are mandatory** for new code: happy path, edge cases, error scenarios, every validation rule from the plan. Target ≥80% coverage on changed files.
+- **Write narrative content** (specs, plans, PR descriptions, chat responses) in the project's configured language (`pt-BR` unless stated otherwise); code identifiers stay in English.
