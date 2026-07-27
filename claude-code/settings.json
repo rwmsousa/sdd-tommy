@@ -7,9 +7,7 @@
     "pr": ""
   },
   "permissions": {
-    "allow": [
-      "mcp__playwright"
-    ],
+    "allow": [],
     "deny": []
   },
   "hooks": {
@@ -21,6 +19,16 @@
             "type": "command",
             "command": "~/.claude/hooks/tommy-format-on-edit.sh",
             "async": true
+          }
+        ]
+      }
+    ],
+    "Stop": [
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "~/.claude/hooks/tommy-quality-sentinel.sh"
           }
         ]
       }
