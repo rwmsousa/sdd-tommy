@@ -53,13 +53,20 @@ Also check for the project-level Tommy scaffolding (as described in the root `RE
 ```
 .tommy/
 ├── TOMMY.md      (created/refreshed in Step 9 below — never at the project root; AGENTS.md is the only file this skill writes outside .tommy/)
+├── config.json   (per-project Tommy choices, e.g. MCP wiring — written by /tommy-start's capabilities step, never by sync)
+├── mcp.json      (canonical MCP servers for the project — see .tommy/templates/mcp/mcp-catalog.md)
 ├── resources/    (may be empty — for project-specific reference material)
 ├── templates/
 │   ├── spec-template.md, prompt-template.md, checklist-template.md, prompt-checklist.md, codegen-checklist.md
 │   ├── agents-md-template.md
+│   ├── sonar-project-reference.properties
+│   ├── mcp/      (mcp-catalog.md + mcp-reference.json — MCP wiring rules and curated catalog)
 │   └── project-research/    (this skill's own reference templates — code-analysis.md, codebase/*.md, project-context/*.md)
-└── scripts/      (create-new-spec.sh, create-new-prompt.sh, create-codegen-checklist.sh, common.sh)
+└── scripts/      (create-new-spec.sh, create-new-prompt.sh, create-codegen-checklist.sh, common.sh,
+                   quality/quality-check.sh, quality/complexity-check.sh, quality/sonar-run.sh)
 ```
+
+`config.json` and `mcp.json` are created by the **capabilities step of `/tommy-start`** (opt-in, user-confirmed) — their absence is *not* a GAP for this skill to fill; never create or modify them during research.
 
 If `.tommy/templates/` or `.tommy/scripts/` is missing, restore it by running `npx -y sdd-tommy@latest --sync-runtime` at the project root — do not try to locate or reconstruct these files yourself. This content is tool-agnostic shared infrastructure (also consumed by the GitHub Copilot and Cursor variants of Tommy) and must stay consistent across projects and tools, which is exactly what the installer guarantees. `.tommy/resources/` may legitimately stay empty; do not treat an empty (but present) `resources/` folder as a GAP.
 
@@ -247,9 +254,9 @@ When investigating a codebase, use these approaches:
 
 | File | Read by | When |
 |---|---|---|
-| `project_goal_context.md` | `tommy-business-analyst`, `tommy-specify` | Always, before eliciting or writing requirements — establishes problem, objective, users, and business context. |
-| `scope_features_context.md` | `tommy-business-analyst`, `tommy-specify` | Always — check the requested feature against the existing roadmap and the "Fora do Escopo" list before treating it as new. |
-| `glossary_context.md` | `tommy-business-analyst`, `tommy-specify`, `tommy-architect`, `tommy-codegen` | Always — domain terms and their EN mapping must stay consistent; pairs with `tommy-ubiquitous-language`. |
+| `project_goal_context.md` | `tommy-business-analyst`, `tommy-specify`, `tommy-product-review` | Always, before eliciting, writing, or reviewing requirements — establishes problem, objective, users, and business context. |
+| `scope_features_context.md` | `tommy-business-analyst`, `tommy-specify`, `tommy-product-review` | Always — check the requested feature against the existing roadmap and the "Fora do Escopo" list before treating it as new. |
+| `glossary_context.md` | `tommy-business-analyst`, `tommy-specify`, `tommy-architect`, `tommy-codegen`, `tommy-product-review` | Always — domain terms and their EN mapping must stay consistent; pairs with `tommy-ubiquitous-language`. |
 | `tech_stack_context.md` | `tommy-architect`, `tommy-prompt`, `tommy-codegen` | When the feature touches a specific technology, integration, or infrastructure decision. For exhaustive dependency versions, prefer `.tommy/codebase/stack.md` and `.tommy/codebase/integrations.md` — this file is the narrative summary, not the inventory. |
 | `tech_restrictions_context.md` | `tommy-architect`, `tommy-prompt`, `tommy-codegen` | Always, before proposing any technical approach — this is the one file with hard constraints (forbidden tech, locked decisions) that override generic best practice. |
 | `architecture_definition_context.md` | `tommy-architect` | Always when designing architecture for a feature. Captures the "why" behind decisions; `.tommy/codebase/architecture.md` captures the current structural "how." |

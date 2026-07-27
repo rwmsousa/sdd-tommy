@@ -1,5 +1,5 @@
 ---
-description: "Cria a base de conhecimento inicial do projeto para o Tommy. Lê o skill tommy-project-research e preenche .tommy/ (scaffolding, project-context, codebase, TOMMY.md) e o AGENTS.md na raiz."
+description: "Cria a base de conhecimento inicial do projeto para o Tommy. Lê o skill tommy-project-research e preenche .tommy/ (scaffolding, project-context, codebase, TOMMY.md) e o AGENTS.md na raiz. Ao final, propõe capacidades opt-in por stack: MCPs, permissões, CLAUDE.md, Sonar e find-skills."
 ---
 
 Create the initial project knowledge base for Tommy. Read the skill `tommy-project-research` (~/.claude/skills/tommy-project-research/SKILL.md) and, in order:
@@ -8,6 +8,14 @@ Create the initial project knowledge base for Tommy. Read the skill `tommy-proje
 2. Ensure the shared scaffolding is present: `.tommy/scripts/` and `.tommy/templates/` (if missing, run `npx -y sdd-tommy@latest --sync-runtime` at the project root to populate them — do not try to locate or reconstruct these files yourself), and `.tommy/resources/` (may be created empty).
 3. Create or refresh `.tommy/project-context/` (the 7 product-context files, per each file's reference template) and `.tommy/codebase/` (the 7 technical files).
 4. Fill `.tommy/TOMMY.md`.
-5. Create or refresh `AGENTS.md` **at the project root** — the one deliberate exception; every other file this command creates lives inside `.tommy/`.
+5. Create or refresh `AGENTS.md` **at the project root** — a deliberate exception; besides it, only the optional `.mcp.json` (step 6) lives outside `.tommy/`.
 
-This is the command a user runs explicitly on first setup — but every Tommy agent that depends on this scaffolding also checks for it and self-triggers `tommy-project-research` if it's missing, so the workflow doesn't hard-fail on a project where `/tommy-start` was never run.
+6. **Capabilities (opt-in, always with explicit user confirmation — never install anything silently):**
+   a. **MCP wiring**: read `.tommy/config.json`. If `mcp.wiring` is not set, ask the user (AskUserQuestion) per `.tommy/templates/mcp/mcp-catalog.md`: `root-file` (generate `.mcp.json` at the project root — native auto-load in Claude Code, recommended) or `tommy-only` (no root file; Claude Code launches with `claude --mcp-config .tommy/mcp.json`). Persist the answer in `.tommy/config.json` and never re-ask.
+   b. **MCP servers**: using the catalog (`.tommy/templates/mcp/mcp-reference.json` + `mcp-catalog.md`) and the stack detected in `.tommy/codebase/stack.md`, propose the applicable servers (context7 always; playwright when the stack has a frontend UI) with each one's "why". Add the confirmed ones to `.tommy/mcp.json`, then generate the tool-native files (`.cursor/mcp.json`, `.vscode/mcp.json`, and `.mcp.json` only in `root-file` wiring) as **non-destructive merges** — never remove or overwrite existing entries, and follow the per-tool format differences documented in the catalog.
+   c. **Project permissions**: offer to add the detected package-manager/test/lint commands (from `stack.md` and `testing.md`) and any confirmed MCP server (e.g. `mcp__playwright`) to the **project's** `.claude/settings.json` allow list — merge, never replace; never touch the global `~/.claude/settings.json` for this.
+   d. **CLAUDE.md**: if the project has no `CLAUDE.md`, offer to create one containing the `@AGENTS.md` import so Claude Code natively lands on Tommy's navigation.
+   e. **SonarQube**: if `sonar-project.properties` does not exist, offer to create it from `.tommy/templates/sonar-project-reference.properties`, filling `sonar.projectKey`/`sonar.projectName` from the repo name and `sonar.sources` from `structure.md`, leaving server/organization as commented placeholders. Only create it if the user confirms — without a server it stays inert (the quality gate treats Sonar as SKIP).
+   f. **find-skills (skills.sh)**: offer to install the community skill-discovery skill with `npx skills add https://github.com/vercel-labs/skills --skill find-skills`. Make the trade-off explicit before confirming: third-party skills are unaudited instructions from the internet (a prompt-injection surface) — the Tommy core flow never depends on them; this is purely an optional extension for discovering stack-specific skills.
+
+This is the command a user runs explicitly on first setup — but every Tommy agent that depends on this scaffolding also checks for it and self-triggers `tommy-project-research` if it's missing, so the workflow doesn't hard-fail on a project where `/tommy-start` was never run. Step 6 is only ever run by this command (agents must not re-open capability questions mid-feature).
