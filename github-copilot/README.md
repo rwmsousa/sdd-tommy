@@ -37,6 +37,8 @@ Each CLI (`gh`/`glab`/`az`) is assumed already installed and authenticated local
 
 ## What's different from the Claude Code version
 
-Copilot has no concept of a subagent with restricted tool access, so the 5 Claude Code personas (specify, business-analyst, architect, prompt, codegen) are condensed into 3 prompt files + bootstrap here — `tommy-specify` absorbs requirements elicitation, `tommy-prompt` absorbs architecture design. Phase separation (not writing code during the spec/plan phases) is **self-enforced discipline**, not a technical guarantee — see the "Known limitation" note in `copilot-instructions.md`.
+Copilot has no concept of a subagent with restricted tool access, so the Claude Code roles (specify + business-analyst elicitation, product-review, architect, prompt, codegen) are condensed into 3 prompt files + bootstrap here — `tommy-specify` absorbs requirements elicitation **and** the independent PM review (as a deliberate, self-enforced role switch at the end of the phase), `tommy-prompt` absorbs architecture design, and `tommy-codegen` closes with the spec→code acceptance traceability matrix. Phase separation (not writing code during the spec/plan phases) is **self-enforced discipline**, not a technical guarantee — see the "Known limitation" note in `copilot-instructions.md`.
+
+Project MCP servers come from the canonical `.tommy/mcp.json` — VS Code/Copilot reads its generated projection at `.vscode/mcp.json` (created by the installer/bootstrap as a non-destructive merge, in VS Code's `servers` format; see `common/templates/mcp/mcp-catalog.md`).
 
 The same applies to versioning: Claude Code's `tommy-git` agent has 4 separate skills (Conventional Commits + one adapter per provider) it loads on demand; here that's condensed into 2 prompt files (`tommy-commit.prompt.md`, `tommy-open-pr.prompt.md`), with the 3 provider adapters as sections inside `tommy-open-pr.prompt.md` instead of separate files.

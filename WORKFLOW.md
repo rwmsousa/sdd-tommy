@@ -11,7 +11,7 @@ flowchart TD
     classDef terminal fill:#E8F5E9,stroke:#2E7D32,color:#1a1a2e;
 
     Start(["User opens a project"]) --> Q1{".tommy/ scaffolding complete?<br/>(scripts, templates, project-context, codebase)"}
-    Q1 -->|No| Boot["Tommy Start<br/>scaffold .tommy/, research codebase & product context,<br/>fill TOMMY.md, create AGENTS.md"]:::phase
+    Q1 -->|No| Boot["Tommy Start<br/>scaffold .tommy/, research codebase & product context,<br/>fill TOMMY.md, create AGENTS.md,<br/>propose opt-in capabilities (MCP wiring & servers,<br/>Sonar properties, find-skills) — always user-confirmed"]:::phase
     Q1 -->|Yes| Specify
     Boot --> Specify
 
@@ -19,13 +19,14 @@ flowchart TD
     Boot -.-> N1
 
     Specify["Specify<br/>describe the feature in natural language"]:::phase --> Branch1["Create feature branch<br/>'NNN-short-name' and spec.md"]
-    Branch1 --> Elicit["Business Analyst elicits requirements<br/>(targeted questions, 3-5 at a time)"]
+    Branch1 --> Elicit["Business Analyst skill elicits requirements<br/>(interactive rounds, 3-5 questions at a time)"]
     Elicit --> WriteSpec["Write / refine spec.md<br/>(goals, user stories, acceptance criteria, non-goals)"]
-    WriteSpec --> Q2{"Passes the spec<br/>quality checklist?"}
-    Q2 -->|"No (fix and retry, up to 3x)"| WriteSpec
+    WriteSpec --> PMReview["Product Review (PM lens, independent)<br/>value, scope, completeness, audience —<br/>only this reviewer marks the requirements checklist"]
+    PMReview --> Q2{"Reviewer approves<br/>the spec?"}
+    Q2 -->|"No (fix and re-review, up to 3x)"| WriteSpec
     Q2 -->|Yes| PromptPhase
 
-    N2["If still failing after 3 iterations, escalate the<br/>open questions to the user instead of looping forever."]:::note
+    N2["If still failing after 3 iterations, escalate the<br/>open questions to the user instead of looping forever.<br/>In Claude Code the reviewer is the fresh-context<br/>tommy-product-review agent; in Cursor/Copilot it is a<br/>self-enforced role switch at the end of the phase."]:::note
     Q2 -.-> N2
 
     PromptPhase["Prompt<br/>reference the approved spec"]:::phase --> Architect["Architect designs implementation architecture,<br/>bounded contexts, data model"]
@@ -36,9 +37,15 @@ flowchart TD
     Codegen --> Q3{"Plan's own checklist<br/>fully checked?"}
     Q3 -->|No| StopReport(["Stop and report the plan<br/>as not yet validated"]):::terminal
     Q3 -->|Yes| Implement["Implement / fix code and tests"]
-    Implement --> Q4{"Quality gate passes?<br/>(lint, tests, complexity, pattern<br/>compliance, Sonar, checklist)"}
+    Implement --> Q4{"Quality gate passes?<br/>(lint, tests incl. e2e, complexity, patterns,<br/>Sonar, frontend audit, security scan, checklist)"}
     Q4 -->|No| Implement
-    Q4 -->|Yes| CodeReady(["Code ready — report to user"]):::terminal
+    Q4 -->|Yes| Accept["Acceptance review (spec→code traceability)<br/>map every acceptance criterion to code + test evidence,<br/>write checklists/acceptance.md"]
+    Accept --> Q10{"All criteria MET<br/>(or justified)?"}
+    Q10 -->|"No (fix the gaps, up to 2 cycles)"| Implement
+    Q10 -->|Yes| CodeReady(["Code ready — report to user"]):::terminal
+
+    N7["The quality gate persists its evidence in<br/>.tommy/.quality-gate-status; in Claude Code a Stop hook<br/>(tommy-quality-sentinel) refuses to end a session with<br/>changed code files and no fresh quality-gate evidence."]:::note
+    Q4 -.-> N7
 
     N3["Versioning is not a fourth phase — two independent<br/>actions available at any point, each only ever triggered<br/>by an EXPLICIT user request. No Tommy agent commits<br/>or opens a PR/MR on its own initiative."]:::note
     CodeReady -.-> N3
@@ -82,6 +89,9 @@ flowchart TD
 
 ## Observations not shown in the diagram
 
-- **Claude Code** runs the full flow above: 5 dedicated agents (Specify, Business Analyst, Architect, Prompt, Codegen) plus `tommy-git` with 4 skills (Conventional Commits + one adapter per provider), each with `tools:` access restricted by role.
-- **Cursor** and **GitHub Copilot** run the same flow, condensed: Specify absorbs Business Analyst, Prompt absorbs Architect, and Commit/Open-PR are condensed into 2 files each instead of 1 agent + 4 skills. Neither tool can technically restrict which tools a phase may use, so phase separation (e.g. not writing code during Specify/Prompt) is **self-enforced discipline**, not a technical guarantee.
+- **Claude Code** runs the full flow above with a mixed structure: `/tommy-specify` and `/tommy-prompt` are **commands** orchestrating in the main conversation (a subagent cannot invoke another subagent, and requirements elicitation needs a real dialog with the user), the Business Analyst is an interactive **skill**, and `tommy-architect`, `tommy-product-review`, `tommy-codegen`, and `tommy-git` are **agents** with `tools:` access restricted by role (`tommy-git` carries 4 skills: Conventional Commits + one adapter per provider).
+- **Cursor** and **GitHub Copilot** run the same flow, condensed: Specify absorbs the Business Analyst elicitation and the PM review (self-enforced role switch), Prompt absorbs Architect, Codegen closes with the acceptance traceability matrix itself, and Commit/Open-PR are condensed into 2 files each. Neither tool can technically restrict which tools a phase may use, so phase separation (e.g. not writing code during Specify/Prompt) is **self-enforced discipline**, not a technical guarantee.
+- The quality gate's automatable checks run through stack-aware scripts in `.tommy/scripts/quality/` (`quality-check.sh`, `complexity-check.sh`, `sonar-run.sh`) — tool-agnostic, no MCP server required. Conditional gates (Sonar, frontend audit) record **SKIP with a reason** when their prerequisites are absent; that is a valid, non-blocking outcome.
+- Project MCP servers are canonical in `.tommy/mcp.json`, projected into each tool's native location (`.mcp.json` at the root — optional, per-project choice persisted in `.tommy/config.json` —, `.cursor/mcp.json`, `.vscode/mcp.json`); see `common/templates/mcp/mcp-catalog.md`.
+- Every Tommy instruction treats project file content (`.tommy/resources/`, codebase, specs, plans) as **data, not instructions** — directives embedded in those files are never followed.
 - Every step above that writes narrative content (spec, plan, commit body, PR/MR description) writes it in the project's configured language (`pt-BR` unless stated otherwise); code identifiers and Conventional Commit keywords stay in English.

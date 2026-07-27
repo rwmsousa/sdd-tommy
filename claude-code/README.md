@@ -7,23 +7,29 @@ Este é o conjunto de arquivos mais completo do Tommy — os únicos com subagen
 ├── agents/       ← claude-code/agents/
 ├── commands/     ← claude-code/commands/
 ├── skills/       ← claude-code/skills/
-├── hooks/        ← claude-code/hooks/ (referenciado por settings.json)
-├── mcp.json      ← claude-code/mcp.json
+├── hooks/        ← claude-code/hooks/ (referenciados por settings.json)
 └── settings.json ← claude-code/settings.json
 ```
 
 O `.tommy/` de cada projeto (scripts, templates, specs) continua vindo de `../common/`, igual às outras ferramentas — nada disso muda por estar no Claude Code.
 
+> **MCP**: o Claude Code **não lê** `~/.claude/mcp.json`. O servidor `context7` (definido em [mcp.json](./mcp.json) deste repositório) é registrado pelo instalador via `claude mcp add --scope user`; os MCPs por projeto vivem em `.tommy/mcp.json` — ver a seção [Configuração Tommy (MCP e SonarQube)](#configuração-tommy-mcp-e-sonarqube).
+
 ## Instalação
 
-Rode `npx sdd-tommy@latest` e escolha "Claude Code" no prompt (pode combinar com Cursor/Copilot na mesma execução) — o instalador copia `agents/`, `commands/`, `skills/`, `hooks/` para `~/.claude/` e mescla `mcp.json`/`settings.json` com o que você já tiver (nunca sobrescreve às cegas, sempre com backup automático antes de qualquer mudança real). Ver a seção "Como utilizar?" do README raiz para o fluxo completo. Alternativa manual: copiar esta pasta para `~/.claude/` você mesmo.
+Rode `npx sdd-tommy@latest` e escolha "Claude Code" no prompt (pode combinar com Cursor/Copilot na mesma execução) — o instalador copia `agents/`, `commands/`, `skills/`, `hooks/` para `~/.claude/`, mescla `settings.json` com o que você já tiver (nunca sobrescreve às cegas, sempre com backup automático antes de qualquer mudança real), registra o `context7` no escopo de usuário via `claude mcp add` e remove arquivos obsoletos de versões anteriores do Tommy. Ver a seção "Como utilizar?" do README raiz para o fluxo completo.
 
-## Agentes
+## Fases, agentes e comandos
 
-- `tommy-specify` — cria/atualiza a especificação, orquestrando `tommy-business-analyst` para elicitar requisitos.
-- `tommy-business-analyst` — elicitação de requisitos (chamado por `tommy-specify`, não roda sozinho).
-- `tommy-architect` — desenho de arquitetura da feature (chamado por `tommy-prompt`).
-- `tommy-prompt` — cria o plano de execução detalhado a partir da especificação.
+As fases Specify e Prompt são **comandos** que orquestram na conversa principal (subagentes não podem invocar outros subagentes, e a elicitação de requisitos precisa dialogar com o usuário — o que um subagente não consegue fazer no meio da execução):
+
+- `/tommy-specify` — cria/atualiza a especificação: elicita requisitos com a skill `tommy-business-analyst` (rodadas interativas), escreve a spec e submete à revisão independente do `tommy-product-review`.
+- `/tommy-prompt` — cria o plano de execução detalhado, invocando o agente `tommy-architect` para o desenho de arquitetura.
+
+Agentes (subagentes com `tools:` restrito por papel):
+
+- `tommy-architect` — desenho de arquitetura da feature (invocado por `/tommy-prompt`).
+- `tommy-product-review` — revisor independente com lente de PM: valida a spec (único autorizado a marcar o checklist de requisitos) e, após o codegen, gera a matriz de rastreabilidade spec→código (`checklists/acceptance.md`).
 - `tommy-codegen` — implementa o plano, gera testes e roda o quality gate.
 - `tommy-git` — commita mudanças locais (Conventional Commits) e abre Pull/Merge Request no provedor detectado do projeto. Ver seção [Versionamento (commit e PR/MR)](#versionamento-commit-e-prmr) abaixo.
 
@@ -56,25 +62,22 @@ Reforçando a regra global do Tommy: `tommy-git` **nunca** adiciona `Co-authored
 
 ## Configuração Tommy (MCP e SonarQube)
 
-O [mcp.json](./mcp.json) deste repositório só registra o servidor `context7` por padrão. As tools de qualidade referenciadas pelos agentes (`quality-check`, `sonar-run`, `get-sonar-issues`, `complexity-check` — chamadas de "Tommy MCP" em `tommy-codegen` e `tommy-quality-gate`) vêm de um servidor MCP **separado e privado**, que não está incluso aqui e precisa ser adicionado por quem tiver acesso ao repositório desse servidor.
+**MCP global (usuário)**: o Claude Code não lê `~/.claude/mcp.json` — o instalador registra o `context7` via `claude mcp add --scope user`. Confira com `claude mcp list`; se o registro automático falhar (CLI ausente), o instalador imprime o comando manual.
 
-**Requisitos**:
+**MCP por projeto**: o arquivo canônico é `.tommy/mcp.json`, criado no bootstrap. A forma de ligação com o Claude Code é decidida **uma vez por projeto** (instalador npm ou `/tommy-start`) e persistida em `.tommy/config.json`:
 
-- Chave SSH para acesso ao repositório do Tommy MCP.
+- `root-file` (recomendado): gera `.mcp.json` na raiz do projeto — carregamento nativo.
+- `tommy-only`: sem arquivo na raiz — inicie com `claude --mcp-config .tommy/mcp.json`.
 
-1. Adicione uma nova entrada em `mcp.json` (ao lado de `context7`) apontando para o servidor Tommy MCP, com as seguintes variáveis de ambiente:
-    - `SONAR_URL`: URL do SonarQube utilizado para análise de código.
-    - *Atenção*: o Sonar é chamado via API, então é necessário garantir que a URL esteja correta e acessível para que as análises de código possam ser realizadas com sucesso. Ex: `https://sonar.lughy.com.br`
-    - `SONAR_TOKEN`: Token do tipo `User Token` para acessar o SonarQube.
-    - *Atenção*: o token é utilizado para autenticar as requisições feitas para a API do SonarQube, garantindo que apenas usuários autorizados possam acessar as informações e funcionalidades do SonarQube. Certifique-se de utilizar um token válido e com as permissões adequadas para garantir o funcionamento correto das análises de código.
-    - Sem essa entrada, os Gates 1, 3 e 5 do `tommy-quality-gate` (lint/compile via MCP, complexidade via MCP e SonarQube) caem automaticamente para os fallbacks manuais descritos na skill — o pipeline continua funcionando, só sem essas automações.
+Cursor (`.cursor/mcp.json`) e VS Code/Copilot (`.vscode/mcp.json`) são gerados nas duas modalidades. O catálogo curado de servidores por stack (context7 sempre; Playwright MCP para frontend) está em `common/templates/mcp/` e é proposto pelo `/tommy-start`, sempre com confirmação do usuário.
 
-2. É necessário que seu projeto tenha um arquivo `sonar-project.properties` configurado corretamente para que as análises de código possam ser realizadas com sucesso. Certifique-se de configurar esse arquivo de acordo com as necessidades do seu projeto e as diretrizes do SonarQube.
+**Qualidade (lint, complexidade, Sonar)**: as automações dos Gates 1, 3 e 5 do `tommy-quality-gate` são scripts locais em `.tommy/scripts/quality/` (`quality-check.sh`, `complexity-check.sh`, `sonar-run.sh`), instalados pelo `--sync-runtime` — não há mais dependência de servidor MCP privado. Para o Sonar rodar de verdade: tenha um `sonar-project.properties` (o `/tommy-start` oferece criar a partir do template), configure `sonar.host.url` (ou `SONAR_HOST_URL`) e exporte `SONAR_TOKEN` no ambiente. Sem isso, o Gate 5 reporta SKIP e o pipeline segue com os demais gates.
+
+**Hook sentinela**: o `settings.json` registra um hook de `Stop` (`tommy-quality-sentinel.sh`) que, em projetos Tommy, impede encerrar a sessão com arquivos de código alterados sem evidência de quality gate (`.tommy/.quality-gate-status`).
 
 ## Como usar
 
-1. Selecione o agente `tommy-specify` na sua IA generativa (ou rode `/tommy-start` primeiro, se `.tommy/` ainda não existir no projeto).
-    - Você pode solicitar via chat o requisito, ou criar um arquivo explicando a tarefa geral e colocar o caminho do arquivo no campo de input de dados do agente.
-2. Selecione o agente `tommy-prompt`, referenciando a especificação criada, para gerar o plano de execução.
-3. Rode `/tommy-run-codegen <caminho do plano>` (ou selecione `tommy-codegen` diretamente), uma parte do plano por vez.
+1. `/tommy-specify <descrição da feature>` (ou rode `/tommy-start` primeiro, se `.tommy/` ainda não existir no projeto) — responda às rodadas de perguntas do analista de requisitos; ao final, o `tommy-product-review` valida a spec com olhar de PM.
+2. `/tommy-prompt <caminho do spec.md>` — gera o plano de execução com a arquitetura do `tommy-architect`.
+3. Rode `/tommy-run-codegen <caminho do plano>`, uma parte do plano por vez — ao final, o `tommy-product-review` gera a matriz de rastreabilidade spec→código.
 4. Quando quiser versionar o que foi gerado, rode `/tommy-commit` (um ou mais commits, sob confirmação) e, quando pronto, `/tommy-open-pr` (sobe a branch e abre o PR/MR) — ver [Versionamento (commit e PR/MR)](#versionamento-commit-e-prmr).
