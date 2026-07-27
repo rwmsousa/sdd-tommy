@@ -7,10 +7,12 @@
 
 ## Quality Tools
 
-- [ ] Run linters and compilers available in the project to ensure the generated code is free of errors and follows the project's standards.
-- [ ] Run tests to ensure all implemented code is covered and all tests are passing successfully.
-- [ ] Run complexity check in MCP, if available, to ensure the generated code does not exceed the project's complexity standards.
-- [ ] Run SonarQube analysis using the Tommy MCP tools, if applicable, to ensure that the generated code meets the project's quality standards and does not introduce new issues.
+- [ ] Run `.tommy/scripts/quality/quality-check.sh` (linters and compilers) to ensure the generated code is free of errors and follows the project's standards.
+- [ ] Run tests to ensure all implemented code is covered and all tests are passing successfully — including component/e2e suites when the change touches UI (see `.tommy/codebase/testing.md`).
+- [ ] Run `.tommy/scripts/quality/complexity-check.sh` (or check manually) to ensure the generated code does not exceed the project's complexity standards.
+- [ ] Run `.tommy/scripts/quality/sonar-run.sh` — SKIP is acceptable when Sonar is not configured for the project.
+- [ ] Run the security scan (Gate 8 of `tommy-quality-gate`): grep heuristics for injection sinks and hardcoded secrets, plus Semgrep when installed.
+- [ ] For frontend changes: run the frontend audit (Gate 7) — axe accessibility scan and Lighthouse lab Core Web Vitals against the locally running app.
 
 ## Code Quality
 
@@ -45,6 +47,7 @@
 - [ ] All tests are passing successfully.
 - [ ] SonarQube analysis shows no new issues introduced by the generated code (if applicable).
 - [ ] Tests cover expected behavior and edge cases, ensuring the implementation is robust and reliable, covering validation rules defined in the prompt plan.
+- [ ] Every acceptance criterion in `spec.md` is traceable to code and test evidence (acceptance traceability matrix in `checklists/acceptance.md`).
 
 ## Notes
 

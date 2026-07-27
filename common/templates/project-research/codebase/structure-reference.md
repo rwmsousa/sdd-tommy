@@ -71,6 +71,17 @@ src/
 | dist/     | Compiled output | Yes |
 | .next/    | Next.js build cache | Yes |
 | coverage/ | Test coverage reports | Yes |
+
+## Run & Serve
+
+How to run the application locally (used by agents and by the quality gate's Frontend Audit):
+
+| App | Command | URL / Port | Ready signal |
+|-----|---------|------------|--------------|
+| Web | npm run dev | http://localhost:3000 | "ready in" log line |
+| API | npm run start:api | http://localhost:8080 | /health returns 200 |
+
+[Include required environment setup (env file to copy, services to start via docker compose) and how to stop cleanly.]
 ```
 
 ## Field Guidance
@@ -79,6 +90,7 @@ src/
 - **Entry Points**: List all files that bootstrap the application or serve as starting points for execution.
 - **Path Aliases**: These are critical for agents to resolve imports correctly. Check `tsconfig.json` paths, `vite.config.ts` resolve.alias, webpack aliases.
 - **Monorepo**: Only include this section if the project uses workspaces. Check `package.json` workspaces field, `pnpm-workspace.yaml`, or `lerna.json`.
+- **Run & Serve**: Required for any project with a runnable app — the quality gate's Frontend Audit (Gate 7) depends on it to start the dev server before auditing accessibility and Core Web Vitals. Derive it from `package.json` scripts, `Makefile`, `docker-compose.yml`, or the README; confirm the port from config/env files.
 
 ## Where to Find This Information
 
