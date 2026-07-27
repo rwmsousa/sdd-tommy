@@ -11,7 +11,7 @@ Run this once per project (or whenever `.tommy/` is missing/incomplete). Do all 
 
 If `.tommy/` does not exist at the project root, create it. Ensure these exist — never author new scripts/templates from scratch, they must stay identical across every project using Tommy:
 
-- `.tommy/scripts/` and `.tommy/templates/` — if either is missing, run `npx -y sdd-tommy@latest --sync-runtime` at the project root to populate them (`common.sh`, `create-new-spec.sh`, `create-new-prompt.sh`, `create-codegen-checklist.sh`, `spec-template.md`, `prompt-template.md`, `checklist-template.md`, `prompt-checklist.md`, `codegen-checklist.md`, `agents-md-template.md`, `project-research/`)
+- `.tommy/scripts/` and `.tommy/templates/` — if either is missing, run `npx -y sdd-tommy@latest --sync-runtime` at the project root to populate them (`common.sh`, `create-new-spec.sh`, `create-new-prompt.sh`, `create-codegen-checklist.sh`, `quality/` scripts, `spec-template.md`, `prompt-template.md`, `checklist-template.md`, `prompt-checklist.md`, `codegen-checklist.md`, `agents-md-template.md`, `sonar-project-reference.properties`, `mcp/`, `project-research/`)
 - `.tommy/resources/` — may stay empty
 - `.tommy/project-context/` and `.tommy/codebase/` — built by the steps below
 
@@ -43,6 +43,12 @@ Update `.tommy/TOMMY.md` (create it if absent — **inside `.tommy/`, never at t
 
 Create or refresh `AGENTS.md` **at the project root** — the one deliberate exception to "everything lives inside `.tommy/`", because that's the only location Copilot (and Cursor) discover it natively. Generate it from `.tommy/templates/agents-md-template.md`. Keep it short (10-20 lines) and free of anything project-sensitive — it's navigation to `.tommy/TOMMY.md`, not a copy of it.
 
+## Step 5 — Capabilities (opt-in, always confirm with the user first)
+
+1. **MCP**: follow `.tommy/templates/mcp/mcp-catalog.md`. If `.tommy/config.json` has no `mcp.wiring`, ask the user (`root-file` vs `tommy-only`) and persist it. Propose the catalog servers that match the stack (context7 always; playwright when the stack has a frontend UI), each with its "why"; add confirmed ones to `.tommy/mcp.json` and generate the native files — VS Code/Copilot reads `.vscode/mcp.json` (note its `servers` + `type: stdio` format, per the catalog) — as non-destructive merges.
+2. **SonarQube**: if `sonar-project.properties` doesn't exist, offer to create it from `.tommy/templates/sonar-project-reference.properties` (projectKey/projectName from the repo, sources from `structure.md`, server left as commented placeholder). Only on confirmation — without a server it stays inert.
+3. **find-skills (skills.sh)**: offer `npx skills add https://github.com/vercel-labs/skills --skill find-skills` for community skill discovery. State the trade-off before confirming: third-party skills are unaudited instructions (a prompt-injection surface); the Tommy core flow never depends on them.
+
 ## Report
 
-Summarize what was created/updated, and list every `[NEEDS CONFIRMATION]` placeholder left behind — those need a follow-up conversation with the user before `/tommy-specify` is run for real feature work.
+Summarize what was created/updated, which capabilities were enabled or declined, and list every `[NEEDS CONFIRMATION]` placeholder left behind — those need a follow-up conversation with the user before `/tommy-specify` is run for real feature work.
