@@ -8,6 +8,7 @@ import { SRC } from "./constants.mjs";
 import { installClaudeCode } from "./installers/claude-code.mjs";
 import { installCursor } from "./installers/cursor.mjs";
 import { installGithubCopilot } from "./installers/github-copilot.mjs";
+import { configureMcp, readTommyConfig } from "./installers/mcp-config.mjs";
 import { syncTommyRuntime } from "./installers/tommy-runtime.mjs";
 import { createReport, printSummary } from "./lib/report.mjs";
 
@@ -81,6 +82,37 @@ export async function runInstall() {
     }
   }
 
+  let mcpWiring = null;
+  if (targetDir) {
+    const existingWiring = readTommyConfig(targetDir).mcp?.wiring;
+    if (existingWiring) {
+      mcpWiring = existingWiring;
+      console.log(`[Tommy] MCP wiring already set for this project: ${mcpWiring} (.tommy/config.json)`);
+    } else {
+      const { wiring } = await prompts(
+        {
+          type: "select",
+          name: "wiring",
+          message: "How should this project's MCP servers (.tommy/mcp.json) reach Claude Code?",
+          choices: [
+            {
+              title: "Generate .mcp.json at the project root (native auto-load — recommended)",
+              value: "root-file",
+            },
+            {
+              title: "Keep it only inside .tommy/ (launch with: claude --mcp-config .tommy/mcp.json)",
+              value: "tommy-only",
+            },
+          ],
+          initial: 0,
+          hint: "Cursor (.cursor/mcp.json) and VS Code (.vscode/mcp.json) are generated either way",
+        },
+        { onCancel }
+      );
+      mcpWiring = wiring;
+    }
+  }
+
   console.log("");
   console.log("[Tommy] About to install:");
   for (const tool of tools) {
@@ -94,8 +126,9 @@ export async function runInstall() {
   }
   if (targetDir) {
     console.log(`  - Shared .tommy/ runtime (scripts + templates) -> ${path.join(targetDir, ".tommy")}`);
+    console.log(`  - Project MCP config -> ${path.join(targetDir, ".tommy", "mcp.json")} (wiring: ${mcpWiring})`);
   }
-  console.log("  Existing settings.json/mcp.json (Claude Code) are merged, never blindly overwritten; any changed file is backed up first.");
+  console.log("  Existing JSON configs are merged, never blindly overwritten; any changed file is backed up first.");
   console.log("");
 
   const { proceed } = await prompts(
@@ -117,6 +150,7 @@ export async function runInstall() {
   }
   if (targetDir) {
     syncTommyRuntime(SRC.common, targetDir, report);
+    configureMcp(targetDir, mcpWiring, report);
   }
 
   printSummary(report);

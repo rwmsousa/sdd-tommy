@@ -4,6 +4,8 @@ export function createReport() {
     written: [],
     upToDate: [],
     backedUp: [],
+    removed: [],
+    notes: [],
   };
 }
 
@@ -16,6 +18,18 @@ export function printSummary(report) {
     for (const { file, backup, reason } of report.backedUp) {
       console.log(`  - ${file}`);
       console.log(`    backup: ${backup}${reason ? ` (${reason})` : ""}`);
+    }
+  }
+  if (report.removed.length > 0) {
+    console.log(`Obsolete files removed: ${report.removed.length}`);
+    for (const file of report.removed) {
+      console.log(`  - ${file}`);
+    }
+  }
+  if (report.notes.length > 0) {
+    console.log("Notes:");
+    for (const note of report.notes) {
+      console.log(`  - ${note}`);
     }
   }
   console.log("");

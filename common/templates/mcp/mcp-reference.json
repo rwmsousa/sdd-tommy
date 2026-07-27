@@ -1,0 +1,16 @@
+{
+  "always": {
+    "context7": {
+      "command": "npx",
+      "args": ["-y", "@upstash/context7-mcp@latest"],
+      "why": "Documentação atualizada de bibliotecas — obrigatório para a knowledge chain (regra Context7)."
+    }
+  },
+  "frontend": {
+    "playwright": {
+      "command": "npx",
+      "args": ["@playwright/mcp@latest"],
+      "why": "Dirige a aplicação em um navegador real: Frontend Audit (Gate 7), varredura de acessibilidade (axe) e exploração de fluxos e2e."
+    }
+  }
+}
