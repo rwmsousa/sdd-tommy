@@ -4,6 +4,16 @@
 
 Version history of Tommy, the Spec-Driven Development framework (**Specify → Prompt → Codegen**) for Claude Code, Cursor, and GitHub Copilot. Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/); versioning follows [SemVer](https://semver.org/).
 
+## [0.2.2] — 2026-07-28
+
+Installer bug fix — a project set up for a single tool no longer gets other tools' native config files.
+
+### Fixed
+
+- **`npx sdd-tommy@latest` created `.cursor/mcp.json` and `.vscode/mcp.json` even when only Claude Code was selected.** `configureMcp()` wrote both files unconditionally, regardless of the tools chosen in the installer — unlike `installCursor()`/`installGithubCopilot()`, which were already correctly gated. The MCP wiring question ("How should this project's MCP servers reach Claude Code?") was also asked even when Claude Code wasn't selected at all. Both are now gated per tool: `.cursor/mcp.json` only when Cursor is selected, `.vscode/mcp.json` only when GitHub Copilot is selected, the wiring question and root `.mcp.json` only when Claude Code is selected. `.tommy/mcp.json` (the canonical, tool-agnostic source) is still always created.
+- **`/tommy-start`'s capabilities step (all 3 tools) had the same flaw**, documented as intentional behavior in `mcp-catalog.md` and `claude-code/README.md`. Each tool's bootstrap now only projects into another tool's native MCP file when there's evidence that tool is already set up for the project (e.g., an existing `.cursor/rules/tommy-core.mdc` or `.github/copilot-instructions.md`) — it always projects into its own tool's file, and into the Claude Code root `.mcp.json` only when `root-file` wiring is already known.
+- **Installer summary before confirmation** now lists exactly which MCP native files will be created, per selected tool, instead of a single generic line.
+
 ## [0.2.1] — 2026-07-28
 
 Documentation accuracy patch — no functional changes to agents, skills, commands, or the installer.
@@ -98,7 +108,8 @@ First version published to npm as **`sdd-tommy`**. Consolidates the framework's 
 
 > History prior to the npm package (2026-07-17/18): the project started as a "Makuco" configuration for Claude Code and was renamed to **Tommy** before the first publish.
 
-[0.2.1]: https://github.com/rwmsousa/sdd-configs/compare/v0.2.0...HEAD
+[0.2.2]: https://github.com/rwmsousa/sdd-configs/compare/v0.2.1...HEAD
+[0.2.1]: https://github.com/rwmsousa/sdd-configs/compare/v0.2.0...v0.2.1
 [0.2.0]: https://github.com/rwmsousa/sdd-configs/compare/v0.1.3...v0.2.0
 [0.1.3]: https://github.com/rwmsousa/sdd-configs/tree/v0.1.3
 
@@ -109,6 +120,16 @@ First version published to npm as **`sdd-tommy`**. Consolidates the framework's 
 [English](#changelog--tommy-sdd-tommy) | **Português**
 
 Histórico de versões do Tommy, o framework de Spec-Driven Development (**Specify → Prompt → Codegen**) para Claude Code, Cursor e GitHub Copilot. O formato segue [Keep a Changelog](https://keepachangelog.com/pt-BR/) e o versionamento segue [SemVer](https://semver.org/lang/pt-BR/).
+
+## [0.2.2] — 2026-07-28
+
+Correção de bug no instalador — um projeto configurado para uma única ferramenta não ganha mais arquivos de config nativos de outras ferramentas.
+
+### Corrigido
+
+- **`npx sdd-tommy@latest` criava `.cursor/mcp.json` e `.vscode/mcp.json` mesmo quando só o Claude Code era selecionado.** O `configureMcp()` gravava os dois arquivos incondicionalmente, sem checar as ferramentas escolhidas no instalador — diferente de `installCursor()`/`installGithubCopilot()`, que já eram corretamente condicionais. A pergunta de wiring do MCP ("Como os servidores MCP deste projeto devem alcançar o Claude Code?") também era feita mesmo quando o Claude Code nem havia sido selecionado. Ambos agora são condicionados por ferramenta: `.cursor/mcp.json` só quando o Cursor é selecionado, `.vscode/mcp.json` só quando o GitHub Copilot é selecionado, a pergunta de wiring e o `.mcp.json` na raiz só quando o Claude Code é selecionado. O `.tommy/mcp.json` (fonte canônica, independente de ferramenta) continua sempre sendo criado.
+- **A etapa de capacidades do `/tommy-start` (nas 3 ferramentas) tinha a mesma falha**, documentada como comportamento intencional em `mcp-catalog.md` e `claude-code/README.md`. Agora cada bootstrap só projeta o arquivo MCP nativo de outra ferramenta quando há evidência de que ela já está configurada no projeto (ex.: `.cursor/rules/tommy-core.mdc` ou `.github/copilot-instructions.md` existentes) — sempre projeta para o arquivo da própria ferramenta, e para o `.mcp.json` na raiz do Claude Code só quando o wiring `root-file` já é conhecido.
+- **O resumo do instalador antes da confirmação** agora lista exatamente quais arquivos MCP nativos serão criados, por ferramenta selecionada, em vez de uma linha genérica única.
 
 ## [0.2.1] — 2026-07-28
 
@@ -204,6 +225,7 @@ Primeira versão publicada no npm como **`sdd-tommy`**. Consolida o trabalho de 
 
 > Histórico anterior ao pacote npm (2026-07-17/18): o projeto nasceu como configuração "Makuco" para Claude Code e foi renomeado para **Tommy** antes da primeira publicação.
 
-[0.2.1]: https://github.com/rwmsousa/sdd-configs/compare/v0.2.0...HEAD
+[0.2.2]: https://github.com/rwmsousa/sdd-configs/compare/v0.2.1...HEAD
+[0.2.1]: https://github.com/rwmsousa/sdd-configs/compare/v0.2.0...v0.2.1
 [0.2.0]: https://github.com/rwmsousa/sdd-configs/compare/v0.1.3...v0.2.0
 [0.1.3]: https://github.com/rwmsousa/sdd-configs/tree/v0.1.3
