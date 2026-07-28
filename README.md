@@ -39,11 +39,13 @@ It lives **inside** `.tommy/`, not at the root — just like `.tommy/project-con
 
 ## AGENTS.md
 
-The `./AGENTS.md` file is the **one exception** — it lives at the project root, outside `.tommy/`, because it only has value if it's natively discovered there by Cursor and Copilot (and it's connectable to Claude Code via an `@AGENTS.md` import inside the project's `CLAUDE.md`, or a symlink). It's a short pointer (10-20 lines, no business content) to `.tommy/TOMMY.md` and `.tommy/` — it doesn't duplicate content. If the project usually ignores `.tommy/` in git, consider version-controlling `AGENTS.md` normally (it doesn't expose anything sensitive, just navigation guidance).
+The `./AGENTS.md` file is the main exception — it lives at the project root, outside `.tommy/`, because it only has value if it's natively discovered there by Cursor and Copilot (and it's connectable to Claude Code via an `@AGENTS.md` import inside the project's `CLAUDE.md`, or a symlink). It's a short pointer (10-20 lines, no business content) to `.tommy/TOMMY.md` and `.tommy/` — it doesn't duplicate content. The only other file Tommy may place at the root is an optional `.mcp.json`, generated when the project's MCP wiring is set to `root-file` — see [MCP and SonarQube Configuration](#mcp-and-sonarqube-configuration-claude-code) below. If the project usually ignores `.tommy/` in git, consider version-controlling `AGENTS.md` normally (it doesn't expose anything sensitive, just navigation guidance).
 
 ## `.tommy` Structure (inside each project)
 
 - **TOMMY.md**: the project's core instructions for the agents — see the section above.
+- **config.json**: per-project Tommy choices (currently just the MCP wiring mode) — written by the bootstrap's opt-in capabilities step, never touched by `--sync-runtime`.
+- **mcp.json**: the project's canonical MCP servers, projected into each tool's native location (optional `.mcp.json` at the root, `.cursor/mcp.json`, `.vscode/mcp.json`) — see [MCP and SonarQube Configuration](#mcp-and-sonarqube-configuration-claude-code) below.
 - **resources**: folder for resource files that agents can use to learn and adapt to the project.
     These files can hold information about code patterns, best practices, naming conventions, project architecture, folder structure,
     code examples, and any other relevant knowledge that helps agents generate code aligned with the project's standards.
@@ -160,11 +162,13 @@ Fica **dentro** de `.tommy/`, não na raiz — assim como `.tommy/project-contex
 
 ## AGENTS.md
 
-O arquivo `./AGENTS.md` é a **única exceção** — fica na raiz do projeto, fora de `.tommy/`, porque só tem valor se for descoberto nativamente ali pelo Cursor e pelo Copilot (e conectável ao Claude Code via import `@AGENTS.md` dentro do `CLAUDE.md` do projeto, ou symlink). É um ponteiro curto (10-20 linhas, sem conteúdo de negócio) para `.tommy/TOMMY.md` e para `.tommy/` — não duplica conteúdo. Se o projeto costuma ignorar `.tommy/` no git, avalie versionar o `AGENTS.md` normalmente (ele não expõe nada sensível, só orientação de navegação).
+O arquivo `./AGENTS.md` é a principal exceção — fica na raiz do projeto, fora de `.tommy/`, porque só tem valor se for descoberto nativamente ali pelo Cursor e pelo Copilot (e conectável ao Claude Code via import `@AGENTS.md` dentro do `CLAUDE.md` do projeto, ou symlink). É um ponteiro curto (10-20 linhas, sem conteúdo de negócio) para `.tommy/TOMMY.md` e para `.tommy/` — não duplica conteúdo. O único outro arquivo que o Tommy pode criar na raiz é um `.mcp.json` opcional, gerado quando o wiring de MCP do projeto está configurado como `root-file` — ver [Configuração de MCP e SonarQube](#configuração-de-mcp-e-sonarqube-claude-code) abaixo. Se o projeto costuma ignorar `.tommy/` no git, avalie versionar o `AGENTS.md` normalmente (ele não expõe nada sensível, só orientação de navegação).
 
 ## Estrutura `.tommy` (dentro de cada projeto)
 
 - **TOMMY.md**: instruções principais do projeto para os agentes — ver seção acima.
+- **config.json**: escolhas do Tommy específicas do projeto (por enquanto, só o modo de wiring do MCP) — escrito pela etapa de capacidades opt-in do bootstrap, nunca tocado pelo `--sync-runtime`.
+- **mcp.json**: os servidores MCP canônicos do projeto, projetados no local nativo de cada ferramenta (`.mcp.json` opcional na raiz, `.cursor/mcp.json`, `.vscode/mcp.json`) — ver [Configuração de MCP e SonarQube](#configuração-de-mcp-e-sonarqube-claude-code) abaixo.
 - **resources**: Pasta destinada a armazenar arquivos de recursos que os agentes podem utilizar para aprender e se adaptar ao projeto.
     Esses arquivos podem conter informações sobre padrões de código, melhores práticas, convenções de nomenclatura, arquitetura do projeto, estrutura de pastas,
     exemplos de código e qualquer outro conhecimento relevante que possa ajudar os agentes a gerar código alinhado com os padrões do projeto.
