@@ -82,8 +82,12 @@ export async function runInstall() {
     }
   }
 
+  // MCP wiring only matters for Claude Code (it's the only tool that needs a
+  // choice — .mcp.json at the root vs. .tommy/mcp.json only). Cursor and
+  // GitHub Copilot each get their own native projection unconditionally when
+  // selected, no wiring question needed.
   let mcpWiring = null;
-  if (targetDir) {
+  if (targetDir && tools.includes("claude-code")) {
     const existingWiring = readTommyConfig(targetDir).mcp?.wiring;
     if (existingWiring) {
       mcpWiring = existingWiring;
@@ -105,7 +109,6 @@ export async function runInstall() {
             },
           ],
           initial: 0,
-          hint: "Cursor (.cursor/mcp.json) and VS Code (.vscode/mcp.json) are generated either way",
         },
         { onCancel }
       );
@@ -126,7 +129,18 @@ export async function runInstall() {
   }
   if (targetDir) {
     console.log(`  - Shared .tommy/ runtime (scripts + templates) -> ${path.join(targetDir, ".tommy")}`);
-    console.log(`  - Project MCP config -> ${path.join(targetDir, ".tommy", "mcp.json")} (wiring: ${mcpWiring})`);
+    console.log(`  - Project MCP config (canonical) -> ${path.join(targetDir, ".tommy", "mcp.json")}`);
+    if (tools.includes("claude-code")) {
+      console.log(
+        `    -> Claude Code: ${mcpWiring === "root-file" ? path.join(targetDir, ".mcp.json") : "no root file (--mcp-config .tommy/mcp.json)"} (wiring: ${mcpWiring})`
+      );
+    }
+    if (tools.includes("cursor")) {
+      console.log(`    -> Cursor: ${path.join(targetDir, ".cursor", "mcp.json")}`);
+    }
+    if (tools.includes("github-copilot")) {
+      console.log(`    -> GitHub Copilot/VS Code: ${path.join(targetDir, ".vscode", "mcp.json")}`);
+    }
   }
   console.log("  Existing JSON configs are merged, never blindly overwritten; any changed file is backed up first.");
   console.log("");
@@ -150,7 +164,11 @@ export async function runInstall() {
   }
   if (targetDir) {
     syncTommyRuntime(SRC.common, targetDir, report);
-    configureMcp(targetDir, mcpWiring, report);
+    configureMcp(targetDir, mcpWiring, report, {
+      claudeCode: tools.includes("claude-code"),
+      cursor: tools.includes("cursor"),
+      githubCopilot: tools.includes("github-copilot"),
+    });
   }
 
   printSummary(report);

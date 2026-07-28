@@ -49,11 +49,13 @@ function toVscodeFormat(canonical) {
 }
 
 // Materializes the project's MCP configuration:
-//   .tommy/mcp.json (canonical) → .cursor/mcp.json, .vscode/mcp.json,
-//   and .mcp.json at the root only when wiring === "root-file".
+//   .tommy/mcp.json (canonical, always) → projected only into the native
+//   locations of the tools actually selected: .mcp.json at the root for
+//   Claude Code (only when wiring === "root-file"), .cursor/mcp.json for
+//   Cursor, .vscode/mcp.json for GitHub Copilot/VS Code.
 // All writes are non-destructive merges; existing entries are never replaced.
-export function configureMcp(targetDir, wiring, report) {
-  if (!MCP_WIRINGS.includes(wiring)) {
+export function configureMcp(targetDir, wiring, report, { claudeCode = false, cursor = false, githubCopilot = false } = {}) {
+  if (claudeCode && !MCP_WIRINGS.includes(wiring)) {
     throw new Error(`Unknown MCP wiring "${wiring}" (expected: ${MCP_WIRINGS.join(", ")})`);
   }
 
@@ -64,21 +66,26 @@ export function configureMcp(targetDir, wiring, report) {
   installJsonWithMerge(canonicalPath, { mcpServers: DEFAULT_SERVERS }, mergeMcp, report);
   const canonical = JSON.parse(fs.readFileSync(canonicalPath, "utf8"));
 
-  persistWiring(targetDir, wiring, report);
-
-  installJsonWithMerge(path.join(targetDir, ".cursor", "mcp.json"), canonical, mergeMcp, report);
-  installJsonWithMerge(
-    path.join(targetDir, ".vscode", "mcp.json"),
-    toVscodeFormat(canonical),
-    mergeVscodeMcp,
-    report
-  );
-
-  if (wiring === "root-file") {
-    installJsonWithMerge(path.join(targetDir, ".mcp.json"), canonical, mergeMcp, report);
-  } else {
-    report.notes.push(
-      'MCP wiring "tommy-only": sem .mcp.json na raiz — inicie o Claude Code neste projeto com: claude --mcp-config .tommy/mcp.json'
+  if (cursor) {
+    installJsonWithMerge(path.join(targetDir, ".cursor", "mcp.json"), canonical, mergeMcp, report);
+  }
+  if (githubCopilot) {
+    installJsonWithMerge(
+      path.join(targetDir, ".vscode", "mcp.json"),
+      toVscodeFormat(canonical),
+      mergeVscodeMcp,
+      report
     );
+  }
+
+  if (claudeCode) {
+    persistWiring(targetDir, wiring, report);
+    if (wiring === "root-file") {
+      installJsonWithMerge(path.join(targetDir, ".mcp.json"), canonical, mergeMcp, report);
+    } else {
+      report.notes.push(
+        'MCP wiring "tommy-only": sem .mcp.json na raiz — inicie o Claude Code neste projeto com: claude --mcp-config .tommy/mcp.json'
+      );
+    }
   }
 }
