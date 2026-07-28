@@ -4,22 +4,22 @@ How Tommy manages MCP servers per project. Used by `/tommy-start` (capabilities 
 
 ## Canonical source: `.tommy/mcp.json`
 
-`.tommy/mcp.json` is the single source of truth for the project's MCP servers, in the standard `{"mcpServers": {...}}` format. Tools do **not** read it natively — it is projected into each tool's native location:
+`.tommy/mcp.json` is the single source of truth for the project's MCP servers, in the standard `{"mcpServers": {...}}` format — created whenever the project is bootstrapped, regardless of which tool(s) are in use. Tools do **not** read it natively — it is projected into each tool's native location, but **only for the tools actually in use in this project** (selected in the `sdd-tommy` installer, or already installed by a previous `/tommy-start` run):
 
-| Tool | Native file | Format |
-|---|---|---|
-| Claude Code | `.mcp.json` (project root) — only in `root-file` wiring | `{"mcpServers": {...}}` |
-| Cursor | `.cursor/mcp.json` | `{"mcpServers": {...}}` |
-| VS Code / GitHub Copilot | `.vscode/mcp.json` | `{"servers": {...}}` — each entry gains `"type": "stdio"` |
+| Tool | Native file | Format | Projected when |
+|---|---|---|---|
+| Claude Code | `.mcp.json` (project root) — only in `root-file` wiring | `{"mcpServers": {...}}` | Claude Code is one of the selected/installed tools |
+| Cursor | `.cursor/mcp.json` | `{"mcpServers": {...}}` | Cursor is one of the selected/installed tools |
+| VS Code / GitHub Copilot | `.vscode/mcp.json` | `{"servers": {...}}` — each entry gains `"type": "stdio"` | GitHub Copilot is one of the selected/installed tools |
 
-Generation is always a **non-destructive merge**: existing servers in a native file are never overwritten or removed; only missing entries are added, and any changed file is backed up first.
+Never project into a tool's native file just because the project has one — a Claude-Code-only project must not end up with a `.cursor/` or `.vscode/` folder it never asked for. Generation is always a **non-destructive merge**: existing servers in a native file are never overwritten or removed; only missing entries are added, and any changed file is backed up first.
 
 ## Wiring modes (persisted in `.tommy/config.json`)
 
-Claude Code only auto-loads project MCP servers from `.mcp.json` at the project root. The wiring choice is asked **once per project** at bootstrap and stored as `{"mcp": {"wiring": ...}}`:
+Claude Code only auto-loads project MCP servers from `.mcp.json` at the project root. This choice — and the question that asks for it — only exists when Claude Code is one of the tools in use. It's asked **once per project** at bootstrap and stored as `{"mcp": {"wiring": ...}}`:
 
 - **`root-file`** (recommended): generate `.mcp.json` at the project root — native auto-load in Claude Code. This is the only file Tommy creates at the root besides `AGENTS.md`.
-- **`tommy-only`**: no file at the root. Claude Code must be launched with `claude --mcp-config .tommy/mcp.json`. Cursor and VS Code are still generated (their files live inside `.cursor/` and `.vscode/`, not the root).
+- **`tommy-only`**: no file at the root. Claude Code must be launched with `claude --mcp-config .tommy/mcp.json`.
 
 Never re-ask when `.tommy/config.json` already records the choice — change it by editing that file and re-running the bootstrap.
 

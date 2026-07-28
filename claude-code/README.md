@@ -69,7 +69,7 @@ Reforçando a regra global do Tommy: `tommy-git` **nunca** adiciona `Co-authored
 - `root-file` (recomendado): gera `.mcp.json` na raiz do projeto — carregamento nativo.
 - `tommy-only`: sem arquivo na raiz — inicie com `claude --mcp-config .tommy/mcp.json`.
 
-Cursor (`.cursor/mcp.json`) e VS Code/Copilot (`.vscode/mcp.json`) são gerados nas duas modalidades. O catálogo curado de servidores por stack (context7 sempre; Playwright MCP para frontend) está em `common/templates/mcp/` e é proposto pelo `/tommy-start`, sempre com confirmação do usuário.
+Os arquivos nativos de Cursor (`.cursor/mcp.json`) e VS Code/Copilot (`.vscode/mcp.json`) só são gerados quando essas ferramentas estão de fato em uso no projeto (selecionadas no instalador, ou já instaladas por um `/tommy-start` anterior) — um projeto só de Claude Code nunca ganha essas pastas. O catálogo curado de servidores por stack (context7 sempre; Playwright MCP para frontend) está em `common/templates/mcp/` e é proposto pelo `/tommy-start`, sempre com confirmação do usuário.
 
 **Qualidade (lint, complexidade, Sonar)**: as automações dos Gates 1, 3 e 5 do `tommy-quality-gate` são scripts locais em `.tommy/scripts/quality/` (`quality-check.sh`, `complexity-check.sh`, `sonar-run.sh`), instalados pelo `--sync-runtime` — não há mais dependência de servidor MCP privado. Para o Sonar rodar de verdade: tenha um `sonar-project.properties` (o `/tommy-start` oferece criar a partir do template), configure `sonar.host.url` (ou `SONAR_HOST_URL`) e exporte `SONAR_TOKEN` no ambiente. Sem isso, o Gate 5 reporta SKIP e o pipeline segue com os demais gates.
 
