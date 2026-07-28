@@ -4,6 +4,20 @@
 
 Version history of Tommy, the Spec-Driven Development framework (**Specify → Prompt → Codegen**) for Claude Code, Cursor, and GitHub Copilot. Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/); versioning follows [SemVer](https://semver.org/).
 
+## [0.2.1] — 2026-07-28
+
+Documentation accuracy patch — no functional changes to agents, skills, commands, or the installer.
+
+### Fixed
+
+- **Root README (EN/PT)**: the `AGENTS.md` section claimed it was "the one exception" living outside `.tommy/`, contradicting the "How to Use It?" section two headings below, which already documents the optional `.mcp.json` generated at the root under `root-file` MCP wiring (introduced in 0.2.0). Softened to "the main exception" with a cross-reference to the MCP configuration section.
+- **`cursor/rules/tommy-start.mdc` and `github-copilot/prompts/tommy-start.prompt.md`**: the same internal contradiction existed within each file — Step 4 claimed AGENTS.md was "the one deliberate exception" while Step 5.1 (capabilities), in the same file, already described generating an optional root `.mcp.json`. Step 5.1 now explicitly states it also generates the root file under `root-file` wiring (parity with `claude-code/commands/tommy-start.md`, which already had this right), and Step 4 cross-references it.
+- **`tommy-project-research/SKILL.md`**: same caveat added to Step 10 (Create AGENTS.md), scoped to what that step creates vs. what `/tommy-start`'s capabilities step creates separately.
+
+### Added
+
+- **Root README (EN/PT)**: the "`.tommy` Structure" section was missing `config.json` and `mcp.json` — two files introduced in 0.2.0 that were already documented in `tommy-project-research/SKILL.md` but never reflected in the root README.
+
 ## [0.2.0] — 2026-07-27
 
 Workflow restructuring focused on structural fixes, spec→code traceability, security, and per-project MCP.
@@ -84,7 +98,8 @@ First version published to npm as **`sdd-tommy`**. Consolidates the framework's 
 
 > History prior to the npm package (2026-07-17/18): the project started as a "Makuco" configuration for Claude Code and was renamed to **Tommy** before the first publish.
 
-[0.2.0]: https://github.com/rwmsousa/sdd-configs/compare/v0.1.3...HEAD
+[0.2.1]: https://github.com/rwmsousa/sdd-configs/compare/v0.2.0...HEAD
+[0.2.0]: https://github.com/rwmsousa/sdd-configs/compare/v0.1.3...v0.2.0
 [0.1.3]: https://github.com/rwmsousa/sdd-configs/tree/v0.1.3
 
 ---
@@ -94,6 +109,20 @@ First version published to npm as **`sdd-tommy`**. Consolidates the framework's 
 [English](#changelog--tommy-sdd-tommy) | **Português**
 
 Histórico de versões do Tommy, o framework de Spec-Driven Development (**Specify → Prompt → Codegen**) para Claude Code, Cursor e GitHub Copilot. O formato segue [Keep a Changelog](https://keepachangelog.com/pt-BR/) e o versionamento segue [SemVer](https://semver.org/lang/pt-BR/).
+
+## [0.2.1] — 2026-07-28
+
+Patch de precisão de documentação — sem mudança funcional em agentes, skills, comandos ou instalador.
+
+### Corrigido
+
+- **README raiz (EN/PT)**: a seção `AGENTS.md` afirmava ser "a única exceção" fora de `.tommy/`, contradizendo a seção "Como utilizar?" duas seções abaixo, que já documenta o `.mcp.json` opcional gerado na raiz sob o wiring `root-file` do MCP (introduzido na 0.2.0). Suavizado para "a principal exceção", com referência cruzada à seção de configuração de MCP.
+- **`cursor/rules/tommy-start.mdc` e `github-copilot/prompts/tommy-start.prompt.md`**: a mesma contradição interna existia em cada arquivo — o Step 4 afirmava que `AGENTS.md` era "a única exceção deliberada", enquanto o Step 5.1 (capacidades), no mesmo arquivo, já descrevia gerar um `.mcp.json` opcional na raiz. O Step 5.1 agora declara explicitamente que também gera o arquivo na raiz sob wiring `root-file` (paridade com `claude-code/commands/tommy-start.md`, que já estava correto), e o Step 4 referencia isso.
+- **`tommy-project-research/SKILL.md`**: mesma ressalva adicionada ao Step 10 (criar AGENTS.md), com escopo limitado ao que esse step cria versus o que a etapa de capacidades do `/tommy-start` cria separadamente.
+
+### Adicionado
+
+- **README raiz (EN/PT)**: a seção "Estrutura `.tommy`" estava sem `config.json` e `mcp.json` — dois arquivos introduzidos na 0.2.0 que já estavam documentados em `tommy-project-research/SKILL.md`, mas nunca refletidos no README raiz.
 
 ## [0.2.0] — 2026-07-27
 
@@ -175,5 +204,6 @@ Primeira versão publicada no npm como **`sdd-tommy`**. Consolida o trabalho de 
 
 > Histórico anterior ao pacote npm (2026-07-17/18): o projeto nasceu como configuração "Makuco" para Claude Code e foi renomeado para **Tommy** antes da primeira publicação.
 
-[0.2.0]: https://github.com/rwmsousa/sdd-configs/compare/v0.1.3...HEAD
+[0.2.1]: https://github.com/rwmsousa/sdd-configs/compare/v0.2.0...HEAD
+[0.2.0]: https://github.com/rwmsousa/sdd-configs/compare/v0.1.3...v0.2.0
 [0.1.3]: https://github.com/rwmsousa/sdd-configs/tree/v0.1.3
