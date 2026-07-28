@@ -4,6 +4,18 @@
 
 Version history of Tommy, the Spec-Driven Development framework (**Specify → Prompt → Codegen**) for Claude Code, Cursor, and GitHub Copilot. Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/); versioning follows [SemVer](https://semver.org/).
 
+## [0.2.3] — 2026-07-28
+
+Metadata patch — the GitHub repository was renamed from `sdd-configs` to `sdd-tommy` (matching the npm package name).
+
+### Changed
+
+- **`package.json`**: `repository.url`, `bugs.url`, and `homepage` updated to `github.com/rwmsousa/sdd-tommy`. npm does not let you edit metadata of an already-published version — this required a new version to take effect on the registry.
+- **`CHANGELOG.md`**: all version-comparison links updated to the new repository URL.
+- **`README.md`**: the illustrative directory-tree label updated from `sdd_configs/` to `sdd-tommy/` for consistency.
+
+> The old repository name still resolves via GitHub's automatic redirect, so no existing link was actually broken — this is a hygiene fix, not an incident response.
+
 ## [0.2.2] — 2026-07-28
 
 Installer bug fix — a project set up for a single tool no longer gets other tools' native config files.
@@ -108,10 +120,11 @@ First version published to npm as **`sdd-tommy`**. Consolidates the framework's 
 
 > History prior to the npm package (2026-07-17/18): the project started as a "Makuco" configuration for Claude Code and was renamed to **Tommy** before the first publish.
 
-[0.2.2]: https://github.com/rwmsousa/sdd-configs/compare/v0.2.1...HEAD
-[0.2.1]: https://github.com/rwmsousa/sdd-configs/compare/v0.2.0...v0.2.1
-[0.2.0]: https://github.com/rwmsousa/sdd-configs/compare/v0.1.3...v0.2.0
-[0.1.3]: https://github.com/rwmsousa/sdd-configs/tree/v0.1.3
+[0.2.3]: https://github.com/rwmsousa/sdd-tommy/compare/v0.2.2...HEAD
+[0.2.2]: https://github.com/rwmsousa/sdd-tommy/compare/v0.2.1...v0.2.2
+[0.2.1]: https://github.com/rwmsousa/sdd-tommy/compare/v0.2.0...v0.2.1
+[0.2.0]: https://github.com/rwmsousa/sdd-tommy/compare/v0.1.3...v0.2.0
+[0.1.3]: https://github.com/rwmsousa/sdd-tommy/tree/v0.1.3
 
 ---
 
@@ -120,6 +133,18 @@ First version published to npm as **`sdd-tommy`**. Consolidates the framework's 
 [English](#changelog--tommy-sdd-tommy) | **Português**
 
 Histórico de versões do Tommy, o framework de Spec-Driven Development (**Specify → Prompt → Codegen**) para Claude Code, Cursor e GitHub Copilot. O formato segue [Keep a Changelog](https://keepachangelog.com/pt-BR/) e o versionamento segue [SemVer](https://semver.org/lang/pt-BR/).
+
+## [0.2.3] — 2026-07-28
+
+Patch de metadados — o repositório no GitHub foi renomeado de `sdd-configs` para `sdd-tommy` (alinhando com o nome do pacote no npm).
+
+### Alterado
+
+- **`package.json`**: `repository.url`, `bugs.url` e `homepage` atualizados para `github.com/rwmsousa/sdd-tommy`. O npm não permite editar metadados de uma versão já publicada — foi necessária uma versão nova para o registro refletir a mudança.
+- **`CHANGELOG.md`**: todos os links de comparação entre versões atualizados para a nova URL do repositório.
+- **`README.md`**: o rótulo ilustrativo da árvore de diretórios atualizado de `sdd_configs/` para `sdd-tommy/`, por consistência.
+
+> O nome antigo do repositório continua redirecionando automaticamente pelo GitHub, então nenhum link existente quebrou de fato — é um ajuste de higiene, não resposta a um incidente.
 
 ## [0.2.2] — 2026-07-28
 
@@ -225,7 +250,8 @@ Primeira versão publicada no npm como **`sdd-tommy`**. Consolida o trabalho de 
 
 > Histórico anterior ao pacote npm (2026-07-17/18): o projeto nasceu como configuração "Makuco" para Claude Code e foi renomeado para **Tommy** antes da primeira publicação.
 
-[0.2.2]: https://github.com/rwmsousa/sdd-configs/compare/v0.2.1...HEAD
-[0.2.1]: https://github.com/rwmsousa/sdd-configs/compare/v0.2.0...v0.2.1
-[0.2.0]: https://github.com/rwmsousa/sdd-configs/compare/v0.1.3...v0.2.0
-[0.1.3]: https://github.com/rwmsousa/sdd-configs/tree/v0.1.3
+[0.2.3]: https://github.com/rwmsousa/sdd-tommy/compare/v0.2.2...HEAD
+[0.2.2]: https://github.com/rwmsousa/sdd-tommy/compare/v0.2.1...v0.2.2
+[0.2.1]: https://github.com/rwmsousa/sdd-tommy/compare/v0.2.0...v0.2.1
+[0.2.0]: https://github.com/rwmsousa/sdd-tommy/compare/v0.1.3...v0.2.0
+[0.1.3]: https://github.com/rwmsousa/sdd-tommy/tree/v0.1.3

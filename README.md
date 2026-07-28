@@ -11,7 +11,7 @@ See [`WORKFLOW.md`](./WORKFLOW.md) for a diagram of the possible Spec-Driven Dev
 Tommy works across three tools — **Claude Code**, **GitHub Copilot**, and **Cursor** — each with a different instruction-loading mechanism. That's why this repository is organized per tool, so an installer can copy just the right set:
 
 ```
-sdd_configs/
+sdd-tommy/
 ├── common/            Tool-agnostic — installed inside .tommy/ of each project, any tool
 │   ├── scripts/        create-new-spec.sh, create-new-prompt.sh, create-codegen-checklist.sh, common.sh,
 │   │                    quality/ (quality-check.sh, complexity-check.sh, sonar-run.sh)
@@ -135,7 +135,7 @@ Veja [`WORKFLOW.md`](./WORKFLOW.md) para um diagrama dos possíveis fluxos de Sp
 O Tommy funciona em três ferramentas — **Claude Code**, **GitHub Copilot** e **Cursor** — cada uma com um mecanismo de carregamento de instruções diferente. Por isso este repositório é organizado por ferramenta, para que um instalador (futuro, via npm) possa copiar só o conjunto certo:
 
 ```
-sdd_configs/
+sdd-tommy/
 ├── common/            Tool-agnostic — instalado dentro de .tommy/ de cada projeto, qualquer ferramenta
 │   ├── scripts/        create-new-spec.sh, create-new-prompt.sh, create-codegen-checklist.sh, common.sh,
 │   │                    quality/ (quality-check.sh, complexity-check.sh, sonar-run.sh)

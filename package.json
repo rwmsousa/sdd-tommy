@@ -1,6 +1,6 @@
 {
   "name": "sdd-tommy",
-  "version": "0.2.2",
+  "version": "0.2.3",
   "description": "Interactive installer for Tommy, a spec-driven development workflow (Specify -> Prompt -> Codegen) for Claude Code, Cursor, and GitHub Copilot.",
   "type": "module",
   "bin": {
@@ -21,12 +21,12 @@
   "author": "Ricardo Sousa <rwmsousa@gmail.com>",
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/rwmsousa/sdd-configs.git"
+    "url": "git+https://github.com/rwmsousa/sdd-tommy.git"
   },
   "bugs": {
-    "url": "https://github.com/rwmsousa/sdd-configs/issues"
+    "url": "https://github.com/rwmsousa/sdd-tommy/issues"
   },
-  "homepage": "https://github.com/rwmsousa/sdd-configs#readme",
+  "homepage": "https://github.com/rwmsousa/sdd-tommy#readme",
   "keywords": [
     "tommy",
     "spec-driven-development",
