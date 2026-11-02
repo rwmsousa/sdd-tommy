@@ -177,12 +177,38 @@ The implementation should:
 
 ---
 
+## Requirements Coverage *(mandatory)*
+
+<!--
+    ACTION REQUIRED: Map every FR-###, SC-### and user story of the spec to the step(s) that deliver it.
+    A requirement with no step is a coverage gap; a step with no requirement is scope creep — both block the plan analysis.
+    When this plan is one part of a split, list the requirements covered by OTHER parts as "Part N".
+-->
+
+| Requirement | Covered by step(s) |
+| --- | --- |
+| FR-001 | 1, 3 |
+| SC-001 | 4 |
+| US1 | 1-4 |
+
+---
+
 ## Implementation Steps *(mandatory)*
+
+<!--
+    Each step declares:
+    * **Covers**: the spec IDs it delivers (FR-/SC-/US) — must match the Requirements Coverage table.
+    * **Depends on**: the steps that must be finished first ("—" when none).
+    * **Parallel**: `[P]` when it touches different files than every other pending step and has no unmet dependency, so it can be implemented independently; `—` otherwise.
+-->
 
 ### 1. [STEP_TITLE]
 
 **File**: `[TARGET_FILE_PATH]`
 **Type**: `[Migration | Model | Controller | Service | Validator | Route | Test | Swagger | Permission | Other]`
+**Covers**: `[FR-###, SC-###, US#]`
+**Depends on**: `[STEP_NUMBERS or —]`
+**Parallel**: `[[P] or —]`
 
 **Objective**: [Clearly describe the objective of this step.]
 
@@ -208,6 +234,9 @@ The implementation should:
 
 **File**: `[TARGET_FILE_PATH]`
 **Type**: `[STEP_TYPE]`
+**Covers**: `[FR-###, SC-###, US#]`
+**Depends on**: `[STEP_NUMBERS or —]`
+**Parallel**: `[[P] or —]`
 
 **Objective**: [Clearly describe the objective of this step.]
 
@@ -232,6 +261,9 @@ The implementation should:
 
 **File**: `[TARGET_FILE_PATH]`
 **Type**: `[STEP_TYPE]`
+**Covers**: `[FR-###, SC-###, US#]`
+**Depends on**: `[STEP_NUMBERS or —]`
+**Parallel**: `[[P] or —]`
 
 **Objective**: [Clearly describe the objective of this step.]
 

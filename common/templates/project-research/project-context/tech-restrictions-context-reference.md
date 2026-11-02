@@ -17,6 +17,15 @@ Template and guidance for documenting binding technical restrictions in `.tommy/
 ```markdown
 # Technical Restrictions and Decisions - [Project Name]
 
+## Project Principles (MUST / SHOULD)
+
+**Version**: [MAJOR.MINOR] · **Last amended**: [YYYY-MM-DD]
+
+| ID | Level | Principle | Rationale |
+|---|---|---|---|
+| P-001 | MUST | [Non-negotiable rule, e.g., "Every public API change ships with a contract test"] | [Why — incident, regulation, architecture] |
+| P-002 | SHOULD | [Strong default that may be broken with a written justification] | [Why] |
+
 ## Forbidden Technologies
 
 | What NOT to use | Reason | Recommended alternative |
@@ -44,6 +53,7 @@ Template and guidance for documenting binding technical restrictions in `.tommy/
 
 ## Field Guidance
 
+- **Project Principles**: the project's "constitution" — a short list (3-10) of rules every spec, plan and change is checked against. `MUST` rules are binding: the plan analysis treats a violation as CRITICAL (the plan is blocked), and codegen's convergence check treats code that violates one as CONTRADICTS. `SHOULD` rules may be broken only with an explicit justification written in the plan. Every principle must be **confirmed with the user** — propose candidates from evidence (linter rules, CI gates, CONTRIBUTING.md), never record an unconfirmed one as MUST. Bump the version (MAJOR when a MUST is removed or redefined, MINOR when a principle is added or a SHOULD changes) and the amendment date on every change.
 - **Forbidden Technologies**: Every row must have a *reason*, not just a rule — "don't use X" without justification invites someone to quietly reintroduce X later. If you can't find or confirm a reason, don't add the row; flag it as `[NEEDS CONFIRMATION]` instead of asserting it as fact.
 - **Decisions Made and Not to Be Reverted**: This table is the highest-leverage part of the whole `.tommy/project-context/` layer — it's what stops `tommy-architect` from proposing a "cleaner" redesign that the team already deliberately rejected. Keep it current; a stale entry here can block legitimate modernization work.
 - If a restriction is only a pattern you observed in code (not a confirmed decision), mark it explicitly as **observed, not confirmed** rather than blending it in as an established rule — `tommy-architect` should treat those differently (worth raising as a question, not enforcing as a constraint).
