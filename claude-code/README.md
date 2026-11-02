@@ -17,20 +17,24 @@ O `.tommy/` de cada projeto (scripts, templates, specs) continua vindo de `../co
 
 ## Instalação
 
-Rode `npx sdd-tommy@latest` e escolha "Claude Code" no prompt (pode combinar com Cursor/Copilot na mesma execução) — o instalador copia `agents/`, `commands/`, `skills/`, `hooks/` para `~/.claude/`, mescla `settings.json` com o que você já tiver (nunca sobrescreve às cegas, sempre com backup automático antes de qualquer mudança real), registra o `context7` no escopo de usuário via `claude mcp add` e remove arquivos obsoletos de versões anteriores do Tommy. Ver a seção "Como utilizar?" do README raiz para o fluxo completo.
+Rode `npx sdd-tommy@latest` e escolha "Claude Code" no prompt (pode combinar com Cursor/Copilot na mesma execução) — o instalador copia `agents/`, `commands/`, `skills/`, `hooks/` para `~/.claude/`, mescla `settings.json` com o que você já tiver (nunca sobrescreve às cegas, sempre com backup automático antes de qualquer mudança real), registra o `context7` no escopo de usuário via `claude mcp add` e remove arquivos obsoletos de versões anteriores do Tommy. Ver o "Passo a passo" do README raiz para o fluxo completo.
+
+**Pré-requisitos (RTK + Graphify)**: na mesma execução, após confirmação, o instalador instala uv, Graphify (`graphifyy`) e RTK em `~/.local/bin` e roda as integrações oficiais de cada um para o Claude Code: `rtk init -g --auto-patch` (hook `PreToolUse` em `~/.claude/settings.json` + `~/.claude/RTK.md`) e `graphify install` (skill em `~/.claude/skills/graphify/` + registro em `~/.claude/CLAUDE.md`). O merge do `settings.json` do Tommy preserva esses hooks em reinstalações. Confira com `npx sdd-tommy@latest --doctor`.
 
 ## Fases, agentes e comandos
 
 As fases Specify e Prompt são **comandos** que orquestram na conversa principal (subagentes não podem invocar outros subagentes, e a elicitação de requisitos precisa dialogar com o usuário — o que um subagente não consegue fazer no meio da execução):
 
-- `/tommy-specify` — cria/atualiza a especificação: elicita requisitos com a skill `tommy-business-analyst` (rodadas interativas), escreve a spec e submete à revisão independente do `tommy-product-review`.
-- `/tommy-prompt` — cria o plano de execução detalhado, invocando o agente `tommy-architect` para o desenho de arquitetura.
+- `/tommy-specify` — cria/atualiza a especificação: elicita requisitos com a skill `tommy-business-analyst` (árvore de decisão, perguntas com resposta recomendada), escreve a spec com log de decisões (`## Clarifications`) e submete à revisão independente do `tommy-product-review`. Com o caminho de um `spec.md` existente, faz um passe de clarificação.
+- `/tommy-prompt` — cria o plano de execução detalhado (com rastreabilidade requisito→etapa), invocando o agente `tommy-architect` para o desenho de arquitetura e o `tommy-product-review` para a análise de consistência do plano.
+- `/tommy-run-codegen` — invoca **somente** o agente `tommy-codegen`, que cuida da fase inteira.
+- `/tommy-bugfix` — avalia o bug na conversa principal (reprodução, causa raiz, confirmação) e delega a correção ao `tommy-codegen` em modo bugfix.
 
 Agentes (subagentes com `tools:` restrito por papel):
 
 - `tommy-architect` — desenho de arquitetura da feature (invocado por `/tommy-prompt`).
-- `tommy-product-review` — revisor independente com lente de PM: valida a spec (único autorizado a marcar o checklist de requisitos) e, após o codegen, gera a matriz de rastreabilidade spec→código (`checklists/acceptance.md`).
-- `tommy-codegen` — implementa o plano, gera testes e roda o quality gate.
+- `tommy-product-review` — revisor independente com contexto novo, em dois modos: **spec-review** (varredura de cobertura, lente de PM, gera e marca os checklists de domínio — único autorizado a marcar os checklists da spec) e **plan-analysis** (análise somente leitura spec ↔ arquitetura ↔ plano ↔ princípios, com achados por severidade; CRITICAL/HIGH bloqueiam o codegen).
+- `tommy-codegen` — implementa o plano (ou o bug confirmado), gera testes, roda o quality gate e fecha com o ciclo de aceite e convergência spec→código (`checklists/acceptance.md`).
 - `tommy-git` — commita mudanças locais (Conventional Commits) e abre Pull/Merge Request no provedor detectado do projeto. Ver seção [Versionamento (commit e PR/MR)](#versionamento-commit-e-prmr) abaixo.
 
 ## Versionamento (commit e PR/MR)
@@ -77,7 +81,8 @@ Os arquivos nativos de Cursor (`.cursor/mcp.json`) e VS Code/Copilot (`.vscode/m
 
 ## Como usar
 
-1. `/tommy-specify <descrição da feature>` (ou rode `/tommy-start` primeiro, se `.tommy/` ainda não existir no projeto) — responda às rodadas de perguntas do analista de requisitos; ao final, o `tommy-product-review` valida a spec com olhar de PM.
-2. `/tommy-prompt <caminho do spec.md>` — gera o plano de execução com a arquitetura do `tommy-architect`.
-3. Rode `/tommy-run-codegen <caminho do plano>`, uma parte do plano por vez — ao final, o `tommy-product-review` gera a matriz de rastreabilidade spec→código.
+1. `/tommy-specify <descrição da feature>` (ou rode `/tommy-start` primeiro, se `.tommy/` ainda não existir no projeto) — responda às rodadas de perguntas (responder "sim" aceita a recomendação); ao final, o `tommy-product-review` valida a spec e gera os checklists de domínio.
+2. `/tommy-prompt <caminho do spec.md>` — gera o plano de execução com a arquitetura do `tommy-architect`; o `tommy-product-review` analisa a consistência do plano.
+3. Rode `/tommy-run-codegen <caminho do plano>`, uma parte do plano por vez — o `tommy-codegen` implementa, roda o quality gate e converge o código com a spec.
+- Bug em código existente: `/tommy-bugfix <descrição do bug>`.
 4. Quando quiser versionar o que foi gerado, rode `/tommy-commit` (um ou mais commits, sob confirmação) e, quando pronto, `/tommy-open-pr` (sobe a branch e abre o PR/MR) — ver [Versionamento (commit e PR/MR)](#versionamento-commit-e-prmr).

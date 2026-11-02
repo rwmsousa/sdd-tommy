@@ -57,14 +57,18 @@ Also check for the project-level Tommy scaffolding (as described in the root `RE
 ├── mcp.json      (canonical MCP servers for the project — see .tommy/templates/mcp/mcp-catalog.md)
 ├── resources/    (may be empty — for project-specific reference material)
 ├── templates/
-│   ├── spec-template.md, prompt-template.md, checklist-template.md, prompt-checklist.md, codegen-checklist.md
+│   ├── spec-template.md, prompt-template.md, checklist-template.md, prompt-checklist.md, codegen-checklist.md,
+│   │   domain-checklist-template.md, bug-template.md
 │   ├── agents-md-template.md
 │   ├── sonar-project-reference.properties
 │   ├── mcp/      (mcp-catalog.md + mcp-reference.json — MCP wiring rules and curated catalog)
 │   └── project-research/    (this skill's own reference templates — code-analysis.md, codebase/*.md, project-context/*.md)
-└── scripts/      (create-new-spec.sh, create-new-prompt.sh, create-codegen-checklist.sh, common.sh,
+└── scripts/      (create-new-spec.sh, create-new-prompt.sh, create-codegen-checklist.sh, create-new-bug.sh,
+                   graph-update.sh, common.sh,
                    quality/quality-check.sh, quality/complexity-check.sh, quality/sonar-run.sh)
 ```
+
+`.tommy/specs/` (one folder per feature) and `.tommy/bugs/` (one folder per bug) are created on demand by the Specify and Bugfix flows — their absence is not a GAP. The code graph lives outside `.tommy/`, in `graphify-out/` at the project root (Graphify's default location, excluded from git by `graph-update.sh`); it is built by `/tommy-start` and refreshed after codegen — its absence is not a GAP either, only a missing accelerator.
 
 `config.json` and `mcp.json` are created by the **capabilities step of `/tommy-start`** (opt-in, user-confirmed) — their absence is *not* a GAP for this skill to fill; never create or modify them during research.
 
@@ -75,6 +79,10 @@ If any required directory or file is missing, trigger this skill to research and
 ## Research Workflow
 
 Follow this order — each step builds on the previous one, and later steps deliberately depend on earlier ones (see Step 8). Do not skip steps even if a file seems obvious; the goal is evidence-based mapping, not assumptions. Read [code-analysis.md](.tommy/templates/project-research/code-analysis.md) for techniques on how to analyze the codebase effectively.
+
+### Step 0: Start from the Code Graph (when available)
+
+If `graphify-out/GRAPH_REPORT.md` exists (or can be built now with `.tommy/scripts/graph-update.sh --json` when you have shell access), read it first: its communities, hub nodes, and cross-module edges are a fast first map for Steps 2, 3, and 6 (structure, architecture boundaries, cross-cutting concerns). Use `graphify query`/`explain`/`path` to answer targeted questions. The graph is an **index, not evidence** — every claim written to `.tommy/codebase/` must still cite the real file path you opened and read. If the graph is unavailable, proceed with plain search; nothing in this workflow depends on it.
 
 ### Step 1: Identify the Stack
 
@@ -205,6 +213,8 @@ If either target codebase file is somehow still missing when you reach this step
 
 The other five files (`project_goal_context.md`, `scope_features_context.md`, `glossary_context.md`, `tech_restrictions_context.md`, `project_management_context.md`) have no codebase-file counterpart to duplicate — they capture product/business boundaries and ubiquitous language that live outside the code.
 
+**Project Principles (in `tech_restrictions_context.md`)**: propose a short list of MUST/SHOULD principles from strong evidence (linter rules that block a pattern, CI gates, CONTRIBUTING.md, ADRs) and confirm each with the user before recording it. They are the project's "constitution": the plan analysis treats a MUST violation as CRITICAL and codegen's convergence check treats code violating one as CONTRADICTS — an unconfirmed MUST would block legitimate work, so when in doubt, record it as SHOULD or leave it out.
+
 **This layer is not purely derivable from code.** Several fields are business decisions that only exist in someone's head — business objective, target users, market positioning, roadmap priority, ceremonies, and "decisions not to revert" cannot be reverse-engineered from source code with confidence. Each reference template marks which fields are evidence-derivable and which must be confirmed with the user/product owner. **Never fabricate a business fact to avoid asking a question** — an empty `[NEEDS CONFIRMATION]` placeholder is correct output; a guessed answer presented as fact is not. This mirrors the `tommy-business-analyst` principle of never assuming rules without evidence.
 
 Once `.tommy/project-context/` exists, do not re-ask the user for facts it already answers in later Tommy workflows (specify, architecture, codegen) — read the file instead. Only re-open a question with the user when the file is silent, contradicts the current request, or is stale relative to the codebase.
@@ -258,7 +268,7 @@ When investigating a codebase, use these approaches:
 | `scope_features_context.md` | `tommy-business-analyst`, `tommy-specify`, `tommy-product-review` | Always — check the requested feature against the existing roadmap and the "Fora do Escopo" list before treating it as new. |
 | `glossary_context.md` | `tommy-business-analyst`, `tommy-specify`, `tommy-architect`, `tommy-codegen`, `tommy-product-review` | Always — domain terms and their EN mapping must stay consistent; pairs with `tommy-ubiquitous-language`. |
 | `tech_stack_context.md` | `tommy-architect`, `tommy-prompt`, `tommy-codegen` | When the feature touches a specific technology, integration, or infrastructure decision. For exhaustive dependency versions, prefer `.tommy/codebase/stack.md` and `.tommy/codebase/integrations.md` — this file is the narrative summary, not the inventory. |
-| `tech_restrictions_context.md` | `tommy-architect`, `tommy-prompt`, `tommy-codegen` | Always, before proposing any technical approach — this is the one file with hard constraints (forbidden tech, locked decisions) that override generic best practice. |
+| `tech_restrictions_context.md` | `tommy-architect`, `tommy-prompt`, `tommy-codegen`, `tommy-product-review` (plan-analysis) | Always, before proposing or reviewing any technical approach — this is the one file with hard constraints (Project Principles MUST/SHOULD, forbidden tech, locked decisions) that override generic best practice. |
 | `architecture_definition_context.md` | `tommy-architect` | Always when designing architecture for a feature. Captures the "why" behind decisions; `.tommy/codebase/architecture.md` captures the current structural "how." |
 | `project_management_context.md` | `tommy-specify`, `tommy-prompt` | When sizing a spec into stories/PBIs or a plan into steps — this file may define project-specific sizing/DoD conventions that override generic defaults (e.g. `tommy-prompt`'s "5-10 files per plan" rule). |
 

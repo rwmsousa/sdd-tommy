@@ -43,6 +43,8 @@ Execution order: **0 → 1 → 2 → 3 → 4 → 5 → 7 → 8 → 6**. Gate 6 (
 
 Gates 1, 3, and 5 are backed by the project's quality scripts in `.tommy/scripts/quality/` (`quality-check.sh`, `complexity-check.sh`, `sonar-run.sh`), installed by the Tommy runtime sync. If they are missing, restore them with `npx -y sdd-tommy@latest --sync-runtime`; each gate's reference also documents the manual fallback.
 
+**Compressed output (RTK)**: when RTK is installed, lint/test/build output reaches you summarized. A gate's verdict is decided by the command's **exit code**, never by the absence of errors in a compressed output. When you need the full output to diagnose a failure (stack trace, complete list of lint errors, coverage table), re-run that single command as `rtk bypass <command>`.
+
 ## Handling Failures
 
 When a gate fails:
@@ -57,7 +59,7 @@ When a gate fails:
 
 After completing all gates, produce a quality report and **persist it**:
 
-1. Write the full report to `.tommy/specs/[SPEC_FOLDER]/quality-report.md`.
+1. Write the full report to `.tommy/specs/[SPEC_FOLDER]/quality-report.md` (feature work) or `.tommy/bugs/[BUG_ID]/quality-report.md` (bugfix work).
 2. Update the machine-checkable marker `.tommy/.quality-gate-status` (single line, overwritten on every run — it is consumed by the `tommy-quality-sentinel` Stop hook):
 
 ```text
