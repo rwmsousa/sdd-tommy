@@ -7,13 +7,21 @@ description: Bootstrap Tommy for this project — scaffold .tommy/, research the
 
 Run this once per project (or whenever `.tommy/` is missing/incomplete). Do all steps in order — do not skip any, even if a file "seems obvious."
 
-## Step 0 — Scaffold `.tommy/`
+## Step 0 — Prerequisites
+
+Run `npx -y sdd-tommy@latest --doctor` and show the result. Missing required tools (node, git, bash, jq) → report how to install them; missing recommended tools (uv, graphify, rtk) → tell the user `npx sdd-tommy@latest` installs them. Continue either way — the flow degrades gracefully.
+
+## Step 0.1 — Scaffold `.tommy/`
 
 If `.tommy/` does not exist at the project root, create it. Ensure these exist — never author new scripts/templates from scratch, they must stay identical across every project using Tommy:
 
-- `.tommy/scripts/` and `.tommy/templates/` — if either is missing, run `npx -y sdd-tommy@latest --sync-runtime` at the project root to populate them (`common.sh`, `create-new-spec.sh`, `create-new-prompt.sh`, `create-codegen-checklist.sh`, `quality/` scripts, `spec-template.md`, `prompt-template.md`, `checklist-template.md`, `prompt-checklist.md`, `codegen-checklist.md`, `agents-md-template.md`, `sonar-project-reference.properties`, `mcp/`, `project-research/`)
+- `.tommy/scripts/` and `.tommy/templates/` — if either is missing, run `npx -y sdd-tommy@latest --sync-runtime` at the project root to populate them (`common.sh`, `create-new-spec.sh`, `create-new-prompt.sh`, `create-codegen-checklist.sh`, `create-new-bug.sh`, `graph-update.sh`, `quality/` scripts, `spec-template.md`, `prompt-template.md`, `checklist-template.md`, `domain-checklist-template.md`, `prompt-checklist.md`, `codegen-checklist.md`, `bug-template.md`, `agents-md-template.md`, `sonar-project-reference.properties`, `mcp/`, `project-research/`)
 - `.tommy/resources/` — may stay empty
 - `.tommy/project-context/` and `.tommy/codebase/` — built by the steps below
+
+## Step 0.2 — Build the code graph
+
+Run `.tommy/scripts/graph-update.sh --json --full` (Graphify, local tree-sitter parsing with LLM backends disabled — no source leaves the machine; `graphify-out/` is excluded from git via `.git/info/exclude`). SKIP is a valid outcome. When it passes, start Step 1 from `graphify-out/GRAPH_REPORT.md` and `graphify query` — the graph is an index; every claim still cites a file you actually read.
 
 ## Step 1 — Map the Codebase (`.tommy/codebase/`)
 
@@ -35,6 +43,8 @@ For each file below, follow its reference template under `.tommy/templates/proje
 
 - `project_goal_context.md`, `scope_features_context.md`, `glossary_context.md`, `tech_stack_context.md`, `architecture_definition_context.md`, `tech_restrictions_context.md`, `project_management_context.md`
 
+In `tech_restrictions_context.md`, propose the **Project Principles (MUST / SHOULD)** from strong evidence (linter rules, CI gates, CONTRIBUTING.md, ADRs) and confirm each one with the user — never record an unconfirmed principle as MUST (the plan analysis blocks on MUST violations).
+
 ## Step 3 — Fill `.tommy/TOMMY.md`
 
 Update `.tommy/TOMMY.md` (create it if absent — **inside `.tommy/`, never at the project root**: `.tommy/` is usually gitignored and not everyone on the project uses Tommy) with a synthesis: project name/purpose, tech stack, architecture entry points and key patterns, 5-10 critical code rules from `conventions.md`, design system if applicable. Keep it under 80 lines — it's a summary, not a dump; the detail lives in `.tommy/codebase/`.
@@ -51,4 +61,4 @@ Create or refresh `AGENTS.md` **at the project root** — a deliberate exception
 
 ## Report
 
-Summarize what was created/updated, which capabilities were enabled or declined, and list every `[NEEDS CONFIRMATION]` placeholder left behind — those need a follow-up conversation with the user before `/tommy-specify` is run for real feature work.
+Summarize what was created/updated, the prerequisites and graph status, the principles recorded, which capabilities were enabled or declined, and list every `[NEEDS CONFIRMATION]` placeholder left behind — those need a follow-up conversation with the user before `/tommy-specify` is run for real feature work.
