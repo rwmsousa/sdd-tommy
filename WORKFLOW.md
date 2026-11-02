@@ -2,7 +2,7 @@
 
 **English** | [Português](#fluxo-tommy-pt-br)
 
-This diagram maps the possible flows of the Spec-Driven Development (SDD) technique as implemented by Tommy: **Specify → Prompt → Codegen**, plus the Bootstrap step that precedes it and the two independent Versioning actions (Commit, Open PR/MR) that sit outside the three-phase backbone. It includes the conditionals that branch each flow and the observations that explain *why* — see the note boxes (yellow) inline.
+This diagram maps the possible flows of the Spec-Driven Development (SDD) technique as implemented by Tommy: **Specify → Prompt → Codegen**, plus the Bootstrap step that precedes it, the lightweight Bugfix flow, and the two independent Versioning actions (Commit, Open PR/MR) that sit outside the three-phase backbone. It includes the conditionals that branch each flow and the observations that explain *why* — see the note boxes (yellow) inline.
 
 The diagram below is drawn as a [Mermaid](https://mermaid.js.org) flowchart so it renders directly on GitHub and in most Markdown viewers.
 
@@ -13,7 +13,7 @@ flowchart TD
     classDef terminal fill:#E8F5E9,stroke:#2E7D32,color:#1a1a2e;
 
     Start(["User opens a project"]) --> Q1{".tommy/ scaffolding complete?<br/>(scripts, templates, project-context, codebase)"}
-    Q1 -->|No| Boot["Tommy Start<br/>scaffold .tommy/, research codebase & product context,<br/>fill TOMMY.md, create AGENTS.md,<br/>propose opt-in capabilities (MCP wiring & servers,<br/>Sonar properties, find-skills) — always user-confirmed"]:::phase
+    Q1 -->|No| Boot["Tommy Start<br/>scaffold .tommy/, research codebase & product context,<br/>check prerequisites (--doctor), build the code graph (Graphify),<br/>record project principles (MUST/SHOULD),<br/>fill TOMMY.md, create AGENTS.md,<br/>propose opt-in capabilities (MCP wiring & servers,<br/>Sonar properties, find-skills) — always user-confirmed"]:::phase
     Q1 -->|Yes| Specify
     Boot --> Specify
 
@@ -21,9 +21,9 @@ flowchart TD
     Boot -.-> N1
 
     Specify["Specify<br/>describe the feature in natural language"]:::phase --> Branch1["Create feature branch<br/>'NNN-short-name' and spec.md"]
-    Branch1 --> Elicit["Business Analyst skill elicits requirements<br/>(interactive rounds, 3-5 questions at a time)"]
-    Elicit --> WriteSpec["Write / refine spec.md<br/>(goals, user stories, acceptance criteria, non-goals)"]
-    WriteSpec --> PMReview["Product Review (PM lens, independent)<br/>value, scope, completeness, audience —<br/>only this reviewer marks the requirements checklist"]
+    Branch1 --> Elicit["Business Analyst skill elicits requirements<br/>(decision tree: frontier-only rounds, max 5 questions,<br/>each with a recommended answer; ends on explicit confirmation)"]
+    Elicit --> WriteSpec["Write / refine spec.md<br/>(goals, user stories, acceptance criteria, non-goals,<br/>decision log in ## Clarifications)"]
+    WriteSpec --> PMReview["Product Review (PM lens, independent)<br/>coverage scan, value, scope, completeness, audience,<br/>domain checklists (unit tests for the requirements) —<br/>only this reviewer marks the spec checklists"]
     PMReview --> Q2{"Reviewer approves<br/>the spec?"}
     Q2 -->|"No (fix and re-review, up to 3x)"| WriteSpec
     Q2 -->|Yes| PromptPhase
@@ -33,18 +33,31 @@ flowchart TD
 
     PromptPhase["Prompt<br/>reference the approved spec"]:::phase --> Architect["Architect designs implementation architecture,<br/>bounded contexts, data model"]
     Architect --> WritePlan["Write detailed implementation plan<br/>+ its own checklist"]
-    WritePlan --> PlanReady(["Plan file ready in<br/>.tommy/specs/.../plans/"])
+    WritePlan --> Analysis["Plan analysis (independent, read-only)<br/>coverage gaps, scope creep, inconsistencies,<br/>ambiguity, MUST-principle violations"]
+    Analysis --> QA{"Any CRITICAL / HIGH<br/>finding?"}
+    QA -->|"Yes (fix the plan, up to 2x;<br/>spec problem → refine the spec)"| WritePlan
+    QA -->|No| PlanReady(["Plan file ready in<br/>.tommy/specs/.../plans/"])
 
     PlanReady --> Codegen["Codegen<br/>pick one plan file to implement"]:::phase
-    Codegen --> Q3{"Plan's own checklist<br/>fully checked?"}
+    Codegen --> Q3{"Plan checklist fully checked<br/>and plan analysis APPROVED?"}
     Q3 -->|No| StopReport(["Stop and report the plan<br/>as not yet validated"]):::terminal
     Q3 -->|Yes| Implement["Implement / fix code and tests"]
     Implement --> Q4{"Quality gate passes?<br/>(lint, tests incl. e2e, complexity, patterns,<br/>Sonar, frontend audit, security scan, checklist)"}
     Q4 -->|No| Implement
-    Q4 -->|Yes| Accept["Acceptance review (spec→code traceability)<br/>map every acceptance criterion to code + test evidence,<br/>write checklists/acceptance.md"]
-    Accept --> Q10{"All criteria MET<br/>(or justified)?"}
+    Q4 -->|Yes| Accept["Acceptance & convergence (spec→code)<br/>MET / PARTIAL / NOT MET per criterion,<br/>plus CONTRADICTS and UNREQUESTED changes,<br/>write checklists/acceptance.md"]
+    Accept --> Q10{"Converged?<br/>(all MET or justified, no open divergence)"}
     Q10 -->|"No (fix the gaps, up to 2 cycles)"| Implement
-    Q10 -->|Yes| CodeReady(["Code ready — report to user"]):::terminal
+    Q10 -->|Yes| CodeReady(["Code ready — graph refreshed,<br/>report to user"]):::terminal
+
+    BugStart(["User reports a bug"]) --> Bugfix["Bugfix<br/>reproduce, find the root cause (graph first),<br/>write bug.md"]:::phase
+    Bugfix --> QB{"Bug or spec gap?"}
+    QB -->|"Spec gap (new scope)"| Specify
+    QB -->|Bug| QBC{"User confirms<br/>the fix approach?"}
+    QBC -->|No| Bugfix
+    QBC -->|Yes| BugFix["Codegen (bugfix mode)<br/>regression test first (must fail),<br/>minimal fix, quality gate"]
+    BugFix --> QBV{"Verdict?"}
+    QBV -->|"partial / failed (up to 2 cycles)"| Bugfix
+    QBV -->|verified| CodeReady
 
     N7["The quality gate persists its evidence in<br/>.tommy/.quality-gate-status; in Claude Code a Stop hook<br/>(tommy-quality-sentinel) refuses to end a session with<br/>changed code files and no fresh quality-gate evidence."]:::note
     Q4 -.-> N7
@@ -91,9 +104,10 @@ flowchart TD
 
 ## Observations not shown in the diagram
 
-- **Claude Code** runs the full flow above with a mixed structure: `/tommy-specify` and `/tommy-prompt` are **commands** orchestrating in the main conversation (a subagent cannot invoke another subagent, and requirements elicitation needs a real dialog with the user), the Business Analyst is an interactive **skill**, and `tommy-architect`, `tommy-product-review`, `tommy-codegen`, and `tommy-git` are **agents** with `tools:` access restricted by role (`tommy-git` carries 4 skills: Conventional Commits + one adapter per provider).
-- **Cursor** and **GitHub Copilot** run the same flow, condensed: Specify absorbs the Business Analyst elicitation and the PM review (self-enforced role switch), Prompt absorbs Architect, Codegen closes with the acceptance traceability matrix itself, and Commit/Open-PR are condensed into 2 files each. Neither tool can technically restrict which tools a phase may use, so phase separation (e.g. not writing code during Specify/Prompt) is **self-enforced discipline**, not a technical guarantee.
+- **Claude Code** runs the full flow above with a mixed structure: `/tommy-specify` and `/tommy-prompt` are **commands** orchestrating in the main conversation (a subagent cannot invoke another subagent, and requirements elicitation needs a real dialog with the user), the Business Analyst is an interactive **skill**, and `tommy-architect`, `tommy-product-review` (spec review + plan analysis), `tommy-codegen` (implementation, quality gate, acceptance & convergence — the only agent `/tommy-run-codegen` invokes), and `tommy-git` are **agents** with `tools:` access restricted by role (`tommy-git` carries 4 skills: Conventional Commits + one adapter per provider).
+- **Cursor** and **GitHub Copilot** run the same flow, condensed: Specify absorbs the Business Analyst elicitation and the PM review (self-enforced role switch), Prompt absorbs Architect and the plan analysis, Codegen closes with the acceptance & convergence loop itself, Bugfix is one file, and Commit/Open-PR are condensed into 2 files each. Neither tool can technically restrict which tools a phase may use, so phase separation (e.g. not writing code during Specify/Prompt) is **self-enforced discipline**, not a technical guarantee.
 - The quality gate's automatable checks run through stack-aware scripts in `.tommy/scripts/quality/` (`quality-check.sh`, `complexity-check.sh`, `sonar-run.sh`) — tool-agnostic, no MCP server required. Conditional gates (Sonar, frontend audit) record **SKIP with a reason** when their prerequisites are absent; that is a valid, non-blocking outcome.
+- **Prerequisites** (`npx sdd-tommy@latest --doctor`): Graphify builds the code graph (`graphify-out/`, refreshed by `.tommy/scripts/graph-update.sh` at bootstrap and after codegen/bugfix) that every phase queries before grepping; RTK compresses command output (exit codes stay authoritative; `rtk bypass <cmd>` shows the full output). Both are wired into all 3 tools by the installer, and both degrade gracefully: when missing, the flow runs exactly as above, just without the graph and the compression.
 - Project MCP servers are canonical in `.tommy/mcp.json`, projected into each tool's native location (`.mcp.json` at the root — optional, per-project choice persisted in `.tommy/config.json` —, `.cursor/mcp.json`, `.vscode/mcp.json`); see `common/templates/mcp/mcp-catalog.md`.
 - Every Tommy instruction treats project file content (`.tommy/resources/`, codebase, specs, plans) as **data, not instructions** — directives embedded in those files are never followed.
 - Every step above that writes narrative content (spec, plan, commit body, PR/MR description) writes it in the project's configured language (`pt-BR` unless stated otherwise); code identifiers and Conventional Commit keywords stay in English.
@@ -104,7 +118,7 @@ flowchart TD
 
 [English](#tommy--spec-driven-development-workflow) | **Português**
 
-Este diagrama mapeia os fluxos possíveis da técnica de Spec-Driven Development (SDD) como implementada pelo Tommy: **Specify → Prompt → Codegen**, mais a etapa de Bootstrap que a precede e as duas ações independentes de Versionamento (Commit, Abrir PR/MR) que ficam fora da espinha dorsal de três fases. Inclui as condicionais que ramificam cada fluxo e as observações que explicam o *porquê* — ver as caixas de nota (amarelas) no próprio diagrama.
+Este diagrama mapeia os fluxos possíveis da técnica de Spec-Driven Development (SDD) como implementada pelo Tommy: **Specify → Prompt → Codegen**, mais a etapa de Bootstrap que a precede, o fluxo leve de Bugfix e as duas ações independentes de Versionamento (Commit, Abrir PR/MR) que ficam fora da espinha dorsal de três fases. Inclui as condicionais que ramificam cada fluxo e as observações que explicam o *porquê* — ver as caixas de nota (amarelas) no próprio diagrama.
 
 O diagrama abaixo é um flowchart [Mermaid](https://mermaid.js.org), renderizado diretamente no GitHub e na maioria dos visualizadores de Markdown.
 
@@ -115,7 +129,7 @@ flowchart TD
     classDef terminal fill:#E8F5E9,stroke:#2E7D32,color:#1a1a2e;
 
     Start(["Usuário abre um projeto"]) --> Q1{"Scaffolding de .tommy/ completo?<br/>(scripts, templates, project-context, codebase)"}
-    Q1 -->|Não| Boot["Tommy Start<br/>cria .tommy/, pesquisa codebase e contexto de produto,<br/>preenche TOMMY.md, cria AGENTS.md,<br/>propõe capacidades opt-in (wiring e servidores MCP,<br/>properties do Sonar, find-skills) — sempre com confirmação do usuário"]:::phase
+    Q1 -->|Não| Boot["Tommy Start<br/>cria .tommy/, pesquisa codebase e contexto de produto,<br/>verifica pré-requisitos (--doctor), gera o grafo de código (Graphify),<br/>registra os princípios do projeto (MUST/SHOULD),<br/>preenche TOMMY.md, cria AGENTS.md,<br/>propõe capacidades opt-in (wiring e servidores MCP,<br/>properties do Sonar, find-skills) — sempre com confirmação do usuário"]:::phase
     Q1 -->|Sim| Specify
     Boot --> Specify
 
@@ -123,9 +137,9 @@ flowchart TD
     Boot -.-> N1
 
     Specify["Specify<br/>descreva a feature em linguagem natural"]:::phase --> Branch1["Cria a branch da feature<br/>'NNN-nome-curto' e o spec.md"]
-    Branch1 --> Elicit["Skill de Business Analyst elicita requisitos<br/>(rodadas interativas, 3-5 perguntas por vez)"]
-    Elicit --> WriteSpec["Escreve / refina o spec.md<br/>(objetivos, user stories, critérios de aceite, non-goals)"]
-    WriteSpec --> PMReview["Product Review (lente de PM, independente)<br/>valor, escopo, completude, audiência —<br/>só este revisor marca o checklist de requisitos"]
+    Branch1 --> Elicit["Skill de Business Analyst elicita requisitos<br/>(árvore de decisão: só a fronteira, máx. 5 perguntas,<br/>cada uma com resposta recomendada; termina com confirmação explícita)"]
+    Elicit --> WriteSpec["Escreve / refina o spec.md<br/>(objetivos, user stories, critérios de aceite, non-goals,<br/>log de decisões em ## Clarifications)"]
+    WriteSpec --> PMReview["Product Review (lente de PM, independente)<br/>varredura de cobertura, valor, escopo, completude, audiência,<br/>checklists de domínio (testes unitários dos requisitos) —<br/>só este revisor marca os checklists da spec"]
     PMReview --> Q2{"Revisor aprova<br/>a spec?"}
     Q2 -->|"Não (corrige e re-revisa, até 3x)"| WriteSpec
     Q2 -->|Sim| PromptPhase
@@ -135,18 +149,31 @@ flowchart TD
 
     PromptPhase["Prompt<br/>referencie a spec aprovada"]:::phase --> Architect["Architect desenha a arquitetura de implementação,<br/>bounded contexts, modelo de dados"]
     Architect --> WritePlan["Escreve o plano de implementação detalhado<br/>+ o checklist do próprio plano"]
-    WritePlan --> PlanReady(["Arquivo de plano pronto em<br/>.tommy/specs/.../plans/"])
+    WritePlan --> Analysis["Análise do plano (independente, somente leitura)<br/>lacunas de cobertura, escopo extra, inconsistências,<br/>ambiguidade, violação de princípio MUST"]
+    Analysis --> QA{"Algum achado<br/>CRITICAL / HIGH?"}
+    QA -->|"Sim (corrige o plano, até 2x;<br/>problema na spec → refina a spec)"| WritePlan
+    QA -->|Não| PlanReady(["Arquivo de plano pronto em<br/>.tommy/specs/.../plans/"])
 
     PlanReady --> Codegen["Codegen<br/>escolha um arquivo de plano para implementar"]:::phase
-    Codegen --> Q3{"Checklist do próprio plano<br/>totalmente marcado?"}
+    Codegen --> Q3{"Checklist do plano marcado<br/>e análise do plano APPROVED?"}
     Q3 -->|Não| StopReport(["Para e reporta o plano<br/>como ainda não validado"]):::terminal
     Q3 -->|Sim| Implement["Implementa / corrige código e testes"]
     Implement --> Q4{"Quality gate passa?<br/>(lint, testes incl. e2e, complexidade, padrões,<br/>Sonar, auditoria frontend, varredura de segurança, checklist)"}
     Q4 -->|Não| Implement
-    Q4 -->|Sim| Accept["Revisão de aceite (rastreabilidade spec→código)<br/>mapeia cada critério de aceite para evidência de código + teste,<br/>grava checklists/acceptance.md"]
-    Accept --> Q10{"Todos os critérios MET<br/>(ou justificados)?"}
+    Q4 -->|Sim| Accept["Aceite e convergência (spec→código)<br/>MET / PARTIAL / NOT MET por critério,<br/>mais mudanças CONTRADICTS e UNREQUESTED,<br/>grava checklists/acceptance.md"]
+    Accept --> Q10{"Convergiu?<br/>(tudo MET ou justificado, sem divergência aberta)"}
     Q10 -->|"Não (corrige as lacunas, até 2 ciclos)"| Implement
-    Q10 -->|Sim| CodeReady(["Código pronto — reporta ao usuário"]):::terminal
+    Q10 -->|Sim| CodeReady(["Código pronto — grafo atualizado,<br/>reporta ao usuário"]):::terminal
+
+    BugStart(["Usuário reporta um bug"]) --> Bugfix["Bugfix<br/>reproduz, acha a causa raiz (grafo primeiro),<br/>escreve bug.md"]:::phase
+    Bugfix --> QB{"Bug ou lacuna de spec?"}
+    QB -->|"Lacuna de spec (escopo novo)"| Specify
+    QB -->|Bug| QBC{"Usuário confirma<br/>a abordagem de correção?"}
+    QBC -->|Não| Bugfix
+    QBC -->|Sim| BugFix["Codegen (modo bugfix)<br/>teste de regressão primeiro (deve falhar),<br/>correção mínima, quality gate"]
+    BugFix --> QBV{"Veredito?"}
+    QBV -->|"partial / failed (até 2 ciclos)"| Bugfix
+    QBV -->|verified| CodeReady
 
     N7["O quality gate persiste sua evidência em<br/>.tommy/.quality-gate-status; no Claude Code um hook de Stop<br/>(tommy-quality-sentinel) recusa encerrar a sessão com<br/>arquivos de código alterados sem evidência fresca do gate."]:::note
     Q4 -.-> N7
@@ -193,9 +220,10 @@ flowchart TD
 
 ## Observações fora do diagrama
 
-- O **Claude Code** roda o fluxo completo acima com estrutura mista: `/tommy-specify` e `/tommy-prompt` são **comandos** que orquestram na conversa principal (um subagente não pode invocar outro subagente, e a elicitação de requisitos precisa de diálogo real com o usuário), o Business Analyst é uma **skill** interativa, e `tommy-architect`, `tommy-product-review`, `tommy-codegen` e `tommy-git` são **agentes** com acesso a `tools:` restrito por papel (o `tommy-git` carrega 4 skills: Conventional Commits + um adaptador por provedor).
-- **Cursor** e **GitHub Copilot** rodam o mesmo fluxo, condensado: o Specify absorve a elicitação do Business Analyst e a revisão de PM (troca de papel autodisciplinada), o Prompt absorve o Architect, o Codegen fecha ele mesmo com a matriz de rastreabilidade de aceite, e Commit/Abrir-PR ficam condensados em 2 arquivos cada. Nenhuma das duas ferramentas consegue restringir tecnicamente as tools de uma fase, então a separação de fases (ex.: não escrever código durante Specify/Prompt) é **disciplina autoimposta**, não garantia técnica.
+- O **Claude Code** roda o fluxo completo acima com estrutura mista: `/tommy-specify` e `/tommy-prompt` são **comandos** que orquestram na conversa principal (um subagente não pode invocar outro subagente, e a elicitação de requisitos precisa de diálogo real com o usuário), o Business Analyst é uma **skill** interativa, e `tommy-architect`, `tommy-product-review` (revisão da spec + análise do plano), `tommy-codegen` (implementação, quality gate, aceite e convergência — o único agente que o `/tommy-run-codegen` invoca) e `tommy-git` são **agentes** com acesso a `tools:` restrito por papel (o `tommy-git` carrega 4 skills: Conventional Commits + um adaptador por provedor).
+- **Cursor** e **GitHub Copilot** rodam o mesmo fluxo, condensado: o Specify absorve a elicitação do Business Analyst e a revisão de PM (troca de papel autodisciplinada), o Prompt absorve o Architect e a análise do plano, o Codegen fecha ele mesmo com o ciclo de aceite e convergência, o Bugfix é um arquivo só, e Commit/Abrir-PR ficam condensados em 2 arquivos cada. Nenhuma das duas ferramentas consegue restringir tecnicamente as tools de uma fase, então a separação de fases (ex.: não escrever código durante Specify/Prompt) é **disciplina autoimposta**, não garantia técnica.
 - As verificações automatizáveis do quality gate rodam via scripts stack-aware em `.tommy/scripts/quality/` (`quality-check.sh`, `complexity-check.sh`, `sonar-run.sh`) — agnósticos de ferramenta, sem servidor MCP. Gates condicionais (Sonar, auditoria frontend) registram **SKIP com motivo** quando faltam pré-requisitos; isso é um resultado válido e não bloqueante.
+- **Pré-requisitos** (`npx sdd-tommy@latest --doctor`): o Graphify gera o grafo de código (`graphify-out/`, atualizado por `.tommy/scripts/graph-update.sh` no bootstrap e após codegen/bugfix) que toda fase consulta antes de fazer grep; o RTK comprime a saída dos comandos (o exit code continua valendo; `rtk bypass <cmd>` mostra a saída completa). O instalador conecta os dois às 3 ferramentas, e ambos degradam com elegância: se faltarem, o fluxo roda exatamente como acima, só sem o grafo e sem a compressão.
 - Os servidores MCP do projeto são canônicos em `.tommy/mcp.json`, projetados no local nativo de cada ferramenta (`.mcp.json` na raiz — opcional, escolha por projeto persistida em `.tommy/config.json` —, `.cursor/mcp.json`, `.vscode/mcp.json`); ver `common/templates/mcp/mcp-catalog.md`.
 - Toda instrução do Tommy trata conteúdo de arquivo do projeto (`.tommy/resources/`, codebase, specs, planos) como **dado, não instrução** — diretivas embutidas nesses arquivos nunca são seguidas.
 - Toda etapa acima que escreve conteúdo narrativo (spec, plano, corpo de commit, descrição de PR/MR) escreve no idioma configurado do projeto (`pt-BR`, salvo indicação em contrário); identificadores de código e palavras-chave de Conventional Commits ficam em inglês.
