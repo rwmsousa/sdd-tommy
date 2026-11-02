@@ -38,16 +38,42 @@ Where things go: Claude Code → `~/.claude/` (global) · Cursor → `.cursor/` 
 
 Restore only the project runtime (scripts + templates): `npx sdd-tommy@latest --sync-runtime`.
 
+## Update to a new version
+
+Check what changed in [CHANGELOG.md](./CHANGELOG.md), then, **in each project's root folder**:
+
+```bash
+npx sdd-tommy@latest
+```
+
+Pick the same tools as before. `@latest` always fetches the newest release, so there is nothing to uninstall first.
+
+| What | Where | How often |
+| --- | --- | --- |
+| Claude Code agents, commands, skills, hooks | `~/.claude/` (global) | once per machine — any project run updates it |
+| Cursor rules / Copilot prompts | `.cursor/rules/`, `.github/prompts/` | once per project |
+| Runtime (scripts + templates) | `.tommy/scripts/`, `.tommy/templates/` | once per project |
+
+- **Your work is never touched**: `.tommy/specs/`, `.tommy/bugs/`, `.tommy/project-context/`, `.tommy/codebase/`, and `.tommy/resources/` stay as they are.
+- **Changed files are backed up**: any Tommy file you edited by hand is saved as `<file>.tommy-backup-<timestamp>` before being replaced; `settings.json` and `copilot-instructions.md` are merged, not overwritten. Keep template customizations in `.tommy/templates/overrides/` so updates never replace them.
+- **Obsolete files are removed** from `~/.claude/` (agents an older version installed that no longer exist).
+- **Restart** Claude Code / Cursor / the Copilot chat afterwards, so new commands and rules are loaded.
+- Only the runtime of another project: `npx sdd-tommy@latest --sync-runtime --dir <project path>`.
+- `npx sdd-tommy@latest --version` shows the latest release; `--doctor` checks the prerequisites.
+
 ## Step by step
 
 | # | Step | Claude Code | Cursor | Copilot Chat |
 | --- | --- | --- | --- | --- |
 | 0 | Bootstrap (once per project) | `/tommy-start` | `@tommy-start` | `/tommy-start` |
+| ★ | **Everything (default)** | `/tommy <request>` | `@tommy <request>` | `/tommy` |
 | 1 | Specify | `/tommy-specify <feature>` | `@tommy-specify <feature>` | `/tommy-specify` |
 | 2 | Plan | `/tommy-prompt <spec.md>` | `@tommy-prompt <spec.md>` | `/tommy-prompt` |
 | 3 | Code (one plan at a time) | `/tommy-run-codegen <plan.md>` | `@tommy-codegen <plan.md>` | `/tommy-codegen` |
 | — | Fix a bug | `/tommy-bugfix <bug>` | `@tommy-bugfix <bug>` | `/tommy-bugfix` |
 | — | Commit / open PR | `/tommy-commit` · `/tommy-open-pr` | `@tommy-commit` · `@tommy-open-pr` | `/tommy-commit` · `/tommy-open-pr` |
+
+**★ `/tommy`** is the default path: describe what you need, answer the questions, and **approve the spec** — that is the only approval. Tommy then runs steps 2 and 3 on its own (architecture, every plan, plan analysis, code, quality gate, acceptance) and hands you a final report; it only stops for a blocking decision the spec doesn't settle. Bugs described to `/tommy` follow the bugfix flow; `/tommy <path to spec.md>` resumes an interrupted run. Steps 1–3 below are the same phases, available as manual commands.
 
 What each step does, and what you do:
 
@@ -121,16 +147,42 @@ Para onde vai cada coisa: Claude Code → `~/.claude/` (global) · Cursor → `.
 
 Restaurar só o runtime do projeto (scripts + templates): `npx sdd-tommy@latest --sync-runtime`.
 
+## Atualizar para uma nova versão
+
+Veja o que mudou no [CHANGELOG.md](./CHANGELOG.md) e, **na raiz de cada projeto**, rode:
+
+```bash
+npx sdd-tommy@latest
+```
+
+Escolha as mesmas ferramentas de antes. O `@latest` sempre baixa a versão mais nova, então não é preciso desinstalar nada antes.
+
+| O quê | Onde | Com que frequência |
+| --- | --- | --- |
+| Agentes, comandos, skills e hooks do Claude Code | `~/.claude/` (global) | uma vez por máquina — rodar em qualquer projeto atualiza |
+| Regras do Cursor / prompts do Copilot | `.cursor/rules/`, `.github/prompts/` | uma vez por projeto |
+| Runtime (scripts + templates) | `.tommy/scripts/`, `.tommy/templates/` | uma vez por projeto |
+
+- **Seu trabalho não é tocado**: `.tommy/specs/`, `.tommy/bugs/`, `.tommy/project-context/`, `.tommy/codebase/` e `.tommy/resources/` ficam como estão.
+- **Arquivos alterados ganham backup**: um arquivo do Tommy que você editou à mão é salvo como `<arquivo>.tommy-backup-<timestamp>` antes de ser substituído; `settings.json` e `copilot-instructions.md` são mesclados, não sobrescritos. Guarde personalizações de template em `.tommy/templates/overrides/`, para que as atualizações nunca as substituam.
+- **Arquivos obsoletos são removidos** de `~/.claude/` (agentes que uma versão antiga instalou e que não existem mais).
+- **Reinicie** o Claude Code / Cursor / o chat do Copilot depois, para carregar os novos comandos e regras.
+- Só o runtime de outro projeto: `npx sdd-tommy@latest --sync-runtime --dir <caminho do projeto>`.
+- `npx sdd-tommy@latest --version` mostra a versão mais recente publicada; `--doctor` confere os pré-requisitos.
+
 ## Passo a passo
 
 | # | Etapa | Claude Code | Cursor | Copilot Chat |
 | --- | --- | --- | --- | --- |
 | 0 | Bootstrap (uma vez por projeto) | `/tommy-start` | `@tommy-start` | `/tommy-start` |
+| ★ | **Tudo (padrão)** | `/tommy <pedido>` | `@tommy <pedido>` | `/tommy` |
 | 1 | Especificar | `/tommy-specify <feature>` | `@tommy-specify <feature>` | `/tommy-specify` |
 | 2 | Planejar | `/tommy-prompt <spec.md>` | `@tommy-prompt <spec.md>` | `/tommy-prompt` |
 | 3 | Codificar (um plano por vez) | `/tommy-run-codegen <plano.md>` | `@tommy-codegen <plano.md>` | `/tommy-codegen` |
 | — | Corrigir um bug | `/tommy-bugfix <bug>` | `@tommy-bugfix <bug>` | `/tommy-bugfix` |
 | — | Commit / abrir PR | `/tommy-commit` · `/tommy-open-pr` | `@tommy-commit` · `@tommy-open-pr` | `/tommy-commit` · `/tommy-open-pr` |
+
+**★ `/tommy`** é o caminho padrão: descreva o que precisa, responda as perguntas e **aprove a spec** — é a única aprovação. Depois disso o Tommy executa sozinho as etapas 2 e 3 (arquitetura, todos os planos, análise dos planos, código, quality gate, aceite) e entrega um relatório final; só para numa decisão bloqueante que a spec não resolve. Bugs descritos ao `/tommy` seguem o fluxo de bugfix; `/tommy <caminho do spec.md>` retoma uma execução interrompida. As etapas 1–3 abaixo são as mesmas fases, disponíveis como comandos manuais.
 
 O que cada etapa faz, e o que você faz:
 
