@@ -2,108 +2,79 @@
 
 **English** | [Português](#tommy-pt-br)
 
-Spec-driven development for **Claude Code**, **Cursor**, and **GitHub Copilot**: every feature goes **Specify → Prompt → Codegen**, every bug goes **Assess → Fix → Verify**, each step with its own quality gate.
+Spec-driven development for **Claude Code**, **Cursor**, and **GitHub Copilot**. Describe what you need, answer a few questions, approve the spec — Tommy plans, writes the code and tests, and checks the result against the spec.
 
-## Prerequisites
+## Requirements
 
-| Tool | Why | Installed by |
-| --- | --- | --- |
-| Node.js ≥ 18.20 | runs the installer | you |
-| git, bash, jq | branches, `.tommy/scripts`, quality-gate hook | you (Windows: Git Bash or WSL) |
-| [uv](https://docs.astral.sh/uv/) | installs Graphify | the Tommy installer |
-| [Graphify](https://github.com/Graphify-Labs/graphify) (`graphifyy`) | code knowledge graph — agents query it before grepping | the Tommy installer |
-| [RTK](https://github.com/rtk-ai/rtk) | compresses command output before it reaches the agent | the Tommy installer |
+- Node.js ≥ 18.20, git, bash, jq (Windows: Git Bash or WSL).
+- Optional, offered by the installer: [uv](https://docs.astral.sh/uv/), [Graphify](https://github.com/Graphify-Labs/graphify) (code graph) and [RTK](https://github.com/rtk-ai/rtk) (compressed command output). Tommy works without them.
 
-Check your machine at any time:
-
-```bash
-npx sdd-tommy@latest --doctor
-```
-
-If uv/Graphify/RTK can't be installed (no permission, Windows, offline), Tommy still works — without the code graph and output compression.
+Check your machine: `npx sdd-tommy@latest --doctor`
 
 ## Install
 
-Run it in your project's root folder:
+In your project's root folder:
 
 ```bash
 npx sdd-tommy@latest
 ```
 
-1. Pick the tools (Claude Code, Cursor, Copilot — more than one is fine).
-2. Confirm the project folder.
-3. Confirm the prerequisites step (installs uv, Graphify, RTK in `~/.local/bin` and wires them into the selected tools).
+Pick the tools you use (more than one is fine) and confirm. Existing configs are merged and backed up, never overwritten.
 
-Where things go: Claude Code → `~/.claude/` (global) · Cursor → `.cursor/` · Copilot → `.github/` · shared runtime → `.tommy/` (per project). Existing configs are merged, never overwritten, and backed up before any change. Running it again updates everything safely.
+## Use
 
-Restore only the project runtime (scripts + templates): `npx sdd-tommy@latest --sync-runtime`.
-
-## Update to a new version
-
-Check what changed in [CHANGELOG.md](./CHANGELOG.md), then, **in each project's root folder**:
-
-```bash
-npx sdd-tommy@latest
-```
-
-Pick the same tools as before. `@latest` always fetches the newest release, so there is nothing to uninstall first.
-
-| What | Where | How often |
-| --- | --- | --- |
-| Claude Code agents, commands, skills, hooks | `~/.claude/` (global) | once per machine — any project run updates it |
-| Cursor rules / Copilot prompts | `.cursor/rules/`, `.github/prompts/` | once per project |
-| Runtime (scripts + templates) | `.tommy/scripts/`, `.tommy/templates/` | once per project |
-
-- **Your work is never touched**: `.tommy/specs/`, `.tommy/bugs/`, `.tommy/project-context/`, `.tommy/codebase/`, and `.tommy/resources/` stay as they are.
-- **Changed files are backed up**: any Tommy file you edited by hand is saved as `<file>.tommy-backup-<timestamp>` before being replaced; `settings.json` and `copilot-instructions.md` are merged, not overwritten. Keep template customizations in `.tommy/templates/overrides/` so updates never replace them.
-- **Obsolete files are removed** from `~/.claude/` (agents an older version installed that no longer exist).
-- **Restart** Claude Code / Cursor / the Copilot chat afterwards, so new commands and rules are loaded.
-- Only the runtime of another project: `npx sdd-tommy@latest --sync-runtime --dir <project path>`.
-- `npx sdd-tommy@latest --version` shows the latest release; `--doctor` checks the prerequisites.
-
-## Step by step
-
-| # | Step | Claude Code | Cursor | Copilot Chat |
-| --- | --- | --- | --- | --- |
-| 0 | Bootstrap (once per project) | `/tommy-start` | `@tommy-start` | `/tommy-start` |
-| ★ | **Everything (default)** | `/tommy <request>` | `@tommy <request>` | `/tommy` |
-| 1 | Specify | `/tommy-specify <feature>` | `@tommy-specify <feature>` | `/tommy-specify` |
-| 2 | Plan | `/tommy-prompt <spec.md>` | `@tommy-prompt <spec.md>` | `/tommy-prompt` |
-| 3 | Code (one plan at a time) | `/tommy-run-codegen <plan.md>` | `@tommy-codegen <plan.md>` | `/tommy-codegen` |
-| — | Fix a bug | `/tommy-bugfix <bug>` | `@tommy-bugfix <bug>` | `/tommy-bugfix` |
-| — | Commit / open PR | `/tommy-commit` · `/tommy-open-pr` | `@tommy-commit` · `@tommy-open-pr` | `/tommy-commit` · `/tommy-open-pr` |
-
-**★ `/tommy`** is the default path: describe what you need, answer the questions, and **approve the spec** — that is the only approval. Tommy then runs steps 2 and 3 on its own (architecture, every plan, plan analysis, code, quality gate, acceptance) and hands you a final report; it only stops for a blocking decision the spec doesn't settle. Bugs described to `/tommy` follow the bugfix flow; `/tommy <path to spec.md>` resumes an interrupted run. Steps 1–3 below are the same phases, available as manual commands.
-
-What each step does, and what you do:
-
-0. **Bootstrap** — checks prerequisites, builds the code graph, maps the codebase into `.tommy/`, and records the project principles (MUST/SHOULD). **You:** answer the `[NEEDS CONFIRMATION]` questions and confirm the principles.
-1. **Specify** — asks questions in rounds (each with a recommended answer — reply "yes" to accept), writes `.tommy/specs/NNN-feature/spec.md` with a decision log, and an independent review marks the checklists. **You:** answer the questions and read the spec. To refine an existing spec later: `/tommy-specify <path to spec.md>`.
-2. **Plan** — designs the architecture and writes `plans/*.md`, mapping every requirement to a step; an independent analysis blocks the plan if a requirement is uncovered or a MUST principle is broken. **You:** review blocking decisions.
-3. **Code** — implements the plan, writes tests, runs the quality gate (lint, tests, complexity, patterns, Sonar, frontend audit, security), then checks the code against the spec (`checklists/acceptance.md`) until it converges. **You:** review the code and approve or reject any change nobody asked for.
-- **Bugfix** — reproduces the bug and finds the root cause, asks you to confirm the fix, writes a failing regression test first, fixes, verifies (`verified` / `partial` / `failed`).
-- **Commit / PR** — only when you ask: Conventional Commits, provider detected automatically (GitHub, GitLab, Azure DevOps).
-
-## Project files
+**1. Once per project** — map the project into `.tommy/`:
 
 ```
-.tommy/
-├── TOMMY.md, project-context/, codebase/   project knowledge (bootstrap)
-├── specs/NNN-feature/                       spec.md, plans/, checklists/, architecture/
-├── bugs/NNN-bug/                            bug.md, quality-report.md
-├── scripts/, templates/                     runtime (customize templates in templates/overrides/)
-└── mcp.json, config.json                    project MCP servers
-AGENTS.md                                    short pointer for the agents (project root)
-graphify-out/                                code graph (git-ignored locally)
+/tommy-start
 ```
+
+**2. For each feature or bug** — say what you need:
+
+```
+/tommy add password reset by email
+```
+
+- Answer the questions. Each comes with a recommended answer — reply "yes" to accept it.
+- Read the spec and **approve it**. That is the only approval.
+- Tommy then runs on its own: architecture, plans, code, tests, quality gate, and a final check against the spec. It only stops if it hits a decision the spec doesn't answer.
+- At the end you get a report with the files changed, the test results, and anything to verify manually.
+
+**3. When you're happy with the result**:
+
+```
+/tommy-commit
+/tommy-open-pr
+```
+
+Tommy never commits or pushes on its own.
+
+| | Claude Code | Cursor | Copilot Chat |
+| --- | --- | --- | --- |
+| Set up the project | `/tommy-start` | `@tommy-start` | `/tommy-start` |
+| Feature or bug | `/tommy <request>` | `@tommy <request>` | `/tommy <request>` |
+| Resume an interrupted run | `/tommy <path to spec.md>` | `@tommy <path to spec.md>` | `/tommy <path to spec.md>` |
+| Commit / open PR | `/tommy-commit` · `/tommy-open-pr` | `@tommy-commit` · `@tommy-open-pr` | `/tommy-commit` · `/tommy-open-pr` |
+
+Prefer to run one phase at a time? The manual commands are still there: `tommy-specify` → `tommy-prompt` → `tommy-run-codegen` (`tommy-codegen` in Cursor/Copilot), and `tommy-bugfix`.
 
 ## Tips
 
-- Give the Specify step as much detail as you can; the spec drives everything after it.
-- Use one chat per plan in the Code step to keep the context window clean.
-- Copilot in VS Code: start a new chat after each code generation.
+- The more detail in your request, the fewer questions you get.
+- Everything Tommy produces lives in `.tommy/specs/<feature>/` (spec, plans, checklists) — review it there.
+- Copilot in VS Code: start a new chat for each request.
 
-More: [WORKFLOW.md](./WORKFLOW.md) (flow diagram) · [claude-code/](./claude-code/README.md) · [cursor/](./cursor/README.md) · [github-copilot/](./github-copilot/README.md) · [CHANGELOG.md](./CHANGELOG.md)
+## Update
+
+When a new version comes out ([CHANGELOG](./CHANGELOG.md)), run the installer again in each project and pick the same tools:
+
+```bash
+npx sdd-tommy@latest
+```
+
+Then restart your tool. Your specs, bugs, and project knowledge in `.tommy/` are not touched; any Tommy file you edited is saved as `<file>.tommy-backup-<timestamp>` before being replaced (keep template customizations in `.tommy/templates/overrides/`). Claude Code is installed globally (`~/.claude/`), so one run updates it for every project.
+
+More: [WORKFLOW.md](./WORKFLOW.md) (how the flow works) · [claude-code/](./claude-code/README.md) · [cursor/](./cursor/README.md) · [github-copilot/](./github-copilot/README.md)
 
 ---
 
@@ -111,105 +82,76 @@ More: [WORKFLOW.md](./WORKFLOW.md) (flow diagram) · [claude-code/](./claude-cod
 
 [English](#tommy) | **Português**
 
-Desenvolvimento orientado a especificação para **Claude Code**, **Cursor** e **GitHub Copilot**: toda feature passa por **Specify → Prompt → Codegen**, todo bug por **Avaliar → Corrigir → Verificar**, cada etapa com seu próprio quality gate.
+Desenvolvimento orientado a especificação para **Claude Code**, **Cursor** e **GitHub Copilot**. Descreva o que precisa, responda algumas perguntas, aprove a spec — o Tommy planeja, escreve o código e os testes e confere o resultado contra a spec.
 
-## Pré-requisitos
+## Requisitos
 
-| Ferramenta | Para quê | Quem instala |
-| --- | --- | --- |
-| Node.js ≥ 18.20 | roda o instalador | você |
-| git, bash, jq | branches, `.tommy/scripts`, hook do quality gate | você (Windows: Git Bash ou WSL) |
-| [uv](https://docs.astral.sh/uv/) | instala o Graphify | o instalador do Tommy |
-| [Graphify](https://github.com/Graphify-Labs/graphify) (`graphifyy`) | grafo de conhecimento do código — os agentes consultam antes de fazer grep | o instalador do Tommy |
-| [RTK](https://github.com/rtk-ai/rtk) | comprime a saída dos comandos antes de chegar ao agente | o instalador do Tommy |
+- Node.js ≥ 18.20, git, bash, jq (Windows: Git Bash ou WSL).
+- Opcionais, oferecidos pelo instalador: [uv](https://docs.astral.sh/uv/), [Graphify](https://github.com/Graphify-Labs/graphify) (grafo de código) e [RTK](https://github.com/rtk-ai/rtk) (saída de comandos comprimida). O Tommy funciona sem eles.
 
-Verifique sua máquina a qualquer momento:
-
-```bash
-npx sdd-tommy@latest --doctor
-```
-
-Se uv/Graphify/RTK não puderem ser instalados (sem permissão, Windows, offline), o Tommy continua funcionando — só sem o grafo de código e sem a compressão de saída.
+Confira sua máquina: `npx sdd-tommy@latest --doctor`
 
 ## Instalação
 
-Rode na raiz do seu projeto:
+Na raiz do seu projeto:
 
 ```bash
 npx sdd-tommy@latest
 ```
 
-1. Escolha as ferramentas (Claude Code, Cursor, Copilot — pode mais de uma).
-2. Confirme a pasta do projeto.
-3. Confirme a etapa de pré-requisitos (instala uv, Graphify e RTK em `~/.local/bin` e os conecta às ferramentas escolhidas).
+Escolha as ferramentas que você usa (pode mais de uma) e confirme. Configurações existentes são mescladas e ganham backup, nunca são sobrescritas.
 
-Para onde vai cada coisa: Claude Code → `~/.claude/` (global) · Cursor → `.cursor/` · Copilot → `.github/` · runtime compartilhado → `.tommy/` (por projeto). Configurações existentes são mescladas, nunca sobrescritas, com backup antes de qualquer mudança. Rodar de novo atualiza tudo com segurança.
+## Uso
 
-Restaurar só o runtime do projeto (scripts + templates): `npx sdd-tommy@latest --sync-runtime`.
-
-## Atualizar para uma nova versão
-
-Veja o que mudou no [CHANGELOG.md](./CHANGELOG.md) e, **na raiz de cada projeto**, rode:
-
-```bash
-npx sdd-tommy@latest
-```
-
-Escolha as mesmas ferramentas de antes. O `@latest` sempre baixa a versão mais nova, então não é preciso desinstalar nada antes.
-
-| O quê | Onde | Com que frequência |
-| --- | --- | --- |
-| Agentes, comandos, skills e hooks do Claude Code | `~/.claude/` (global) | uma vez por máquina — rodar em qualquer projeto atualiza |
-| Regras do Cursor / prompts do Copilot | `.cursor/rules/`, `.github/prompts/` | uma vez por projeto |
-| Runtime (scripts + templates) | `.tommy/scripts/`, `.tommy/templates/` | uma vez por projeto |
-
-- **Seu trabalho não é tocado**: `.tommy/specs/`, `.tommy/bugs/`, `.tommy/project-context/`, `.tommy/codebase/` e `.tommy/resources/` ficam como estão.
-- **Arquivos alterados ganham backup**: um arquivo do Tommy que você editou à mão é salvo como `<arquivo>.tommy-backup-<timestamp>` antes de ser substituído; `settings.json` e `copilot-instructions.md` são mesclados, não sobrescritos. Guarde personalizações de template em `.tommy/templates/overrides/`, para que as atualizações nunca as substituam.
-- **Arquivos obsoletos são removidos** de `~/.claude/` (agentes que uma versão antiga instalou e que não existem mais).
-- **Reinicie** o Claude Code / Cursor / o chat do Copilot depois, para carregar os novos comandos e regras.
-- Só o runtime de outro projeto: `npx sdd-tommy@latest --sync-runtime --dir <caminho do projeto>`.
-- `npx sdd-tommy@latest --version` mostra a versão mais recente publicada; `--doctor` confere os pré-requisitos.
-
-## Passo a passo
-
-| # | Etapa | Claude Code | Cursor | Copilot Chat |
-| --- | --- | --- | --- | --- |
-| 0 | Bootstrap (uma vez por projeto) | `/tommy-start` | `@tommy-start` | `/tommy-start` |
-| ★ | **Tudo (padrão)** | `/tommy <pedido>` | `@tommy <pedido>` | `/tommy` |
-| 1 | Especificar | `/tommy-specify <feature>` | `@tommy-specify <feature>` | `/tommy-specify` |
-| 2 | Planejar | `/tommy-prompt <spec.md>` | `@tommy-prompt <spec.md>` | `/tommy-prompt` |
-| 3 | Codificar (um plano por vez) | `/tommy-run-codegen <plano.md>` | `@tommy-codegen <plano.md>` | `/tommy-codegen` |
-| — | Corrigir um bug | `/tommy-bugfix <bug>` | `@tommy-bugfix <bug>` | `/tommy-bugfix` |
-| — | Commit / abrir PR | `/tommy-commit` · `/tommy-open-pr` | `@tommy-commit` · `@tommy-open-pr` | `/tommy-commit` · `/tommy-open-pr` |
-
-**★ `/tommy`** é o caminho padrão: descreva o que precisa, responda as perguntas e **aprove a spec** — é a única aprovação. Depois disso o Tommy executa sozinho as etapas 2 e 3 (arquitetura, todos os planos, análise dos planos, código, quality gate, aceite) e entrega um relatório final; só para numa decisão bloqueante que a spec não resolve. Bugs descritos ao `/tommy` seguem o fluxo de bugfix; `/tommy <caminho do spec.md>` retoma uma execução interrompida. As etapas 1–3 abaixo são as mesmas fases, disponíveis como comandos manuais.
-
-O que cada etapa faz, e o que você faz:
-
-0. **Bootstrap** — verifica os pré-requisitos, gera o grafo de código, mapeia o projeto em `.tommy/` e registra os princípios do projeto (MUST/SHOULD). **Você:** responde as perguntas `[NEEDS CONFIRMATION]` e confirma os princípios.
-1. **Especificar** — faz perguntas em rodadas (cada uma com resposta recomendada — responda "sim" para aceitar), escreve `.tommy/specs/NNN-feature/spec.md` com log de decisões, e uma revisão independente marca os checklists. **Você:** responde as perguntas e lê a spec. Para refinar uma spec existente depois: `/tommy-specify <caminho do spec.md>`.
-2. **Planejar** — desenha a arquitetura e escreve `plans/*.md`, ligando cada requisito a uma etapa; uma análise independente bloqueia o plano se algum requisito ficar sem cobertura ou um princípio MUST for violado. **Você:** revisa as decisões bloqueantes.
-3. **Codificar** — implementa o plano, escreve testes, roda o quality gate (lint, testes, complexidade, padrões, Sonar, auditoria de frontend, segurança) e confere o código contra a spec (`checklists/acceptance.md`) até convergir. **Você:** revisa o código e aprova ou rejeita qualquer mudança que ninguém pediu.
-- **Bugfix** — reproduz o bug e acha a causa raiz, pede sua confirmação da correção, escreve primeiro um teste de regressão que falha, corrige e verifica (`verified` / `partial` / `failed`).
-- **Commit / PR** — só quando você pede: Conventional Commits, provedor detectado automaticamente (GitHub, GitLab, Azure DevOps).
-
-## Arquivos no projeto
+**1. Uma vez por projeto** — mapeia o projeto em `.tommy/`:
 
 ```
-.tommy/
-├── TOMMY.md, project-context/, codebase/   conhecimento do projeto (bootstrap)
-├── specs/NNN-feature/                       spec.md, plans/, checklists/, architecture/
-├── bugs/NNN-bug/                            bug.md, quality-report.md
-├── scripts/, templates/                     runtime (customize templates em templates/overrides/)
-└── mcp.json, config.json                    servidores MCP do projeto
-AGENTS.md                                    ponteiro curto para os agentes (raiz do projeto)
-graphify-out/                                grafo de código (ignorado no git localmente)
+/tommy-start
 ```
+
+**2. Para cada feature ou bug** — diga o que precisa:
+
+```
+/tommy adicionar redefinição de senha por e-mail
+```
+
+- Responda as perguntas. Cada uma vem com uma resposta recomendada — responda "sim" para aceitá-la.
+- Leia a spec e **aprove**. É a única aprovação.
+- A partir daí o Tommy segue sozinho: arquitetura, planos, código, testes, quality gate e uma conferência final contra a spec. Ele só para se encontrar uma decisão que a spec não responde.
+- No fim você recebe um relatório com os arquivos alterados, o resultado dos testes e o que precisa ser verificado manualmente.
+
+**3. Quando estiver satisfeito com o resultado**:
+
+```
+/tommy-commit
+/tommy-open-pr
+```
+
+O Tommy nunca faz commit nem push por conta própria.
+
+| | Claude Code | Cursor | Copilot Chat |
+| --- | --- | --- | --- |
+| Preparar o projeto | `/tommy-start` | `@tommy-start` | `/tommy-start` |
+| Feature ou bug | `/tommy <pedido>` | `@tommy <pedido>` | `/tommy <pedido>` |
+| Retomar uma execução interrompida | `/tommy <caminho do spec.md>` | `@tommy <caminho do spec.md>` | `/tommy <caminho do spec.md>` |
+| Commit / abrir PR | `/tommy-commit` · `/tommy-open-pr` | `@tommy-commit` · `@tommy-open-pr` | `/tommy-commit` · `/tommy-open-pr` |
+
+Prefere rodar uma fase por vez? Os comandos manuais continuam disponíveis: `tommy-specify` → `tommy-prompt` → `tommy-run-codegen` (`tommy-codegen` no Cursor/Copilot), e `tommy-bugfix`.
 
 ## Dicas
 
-- Dê o máximo de detalhe na etapa Especificar; a spec guia tudo o que vem depois.
-- Use um chat por plano na etapa Codificar, para manter a janela de contexto limpa.
-- Copilot no VS Code: abra um chat novo após cada geração de código.
+- Quanto mais detalhe no pedido, menos perguntas.
+- Tudo o que o Tommy produz fica em `.tommy/specs/<feature>/` (spec, planos, checklists) — revise por lá.
+- Copilot no VS Code: abra um chat novo para cada pedido.
 
-Mais: [WORKFLOW.md](./WORKFLOW.md) (diagrama do fluxo) · [claude-code/](./claude-code/README.md) · [cursor/](./cursor/README.md) · [github-copilot/](./github-copilot/README.md) · [CHANGELOG.md](./CHANGELOG.md)
+## Atualização
+
+Quando sair uma versão nova ([CHANGELOG](./CHANGELOG.md)), rode o instalador de novo em cada projeto e escolha as mesmas ferramentas:
+
+```bash
+npx sdd-tommy@latest
+```
+
+Depois reinicie a ferramenta. Suas specs, bugs e o conhecimento do projeto em `.tommy/` não são tocados; um arquivo do Tommy que você editou é salvo como `<arquivo>.tommy-backup-<timestamp>` antes de ser substituído (guarde personalizações de template em `.tommy/templates/overrides/`). O Claude Code é instalado globalmente (`~/.claude/`), então uma execução já o atualiza para todos os projetos.
+
+Mais: [WORKFLOW.md](./WORKFLOW.md) (como o fluxo funciona) · [claude-code/](./claude-code/README.md) · [cursor/](./cursor/README.md) · [github-copilot/](./github-copilot/README.md)
