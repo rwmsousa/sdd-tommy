@@ -10,6 +10,7 @@ This folder is installed **per project**, not globally — into the target repos
     ├── tommy-specify.mdc
     ├── tommy-prompt.mdc
     ├── tommy-codegen.mdc
+    ├── tommy-bugfix.mdc
     ├── tommy-commit.mdc
     └── tommy-open-pr.mdc
 ```
@@ -27,7 +28,13 @@ Run `npx sdd-tommy@latest` at the project root and pick "Cursor" in the prompt (
 3. `@tommy-codegen` — reference one plan file at a time from step 2.
 4. When ready to version what was generated: `@tommy-commit` (one or more commits, under confirmation) and, when ready, `@tommy-open-pr` (pushes the branch and opens the PR/MR) — see "Versioning" below.
 
+Bugs in existing code: `@tommy-bugfix` — describe a bug in existing code (assess → fix → verify).
+
 The rules use `description`-based (Agent Requested) activation, so Cursor can also pull them in automatically when your request matches — you don't strictly have to type `@rule-name` every time, unlike Copilot's manual-only `/prompt-name` invocation.
+
+## Prerequisites (RTK + Graphify)
+
+When Cursor is selected, the installer (after confirmation) installs uv, Graphify and RTK and runs their official Cursor integrations: `rtk init -g --agent cursor --auto-patch` (global `preToolUse` hook in `~/.cursor/hooks.json`) and `graphify cursor install` (project rule `.cursor/rules/graphify.mdc`). The Tommy rules query the code graph (`graphify query`) before grepping and treat RTK-compressed output by its exit code (`rtk bypass <cmd>` for the full output). Check with `npx sdd-tommy@latest --doctor`.
 
 ## Versioning (commit and PR/MR)
 
@@ -40,7 +47,7 @@ Each CLI (`gh`/`glab`/`az`) is assumed already installed and authenticated local
 
 ## What's different from the Claude Code version
 
-Cursor has no concept of a subagent with restricted tool access, so the Claude Code roles (specify + business-analyst elicitation, product-review, architect, prompt, codegen) are condensed into 3 phase rules + bootstrap here — `tommy-specify` absorbs requirements elicitation **and** the independent PM review (as a deliberate, self-enforced role switch at the end of the phase), `tommy-prompt` absorbs architecture design, and `tommy-codegen` closes with the spec→code acceptance traceability matrix. Phase separation (not writing code during the spec/plan phases) is **self-enforced discipline**, not a technical guarantee — see the "Known limitation" note in `tommy-core.mdc`. Cursor's "custom modes" could in principle map to the 3 phases, but they're configured in-app rather than fully filesystem-scriptable, so they're intentionally not part of this setup.
+Cursor has no concept of a subagent with restricted tool access, so the Claude Code roles (specify + business-analyst elicitation, product-review, architect, prompt, codegen) are condensed into 3 phase rules + bugfix + bootstrap here — `tommy-specify` absorbs requirements elicitation **and** the independent PM review with the domain checklists (as a deliberate, self-enforced role switch at the end of the phase), `tommy-prompt` absorbs architecture design **and** the read-only plan analysis, and `tommy-codegen` closes with the spec→code acceptance & convergence loop. Phase separation (not writing code during the spec/plan phases) is **self-enforced discipline**, not a technical guarantee — see the "Known limitation" note in `tommy-core.mdc`. Cursor's "custom modes" could in principle map to the 3 phases, but they're configured in-app rather than fully filesystem-scriptable, so they're intentionally not part of this setup.
 
 Project MCP servers come from the canonical `.tommy/mcp.json` — Cursor reads its generated projection at `.cursor/mcp.json` (created by the installer/bootstrap as a non-destructive merge; see `common/templates/mcp/mcp-catalog.md`).
 

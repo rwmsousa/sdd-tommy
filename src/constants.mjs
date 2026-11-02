@@ -14,3 +14,5 @@ export const SRC = {
 
 export const TOMMY_COPILOT_MARKER =
   "<!-- ===== Tommy (sdd-tommy) managed section below — do not edit; re-run `npx sdd-tommy@latest` to update ===== -->";
+
+export const TOMMY_COPILOT_END_MARKER = "<!-- ===== end of Tommy (sdd-tommy) managed section ===== -->";

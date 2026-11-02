@@ -21,6 +21,9 @@
 - [ ] Edge cases are identified
 - [ ] Scope is clearly bounded
 - [ ] Dependencies and assumptions identified
+- [ ] Coverage scan: no taxonomy category relevant to this feature is left Partial or Missing (functional scope, domain/data, UX flow, non-functional, integrations, edge cases, constraints, terminology, completion signals)
+- [ ] Every decision taken with the user is recorded in `## Clarifications` and applied to the section it affects
+- [ ] No assumption was made silently — every assumption is stated as such in the spec
 
 ## Feature Readiness
 

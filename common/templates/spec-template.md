@@ -5,6 +5,18 @@
 **Status**: Draft  
 **Input**: User description: "[ORIGINAL_FEATURE_DESCRIPTION]"
 
+## Clarifications
+
+<!--
+  Decision log. Every decision taken with the user during elicitation or a later clarification pass
+  is recorded here (one bullet per accepted answer) AND applied to the section it affects
+  (requirements, stories, edge cases, success criteria). Never leave a decision only in this log.
+-->
+
+### Session [YYYY-MM-DD]
+
+- Q: [Question asked] → A: [Final answer accepted by the user]
+
 ## User Scenarios & Testing *(mandatory)*
 
 <!--

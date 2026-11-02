@@ -17,6 +17,10 @@ Verify that the generated code follows the project's existing patterns, conventi
    - Error messages are clear and actionable.
    - Custom error types are used where the project expects them.
 
+5. Verify the **Project Principles** in `.tommy/project-context/tech_restrictions_context.md`:
+   - Every MUST principle holds for the changed code — a violation fails this gate, with no "justified" escape.
+   - Every SHOULD principle holds, or the deviation is justified in the plan (or in `bug.md` for a bugfix) — an unjustified deviation fails this gate.
+
 ## Pass criteria
 
-Generated code is indistinguishable in style from existing project code.
+Generated code is indistinguishable in style from existing project code, and no MUST principle is violated.

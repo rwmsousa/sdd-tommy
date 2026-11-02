@@ -48,6 +48,8 @@
 - [ ] SonarQube analysis shows no new issues introduced by the generated code (if applicable).
 - [ ] Tests cover expected behavior and edge cases, ensuring the implementation is robust and reliable, covering validation rules defined in the prompt plan.
 - [ ] Every acceptance criterion in `spec.md` is traceable to code and test evidence (acceptance traceability matrix in `checklists/acceptance.md`).
+- [ ] Convergence reached: no criterion is NOT MET, PARTIAL, or CONTRADICTS, and every UNREQUESTED change was removed or explicitly approved by the user.
+- [ ] No project principle marked MUST in `.tommy/project-context/tech_restrictions_context.md` is violated by the change.
 
 ## Notes
 

@@ -4,6 +4,35 @@
 
 Version history of Tommy, the Spec-Driven Development framework (**Specify → Prompt → Codegen**) for Claude Code, Cursor, and GitHub Copilot. Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/); versioning follows [SemVer](https://semver.org/).
 
+## [0.3.0] — 2026-11-02
+
+Machine prerequisites (RTK + Graphify), ideas extracted from GitHub Spec Kit and Matt Pocock's `grilling` skill, a bugfix flow, and a leaner README.
+
+### Added
+
+- **Machine prerequisites**: the installer now checks node, git, bash, jq, uv, Graphify, and RTK, and — after one explicit confirmation — installs uv, Graphify (`graphifyy`, the official PyPI package) and RTK in user space (`~/.local/bin`) and runs their official integrations for each selected tool (`rtk init -g [--agent cursor | --copilot] --auto-patch`, `graphify install` / `graphify cursor install` / `graphify vscode install`). Failures (no permission, offline, Windows) become report notes; the install never aborts and the flow degrades gracefully.
+- **`npx sdd-tommy@latest --doctor`**: prints the prerequisite status and how to install whatever is missing; `/tommy-start` runs it first.
+- **Code graph** (`.tommy/scripts/graph-update.sh`): builds/refreshes `graphify-out/` locally with LLM backends disabled, excludes it from git via `.git/info/exclude`, and reports SKIP when Graphify is absent. Built at bootstrap, refreshed after codegen and bugfix; the knowledge chain now queries the graph (`graphify query/explain/path`) before grepping — always confirming in the real source.
+- **Bugfix flow** (`/tommy-bugfix`, `tommy-bugfix.mdc`, `tommy-bugfix.prompt.md`): assess (reproduction + evidence-backed root cause, bug vs. spec gap) → user confirms the fix → regression test first, minimal fix, quality gate → verdict `verified`/`partial`/`failed`. New `create-new-bug.sh` and `bug-template.md`; records live in `.tommy/bugs/`.
+- **Plan analysis** (from Spec Kit's `/analyze`): new `plan-analysis` mode in `tommy-product-review` — a read-only spec ↔ architecture ↔ plan ↔ principles check (coverage gaps, scope creep, inconsistency, ambiguity, underspecification, principle violation, terminology drift, duplication) with CRITICAL/HIGH/MEDIUM/LOW severity. CRITICAL/HIGH block codegen.
+- **Acceptance & convergence** (from Spec Kit's `/converge`): codegen's traceability now also flags **CONTRADICTS** and **UNREQUESTED** changes, generates convergence tasks, and loops (max 2 cycles) until CONVERGED.
+- **Clarifications log and refine mode** (from Spec Kit's `/clarify`): `## Clarifications` section in the spec template; `/tommy-specify <spec.md>` runs a clarification pass on an existing spec; an 11-category coverage taxonomy drives elicitation and review.
+- **Domain checklists — "unit tests for the requirements"** (from Spec Kit's `/checklist`): the reviewer generates and marks `checklists/domain-<ux|security|api|…>.md` for the domains a feature touches; `/tommy-prompt` requires them checked.
+- **Per-step traceability** (from Spec Kit's tasks): Requirements Coverage table plus `Covers` / `Depends on` / `Parallel [P]` on every plan step.
+- **Project principles MUST/SHOULD** (from Spec Kit's constitution): versioned section in `tech_restrictions_context.md`, proposed at bootstrap and always confirmed by the user; enforced by the plan analysis, Gate 4, and the convergence check.
+
+### Changed
+
+- **Requirements elicitation** (from `grilling`): decision tree asked frontier-only (a question waits for the answers it depends on), max 5 per round, each with a recommended answer that "yes" accepts; facts are looked up, never asked; explicit termination criterion (empty frontier, nothing assumed silently) and explicit confirmation before writing; glossary updates proposed during the interview. Mirrored in Cursor and Copilot.
+- **`/tommy-run-codegen` invokes only the `tommy-codegen` agent**, which now owns the whole phase (gates, implementation, quality gate, acceptance & convergence). `tommy-product-review` keeps the independent spec review and gains the plan analysis; its acceptance-review mode moved into codegen.
+- **Quality gate**: verdicts are decided by exit codes when RTK compresses output (`rtk bypass <cmd>` for the full output); Gate 4 enforces MUST principles; reports for bugs go to `.tommy/bugs/<id>/`.
+- **README** rewritten to be short and practical: prerequisites, install, a per-tool step-by-step table.
+
+### Fixed
+
+- **Copilot instructions lost other tools' sections on re-install**: Tommy's managed section in `.github/copilot-instructions.md` is now bounded by start/end markers, so sections appended below it (e.g. Graphify's) survive; a file created by an earlier version without markers no longer gets the Tommy section duplicated.
+- **`tommy-architect` could not read Context7 docs**: its tool allowlist only had the old `get-library-docs` name; `query-docs` (current Context7 server) was added, and the knowledge chain names both.
+
 ## [0.2.3] — 2026-07-28
 
 Metadata patch — the GitHub repository was renamed from `sdd-configs` to `sdd-tommy` (matching the npm package name).
@@ -120,7 +149,8 @@ First version published to npm as **`sdd-tommy`**. Consolidates the framework's 
 
 > History prior to the npm package (2026-07-17/18): the project started as a "Makuco" configuration for Claude Code and was renamed to **Tommy** before the first publish.
 
-[0.2.3]: https://github.com/rwmsousa/sdd-tommy/compare/v0.2.2...HEAD
+[0.3.0]: https://github.com/rwmsousa/sdd-tommy/compare/v0.2.3...HEAD
+[0.2.3]: https://github.com/rwmsousa/sdd-tommy/compare/v0.2.2...v0.2.3
 [0.2.2]: https://github.com/rwmsousa/sdd-tommy/compare/v0.2.1...v0.2.2
 [0.2.1]: https://github.com/rwmsousa/sdd-tommy/compare/v0.2.0...v0.2.1
 [0.2.0]: https://github.com/rwmsousa/sdd-tommy/compare/v0.1.3...v0.2.0
@@ -133,6 +163,35 @@ First version published to npm as **`sdd-tommy`**. Consolidates the framework's 
 [English](#changelog--tommy-sdd-tommy) | **Português**
 
 Histórico de versões do Tommy, o framework de Spec-Driven Development (**Specify → Prompt → Codegen**) para Claude Code, Cursor e GitHub Copilot. O formato segue [Keep a Changelog](https://keepachangelog.com/pt-BR/) e o versionamento segue [SemVer](https://semver.org/lang/pt-BR/).
+
+## [0.3.0] — 2026-11-02
+
+Pré-requisitos de máquina (RTK + Graphify), ideias extraídas do GitHub Spec Kit e da skill `grilling` do Matt Pocock, fluxo de bugfix e um README mais enxuto.
+
+### Adicionado
+
+- **Pré-requisitos de máquina**: o instalador verifica node, git, bash, jq, uv, Graphify e RTK e — após uma confirmação explícita — instala uv, Graphify (`graphifyy`, o pacote oficial no PyPI) e RTK no espaço do usuário (`~/.local/bin`) e roda as integrações oficiais de cada um para as ferramentas escolhidas (`rtk init -g [--agent cursor | --copilot] --auto-patch`, `graphify install` / `graphify cursor install` / `graphify vscode install`). Falhas (sem permissão, offline, Windows) viram notas no relatório; a instalação nunca aborta e o fluxo degrada com elegância.
+- **`npx sdd-tommy@latest --doctor`**: mostra o status dos pré-requisitos e como instalar o que falta; o `/tommy-start` roda ele primeiro.
+- **Grafo de código** (`.tommy/scripts/graph-update.sh`): gera/atualiza `graphify-out/` localmente com os backends de LLM desligados, exclui a pasta do git via `.git/info/exclude` e reporta SKIP sem o Graphify. Gerado no bootstrap, atualizado após codegen e bugfix; a knowledge chain agora consulta o grafo (`graphify query/explain/path`) antes do grep — sempre confirmando no código real.
+- **Fluxo de bugfix** (`/tommy-bugfix`, `tommy-bugfix.mdc`, `tommy-bugfix.prompt.md`): avaliação (reprodução + causa raiz com evidência, bug vs. lacuna de spec) → usuário confirma a correção → teste de regressão primeiro, correção mínima, quality gate → veredito `verified`/`partial`/`failed`. Novos `create-new-bug.sh` e `bug-template.md`; registros em `.tommy/bugs/`.
+- **Análise do plano** (do `/analyze` do Spec Kit): novo modo `plan-analysis` no `tommy-product-review` — checagem somente leitura spec ↔ arquitetura ↔ plano ↔ princípios (lacunas de cobertura, escopo extra, inconsistência, ambiguidade, subespecificação, violação de princípio, deriva de terminologia, duplicação) com severidade CRITICAL/HIGH/MEDIUM/LOW. CRITICAL/HIGH bloqueiam o codegen.
+- **Aceite e convergência** (do `/converge` do Spec Kit): a rastreabilidade do codegen agora também aponta mudanças **CONTRADICTS** e **UNREQUESTED**, gera tarefas de convergência e itera (máx. 2 ciclos) até CONVERGED.
+- **Log de decisões e modo refine** (do `/clarify` do Spec Kit): seção `## Clarifications` no template da spec; `/tommy-specify <spec.md>` faz um passe de clarificação numa spec existente; uma taxonomia de cobertura com 11 categorias guia a elicitação e a revisão.
+- **Checklists de domínio — "testes unitários dos requisitos"** (do `/checklist` do Spec Kit): o revisor gera e marca `checklists/domain-<ux|security|api|…>.md` para os domínios que a feature toca; o `/tommy-prompt` exige que estejam marcados.
+- **Rastreabilidade por etapa** (das tasks do Spec Kit): tabela de Requirements Coverage mais `Covers` / `Depends on` / `Parallel [P]` em toda etapa do plano.
+- **Princípios do projeto MUST/SHOULD** (da constitution do Spec Kit): seção versionada em `tech_restrictions_context.md`, proposta no bootstrap e sempre confirmada pelo usuário; aplicada pela análise do plano, pelo Gate 4 e pela checagem de convergência.
+
+### Alterado
+
+- **Elicitação de requisitos** (do `grilling`): árvore de decisão perguntada só pela fronteira (uma pergunta espera as respostas de que depende), máx. 5 por rodada, cada uma com resposta recomendada que "sim" aceita; fatos são pesquisados, nunca perguntados; critério de término explícito (fronteira vazia, nada assumido em silêncio) e confirmação explícita antes de escrever; atualizações de glossário propostas durante a entrevista. Espelhado no Cursor e no Copilot.
+- **O `/tommy-run-codegen` invoca só o agente `tommy-codegen`**, que agora é dono da fase inteira (gates, implementação, quality gate, aceite e convergência). O `tommy-product-review` mantém a revisão independente da spec e ganha a análise do plano; o modo acceptance-review foi para o codegen.
+- **Quality gate**: o veredito é decidido pelo exit code quando o RTK comprime a saída (`rtk bypass <cmd>` para a saída completa); o Gate 4 aplica os princípios MUST; relatórios de bug vão para `.tommy/bugs/<id>/`.
+- **README** reescrito, curto e prático: pré-requisitos, instalação e uma tabela de passo a passo por ferramenta.
+
+### Corrigido
+
+- **As instruções do Copilot perdiam seções de outras ferramentas ao reinstalar**: a seção gerenciada do Tommy em `.github/copilot-instructions.md` agora tem marcadores de início e fim, então seções adicionadas abaixo dela (ex.: a do Graphify) sobrevivem; um arquivo criado por versão anterior sem marcadores não ganha mais a seção do Tommy duplicada.
+- **O `tommy-architect` não conseguia ler docs do Context7**: a allowlist de tools só tinha o nome antigo `get-library-docs`; foi adicionado `query-docs` (servidor Context7 atual), e a knowledge chain cita os dois.
 
 ## [0.2.3] — 2026-07-28
 
@@ -250,7 +309,8 @@ Primeira versão publicada no npm como **`sdd-tommy`**. Consolida o trabalho de 
 
 > Histórico anterior ao pacote npm (2026-07-17/18): o projeto nasceu como configuração "Makuco" para Claude Code e foi renomeado para **Tommy** antes da primeira publicação.
 
-[0.2.3]: https://github.com/rwmsousa/sdd-tommy/compare/v0.2.2...HEAD
+[0.3.0]: https://github.com/rwmsousa/sdd-tommy/compare/v0.2.3...HEAD
+[0.2.3]: https://github.com/rwmsousa/sdd-tommy/compare/v0.2.2...v0.2.3
 [0.2.2]: https://github.com/rwmsousa/sdd-tommy/compare/v0.2.1...v0.2.2
 [0.2.1]: https://github.com/rwmsousa/sdd-tommy/compare/v0.2.0...v0.2.1
 [0.2.0]: https://github.com/rwmsousa/sdd-tommy/compare/v0.1.3...v0.2.0

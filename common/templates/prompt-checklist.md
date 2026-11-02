@@ -17,6 +17,9 @@
 - [ ] The plan includes a detailed breakdown of the implementation steps, with clear instructions and expected outcomes for each step.
 - [ ] The plan references existing code patterns and best practices in the project to ensure consistency and maintainability.
 - [ ] The plan includes a validation strategy with specific rules to verify the correctness and completeness of the implementation.
+- [ ] The Requirements Coverage table maps every FR-###, SC-### and user story of the spec to at least one step (or to another part of the split).
+- [ ] Every step declares Covers, Depends on and Parallel, consistent with the Requirements Coverage table — no step without a requirement behind it.
+- [ ] The plan respects every MUST principle in `.tommy/project-context/tech_restrictions_context.md` (or states the conflict as a blocking decision).
 
 ## Feature Readiness
 

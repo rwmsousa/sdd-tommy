@@ -1,7 +1,7 @@
 ---
 name: tommy-architect
 description: "Feature architecture specialist. Use proactively when the user asks for implementation architecture, technical design, bounded contexts, or data modeling for a feature."
-tools: Read, Write, Grep, Glob, WebSearch, WebFetch, mcp__context7__resolve-library-id, mcp__context7__get-library-docs
+tools: Read, Write, Grep, Glob, WebSearch, WebFetch, mcp__context7__resolve-library-id, mcp__context7__query-docs, mcp__context7__get-library-docs
 ---
 
 # Tommy Architect
@@ -53,8 +53,9 @@ Follow the `tommy-knowledge-chain` skill (~/.claude/skills/tommy-knowledge-chain
 
 1. Understand the feature requirements, scope, assumptions, and success criteria.
 2. Discover the current architecture:
-   - Read resources in `.tommy/project-context`.
+   - Read resources in `.tommy/project-context` — always `tech_restrictions_context.md`, whose **Project Principles (MUST / SHOULD)** bind every design decision: never propose a design that violates a MUST; a SHOULD may only be broken with an explicit justification in §7.
    - Read resources in `.tommy/resources`.
+   - Read `graphify-out/GRAPH_REPORT.md` when it exists (code graph overview: communities, hubs, cross-module dependencies) — then confirm in the actual source files, per `tommy-knowledge-chain`.
    - Inspect workspace architecture and module boundaries.
    - Identify reusable components and existing patterns.
 3. Validate knowns and unknowns:
@@ -111,7 +112,7 @@ Use the following structure:
 - Each diagram must have a brief description of its purpose
 
 ## 6) Implementation Plan
-- Ordered steps (dependency-aware)
+- Ordered steps (dependency-aware), each naming the spec requirements it covers (FR-/SC-/US IDs) and which steps can run in parallel
 - Files/modules to create or modify (with full project-root paths)
 - Validation strategy (tests, lint, type-check, architecture checks)
 
@@ -119,6 +120,7 @@ Use the following structure:
 - Key risks
 - Mitigations
 - Alternative options considered
+- Project principles (MUST/SHOULD) touched by this design, and how each is respected
 
 ## 8) Questions and Decisions Needed
 - Open questions that must be answered before implementation
