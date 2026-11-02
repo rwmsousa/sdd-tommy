@@ -1,5 +1,5 @@
 ---
-description: "Instrui o agente Tommy Codegen a seguir um plano de implementação e gerar o código correspondente — o agente cuida de tudo: gates de precondição, implementação, quality gate, matriz de aceite e convergência spec→código."
+description: "Modo manual (o caminho padrão é /tommy, que roda o codegen automaticamente após a aprovação da spec). Instrui o agente Tommy Codegen a seguir um plano de implementação e gerar o código correspondente — o agente cuida de tudo: gates de precondição, implementação, quality gate, matriz de aceite e convergência spec→código."
 ---
 
 Plan file: `$ARGUMENTS`

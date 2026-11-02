@@ -1,5 +1,5 @@
 ---
-description: "Corrige um bug com rastreabilidade: avalia (reprodução + causa raiz, confirmada com o usuário), corrige via agente tommy-codegen (teste de regressão primeiro, correção mínima, quality gate) e verifica (veredito verified/partial/failed)."
+description: "Modo manual (/tommy também detecta bugs e segue este fluxo). Corrige um bug com rastreabilidade: avalia (reprodução + causa raiz, confirmada com o usuário), corrige via agente tommy-codegen (teste de regressão primeiro, correção mínima, quality gate) e verifica (veredito verified/partial/failed)."
 ---
 
 # Tommy Bugfix

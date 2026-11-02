@@ -1,11 +1,16 @@
 ---
 name: 'tommy-business-analyst'
-description: "Tommy Business Analyst Skill — requirements discovery through targeted questioning. Use when a feature or system idea needs requirements elicitation: business rules, flows, users and roles, acceptance criteria, user stories. Runs in the main conversation so questioning rounds are truly interactive. Triggers on: elicit requirements, requirements discovery, business rules, acceptance criteria, user stories, discovery questions, refine feature idea, clarify spec, grill me."
+description: "Tommy Business Analyst Skill — requirements discovery through targeted questioning. Use when a feature or system idea needs requirements elicitation: business rules, flows, users and roles, acceptance criteria, user stories. Runs in the main conversation (interactive mode, /tommy-specify) or inside the tommy-spec agent (relay mode, /tommy), where each round is returned to the orchestrator who asks the user. Triggers on: elicit requirements, requirements discovery, business rules, acceptance criteria, user stories, discovery questions, refine feature idea, clarify spec, grill me."
 ---
 
 # Tommy Business Analyst
 
 This skill turns an initial feature idea into clear, complete, and actionable requirements ready for technical planning. It runs in the main conversation — questions are asked directly to the user, in rounds, and the consolidated requirements stay in the conversation for the calling workflow (typically `/tommy-specify`) to map into the project's single canonical specification document.
+
+## Modes
+
+- **Interactive** (default — `/tommy-specify`): you ask the user directly, in the main conversation.
+- **Relay** (inside the `tommy-spec` agent, driven by `/tommy`): you cannot reach the user. Each round is returned to the orchestrator in the agent's return format (stable question IDs `Q-###`, context, recommendation, options); the orchestrator asks the user and relays the answers verbatim. Everything else in this skill applies unchanged — and because the agent may be re-invoked with a fresh context, the coverage map, decisions, open questions and facts found are persisted in `FEATURE_DIR/elicitation.md` after every round. The termination criterion still ends with an **explicit user confirmation**, obtained by the orchestrator.
 
 ## Goal
 
@@ -13,7 +18,7 @@ This skill turns an initial feature idea into clear, complete, and actionable re
 - Eliminate ambiguities before technical planning begins — nothing is assumed silently.
 - Deliver functional and non-functional requirements with acceptance criteria.
 - Define only User Stories that genuinely deliver testable value to the end user.
-- Never write files — the calling workflow owns persisting the requirements into `spec.md` (and any glossary update you propose).
+- Never write files in interactive mode — the calling workflow owns persisting the requirements into `spec.md` (and any glossary update you propose). In relay mode, the only extra file is the `tommy-spec` agent's `elicitation.md` state file.
 
 ## Resources Available
 
