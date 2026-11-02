@@ -4,6 +4,12 @@
 
 Version history of Tommy, the Spec-Driven Development framework (**Specify → Prompt → Codegen**) for Claude Code, Cursor, and GitHub Copilot. Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/); versioning follows [SemVer](https://semver.org/).
 
+## [0.4.1] — 2026-11-02
+
+### Changed
+
+- **README rewritten around usage**: requirements, install, the three-step `/tommy` flow (set up the project, ask for a feature or bug and approve the spec, commit/PR), a command table per tool, tips, and a short update section. Flow internals now live only in WORKFLOW.md and the per-tool READMEs.
+
 ## [0.4.0] — 2026-11-02
 
 A single entry point: `/tommy` orchestrates the whole flow, and the spec is the only artifact the user approves.
@@ -167,7 +173,8 @@ First version published to npm as **`sdd-tommy`**. Consolidates the framework's 
 
 > History prior to the npm package (2026-07-17/18): the project started as a "Makuco" configuration for Claude Code and was renamed to **Tommy** before the first publish.
 
-[0.4.0]: https://github.com/rwmsousa/sdd-tommy/compare/v0.3.0...HEAD
+[0.4.1]: https://github.com/rwmsousa/sdd-tommy/compare/v0.4.0...HEAD
+[0.4.0]: https://github.com/rwmsousa/sdd-tommy/compare/v0.3.0...v0.4.0
 [0.3.0]: https://github.com/rwmsousa/sdd-tommy/compare/v0.2.3...v0.3.0
 [0.2.3]: https://github.com/rwmsousa/sdd-tommy/compare/v0.2.2...v0.2.3
 [0.2.2]: https://github.com/rwmsousa/sdd-tommy/compare/v0.2.1...v0.2.2
@@ -182,6 +189,12 @@ First version published to npm as **`sdd-tommy`**. Consolidates the framework's 
 [English](#changelog--tommy-sdd-tommy) | **Português**
 
 Histórico de versões do Tommy, o framework de Spec-Driven Development (**Specify → Prompt → Codegen**) para Claude Code, Cursor e GitHub Copilot. O formato segue [Keep a Changelog](https://keepachangelog.com/pt-BR/) e o versionamento segue [SemVer](https://semver.org/lang/pt-BR/).
+
+## [0.4.1] — 2026-11-02
+
+### Alterado
+
+- **README reescrito com foco em uso**: requisitos, instalação, o fluxo `/tommy` em três passos (preparar o projeto, pedir uma feature ou bug e aprovar a spec, commit/PR), tabela de comandos por ferramenta, dicas e uma seção curta de atualização. Os detalhes internos do fluxo ficam só no WORKFLOW.md e nos READMEs de cada ferramenta.
 
 ## [0.4.0] — 2026-11-02
 
@@ -346,7 +359,8 @@ Primeira versão publicada no npm como **`sdd-tommy`**. Consolida o trabalho de 
 
 > Histórico anterior ao pacote npm (2026-07-17/18): o projeto nasceu como configuração "Makuco" para Claude Code e foi renomeado para **Tommy** antes da primeira publicação.
 
-[0.4.0]: https://github.com/rwmsousa/sdd-tommy/compare/v0.3.0...HEAD
+[0.4.1]: https://github.com/rwmsousa/sdd-tommy/compare/v0.4.0...HEAD
+[0.4.0]: https://github.com/rwmsousa/sdd-tommy/compare/v0.3.0...v0.4.0
 [0.3.0]: https://github.com/rwmsousa/sdd-tommy/compare/v0.2.3...v0.3.0
 [0.2.3]: https://github.com/rwmsousa/sdd-tommy/compare/v0.2.2...v0.2.3
 [0.2.2]: https://github.com/rwmsousa/sdd-tommy/compare/v0.2.1...v0.2.2
