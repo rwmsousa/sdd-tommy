@@ -11,6 +11,8 @@ Usage:
   npx sdd-tommy@latest --sync-runtime [--dir <path>]
                                      Non-interactive: (re)populate .tommy/scripts
                                      and .tommy/templates in <path> (default: cwd)
+  npx sdd-tommy@latest --doctor     Check the machine prerequisites (node, git, bash,
+                                     jq, uv, graphify, rtk) and how to install them
   npx sdd-tommy@latest --help       Show this help
   npx sdd-tommy@latest --version    Show the installed sdd-tommy version
 `;
@@ -32,6 +34,12 @@ async function main() {
   if (args.includes("--version") || args.includes("-v")) {
     const pkg = JSON.parse(fs.readFileSync(path.join(PKG_ROOT, "package.json"), "utf8"));
     console.log(pkg.version);
+    return;
+  }
+
+  if (args.includes("--doctor")) {
+    const { detectPrerequisites, printDoctor } = await import("../src/installers/prerequisites.mjs");
+    printDoctor(detectPrerequisites());
     return;
   }
 

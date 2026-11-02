@@ -9,6 +9,13 @@ import { installClaudeCode } from "./installers/claude-code.mjs";
 import { installCursor } from "./installers/cursor.mjs";
 import { installGithubCopilot } from "./installers/github-copilot.mjs";
 import { configureMcp, readTommyConfig } from "./installers/mcp-config.mjs";
+import {
+  configureIntegrations,
+  detectPrerequisites,
+  installManagedTools,
+  missingManagedTools,
+  printDoctor,
+} from "./installers/prerequisites.mjs";
 import { syncTommyRuntime } from "./installers/tommy-runtime.mjs";
 import { createReport, printSummary } from "./lib/report.mjs";
 
@@ -116,6 +123,27 @@ export async function runInstall() {
     }
   }
 
+  // RTK and Graphify are part of the supported setup, but installing them runs
+  // their official downloaded installers and changes the tools' global hooks —
+  // so it is one explicit confirmation, defaulting to yes. Declining (or a
+  // failure: no network, no permission, Windows) never aborts the install.
+  console.log("");
+  const prerequisites = detectPrerequisites();
+  printDoctor(prerequisites);
+  const missingManaged = missingManagedTools(prerequisites);
+  const { setupPrerequisites } = await prompts(
+    {
+      type: "confirm",
+      name: "setupPrerequisites",
+      message:
+        missingManaged.length > 0
+          ? `Install ${missingManaged.map((t) => t.name).join(", ")} (user space, ~/.local/bin) and configure RTK + Graphify for the selected tools? (required by Tommy)`
+          : "Configure RTK + Graphify for the selected tools? (required by Tommy)",
+      initial: true,
+    },
+    { onCancel }
+  );
+
   console.log("");
   console.log("[Tommy] About to install:");
   for (const tool of tools) {
@@ -141,6 +169,12 @@ export async function runInstall() {
     if (tools.includes("github-copilot")) {
       console.log(`    -> GitHub Copilot/VS Code: ${path.join(targetDir, ".vscode", "mcp.json")}`);
     }
+  }
+  if (setupPrerequisites) {
+    if (missingManaged.length > 0) {
+      console.log(`  - Prerequisites -> ${missingManaged.map((t) => t.name).join(", ")} (official installers, user space)`);
+    }
+    console.log("  - RTK hooks and Graphify skill/rules for the selected tools (via their own CLIs)");
   }
   console.log("  Existing JSON configs are merged, never blindly overwritten; any changed file is backed up first.");
   console.log("");
@@ -169,6 +203,13 @@ export async function runInstall() {
       cursor: tools.includes("cursor"),
       githubCopilot: tools.includes("github-copilot"),
     });
+  }
+
+  if (setupPrerequisites) {
+    installManagedTools(prerequisites, report);
+    configureIntegrations(tools, targetDir, report);
+  } else {
+    report.notes.push("Pré-requisitos RTK/Graphify não configurados (recusado). Tommy funciona em modo degradado; rode `npx sdd-tommy@latest` de novo para configurá-los.");
   }
 
   printSummary(report);
