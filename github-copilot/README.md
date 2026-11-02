@@ -7,6 +7,7 @@ This folder is installed **per project**, not globally — into the target repos
 ├── copilot-instructions.md
 └── prompts/
     ├── tommy-start.prompt.md
+    ├── tommy.prompt.md          (default entry point)
     ├── tommy-specify.prompt.md
     ├── tommy-prompt.prompt.md
     ├── tommy-codegen.prompt.md
@@ -22,10 +23,9 @@ Run `npx sdd-tommy@latest` at the project root and pick "GitHub Copilot" in the 
 ## Usage
 
 1. Open Copilot Chat in this project, run `/tommy-start` once.
-2. `/tommy-specify` — describe the feature; answer the clarifying questions.
-3. `/tommy-prompt` — reference the spec created in step 2.
-4. `/tommy-codegen` — reference one plan file at a time from step 3.
-5. When ready to version what was generated: `/tommy-commit` (one or more commits, under confirmation) and, when ready, `/tommy-open-pr` (pushes the branch and opens the PR/MR) — see "Versioning" below.
+2. `/tommy <what you need>` — answer the clarifying questions, then **approve the spec**. From there Tommy plans and implements on its own (architecture, plans, plan analysis, code, quality gate, acceptance) and only stops for a blocking decision. Bugs described to `/tommy` follow the bugfix flow.
+3. Manual mode, one phase at a time: `/tommy-specify` (feature → spec), `/tommy-prompt` (spec → plans), `/tommy-codegen` (one plan file at a time).
+4. When ready to version what was generated: `/tommy-commit` (one or more commits, under confirmation) and, when ready, `/tommy-open-pr` (pushes the branch and opens the PR/MR) — see "Versioning" below.
 
 Bugs in existing code: `/tommy-bugfix` — describe a bug in existing code (assess → fix → verify).
 
@@ -44,7 +44,7 @@ Each CLI (`gh`/`glab`/`az`) is assumed already installed and authenticated local
 
 ## What's different from the Claude Code version
 
-Copilot has no concept of a subagent with restricted tool access, so the Claude Code roles (specify + business-analyst elicitation, product-review, architect, prompt, codegen) are condensed into 3 prompt files + bugfix + bootstrap here — `tommy-specify` absorbs requirements elicitation **and** the independent PM review with the domain checklists (as a deliberate, self-enforced role switch at the end of the phase), `tommy-prompt` absorbs architecture design **and** the read-only plan analysis, and `tommy-codegen` closes with the spec→code acceptance & convergence loop. Phase separation (not writing code during the spec/plan phases) is **self-enforced discipline**, not a technical guarantee — see the "Known limitation" note in `copilot-instructions.md`.
+Copilot has no concept of a subagent with restricted tool access, so the Claude Code roles (specify + business-analyst elicitation, product-review, architect, prompt, codegen) are condensed into 3 prompt files + bugfix + bootstrap here — `tommy-specify` absorbs requirements elicitation **and** the independent PM review with the domain checklists (as a deliberate, self-enforced role switch at the end of the phase), `tommy-prompt` absorbs architecture design **and** the read-only plan analysis, and `tommy-codegen` closes with the spec→code acceptance & convergence loop. Phase separation (not writing code during the spec/plan phases) is **self-enforced discipline**, not a technical guarantee — see the "Known limitation" note in `copilot-instructions.md`. `/tommy` chains the three prompt files in one chat, with the spec approval as the only gate — the Claude Code version does the same with real subagents.
 
 Project MCP servers come from the canonical `.tommy/mcp.json` — VS Code/Copilot reads its generated projection at `.vscode/mcp.json` (created by the installer/bootstrap as a non-destructive merge, in VS Code's `servers` format; see `common/templates/mcp/mcp-catalog.md`).
 

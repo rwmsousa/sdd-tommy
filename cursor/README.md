@@ -7,6 +7,7 @@ This folder is installed **per project**, not globally — into the target repos
 └── rules/
     ├── tommy-core.mdc        (alwaysApply: true)
     ├── tommy-start.mdc
+    ├── tommy.mdc             (default entry point)
     ├── tommy-specify.mdc
     ├── tommy-prompt.mdc
     ├── tommy-codegen.mdc
@@ -23,10 +24,9 @@ Run `npx sdd-tommy@latest` at the project root and pick "Cursor" in the prompt (
 
 `tommy-core.mdc` is always active and will prompt you to pull in `@tommy-start` the first time `.tommy/` is missing. After that:
 
-1. `@tommy-specify` — describe the feature; answer the clarifying questions.
-2. `@tommy-prompt` — reference the spec created in step 1.
-3. `@tommy-codegen` — reference one plan file at a time from step 2.
-4. When ready to version what was generated: `@tommy-commit` (one or more commits, under confirmation) and, when ready, `@tommy-open-pr` (pushes the branch and opens the PR/MR) — see "Versioning" below.
+1. `@tommy <what you need>` — answer the clarifying questions, then **approve the spec**. From there Tommy plans and implements on its own (architecture, plans, plan analysis, code, quality gate, acceptance) and only stops for a blocking decision. Bugs described to `@tommy` follow the bugfix flow.
+2. Manual mode, one phase at a time: `@tommy-specify` (feature → spec), `@tommy-prompt` (spec → plans), `@tommy-codegen` (one plan file at a time).
+3. When ready to version what was generated: `@tommy-commit` (one or more commits, under confirmation) and, when ready, `@tommy-open-pr` (pushes the branch and opens the PR/MR) — see "Versioning" below.
 
 Bugs in existing code: `@tommy-bugfix` — describe a bug in existing code (assess → fix → verify).
 

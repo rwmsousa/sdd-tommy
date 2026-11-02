@@ -8,9 +8,13 @@ This project uses **Tommy**, a spec-driven development workflow: **Specify → P
 2. If `.tommy/` does not exist at the project root, or `.tommy/scripts/`, `.tommy/templates/`, or `.tommy/project-context/` are missing, this project has never been bootstrapped for Tommy. Tell the user to run `/tommy-start` first (see `.github/prompts/tommy-start.prompt.md`) — do not attempt to guess project context or invent architecture/conventions instead.
 3. Otherwise, read `.tommy/project-context/` selectively (only the files relevant to the current request — see the table in `.tommy/templates/project-research/project-context/` for guidance) and `.tommy/codebase/` for technical detail.
 
+## Default entry point: `/tommy`
+
+`/tommy <request>` (`.github/prompts/tommy.prompt.md`) runs the whole flow: it elicits requirements and writes the spec with the user, asks the user to **approve the spec** — the only approval — and then plans and implements autonomously (architecture, plans, plan analysis, code, quality gate, acceptance), interrupting only for blocking escalations. Bugs are routed to the bugfix flow.
+
 ## The three phases
 
-Tommy work happens in three explicit phases, each with its own prompt file — use them via `/tommy-specify`, `/tommy-prompt`, `/tommy-codegen` in Copilot Chat rather than improvising the workflow inline:
+Tommy work happens in three explicit phases, each with its own prompt file — `/tommy` chains them; to run one by hand, use `/tommy-specify`, `/tommy-prompt`, `/tommy-codegen` in Copilot Chat rather than improvising the workflow inline:
 
 1. **`/tommy-specify`** — turns a feature idea into `.tommy/specs/[NNN-feature]/spec.md`, business-language only, elicited as a decision tree with recommended answers, decisions logged in `## Clarifications`, closed by an independent PM-lens review plus domain checklists. Also refines an existing spec (clarification pass).
 2. **`/tommy-prompt`** — turns an approved spec into a detailed implementation plan (`.tommy/specs/[NNN-feature]/plans/*.md`), including architecture decisions and per-requirement traceability, closed by a read-only cross-artifact analysis that blocks codegen on CRITICAL/HIGH findings. Still no code.

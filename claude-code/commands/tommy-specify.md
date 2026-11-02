@@ -1,5 +1,5 @@
 ---
-description: "Cria ou atualiza a especificação de uma feature a partir de uma descrição em linguagem natural (ou refina uma spec existente). Orquestra na conversa principal: branch, elicitação de requisitos (skill business-analyst, método de árvore de decisão com resposta recomendada), escrita da spec com log de decisões e revisão independente (agente tommy-product-review, que também gera os checklists de domínio)."
+description: "Modo manual (o caminho padrão é /tommy, que orquestra spec, planos e código). Cria ou atualiza a especificação de uma feature a partir de uma descrição em linguagem natural (ou refina uma spec existente). Orquestra na conversa principal: branch, elicitação de requisitos (skill business-analyst, método de árvore de decisão com resposta recomendada), escrita da spec com log de decisões e revisão independente (agente tommy-product-review, que também gera os checklists de domínio)."
 ---
 
 # Tommy Specify

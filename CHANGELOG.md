@@ -4,6 +4,24 @@
 
 Version history of Tommy, the Spec-Driven Development framework (**Specify → Prompt → Codegen**) for Claude Code, Cursor, and GitHub Copilot. Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/); versioning follows [SemVer](https://semver.org/).
 
+## [0.4.0] — 2026-11-02
+
+A single entry point: `/tommy` orchestrates the whole flow, and the spec is the only artifact the user approves.
+
+### Added
+
+- **`/tommy` — single entry point and orchestrator** (Claude Code command `/tommy`, Cursor rule `tommy.mdc`, Copilot prompt `tommy.prompt.md`): takes the request in natural language, routes it (feature, bug, resume from an existing spec), runs the interactive specification, and asks the user to **approve the spec — the only approval in the flow**. After that, architecture, plans (one or more, in dependency order), plan analysis, code, quality gate, and acceptance run autonomously; the user is interrupted only for blocking escalations (a decision the spec does not settle, a MUST that cannot be met, an incompatible library API, a necessary UNREQUESTED change, NEEDS WORK after the convergence cycles). Interrupted runs resume from the artifacts in `FEATURE_DIR`.
+- **`tommy-spec` agent** (Claude Code): elicitation in **relay mode** — it never talks to the user; each round of questions (stable `Q-###` IDs, recommended answers) goes back to the orchestrator, and the state is persisted in `FEATURE_DIR/elicitation.md` so a fresh invocation resumes correctly. Modes: elicit, write, revise, refine.
+- **`tommy-planner` agent** (Claude Code): writes the implementation plans from the approved spec and the architecture plan, validates each plan's checklist, and returns the plans in execution order. Technical defaults are decided with evidence and logged under `### Autonomous Decisions`; only blocking questions are returned.
+- **README — "Update to a new version"**: how to update Tommy in existing projects (what is updated where, what is preserved, backups, restart).
+
+### Changed
+
+- **Subagents talk only to the caller**: `tommy-architect` records autonomous decisions and returns only blocking questions (§8 "Decided autonomously" / "Blocking"); `tommy-codegen` and `tommy-product-review` route escalations through the caller instead of addressing the user.
+- **Acceptance matrix with several plans**: `checklists/acceptance.md` holds one `## Plan: …` section per plan (appended, never overwritten).
+- `/tommy-specify`, `/tommy-prompt`, `/tommy-run-codegen`, and `/tommy-bugfix` (and their Cursor/Copilot mirrors) remain as the **manual mode**; `/tommy-prompt` now relays the architect's blocking questions to the user.
+- `tommy-business-analyst` documents the relay mode used by `tommy-spec`.
+
 ## [0.3.0] — 2026-11-02
 
 Machine prerequisites (RTK + Graphify), ideas extracted from GitHub Spec Kit and Matt Pocock's `grilling` skill, a bugfix flow, and a leaner README.
@@ -149,7 +167,8 @@ First version published to npm as **`sdd-tommy`**. Consolidates the framework's 
 
 > History prior to the npm package (2026-07-17/18): the project started as a "Makuco" configuration for Claude Code and was renamed to **Tommy** before the first publish.
 
-[0.3.0]: https://github.com/rwmsousa/sdd-tommy/compare/v0.2.3...HEAD
+[0.4.0]: https://github.com/rwmsousa/sdd-tommy/compare/v0.3.0...HEAD
+[0.3.0]: https://github.com/rwmsousa/sdd-tommy/compare/v0.2.3...v0.3.0
 [0.2.3]: https://github.com/rwmsousa/sdd-tommy/compare/v0.2.2...v0.2.3
 [0.2.2]: https://github.com/rwmsousa/sdd-tommy/compare/v0.2.1...v0.2.2
 [0.2.1]: https://github.com/rwmsousa/sdd-tommy/compare/v0.2.0...v0.2.1
@@ -163,6 +182,24 @@ First version published to npm as **`sdd-tommy`**. Consolidates the framework's 
 [English](#changelog--tommy-sdd-tommy) | **Português**
 
 Histórico de versões do Tommy, o framework de Spec-Driven Development (**Specify → Prompt → Codegen**) para Claude Code, Cursor e GitHub Copilot. O formato segue [Keep a Changelog](https://keepachangelog.com/pt-BR/) e o versionamento segue [SemVer](https://semver.org/lang/pt-BR/).
+
+## [0.4.0] — 2026-11-02
+
+Um ponto de entrada único: o `/tommy` orquestra o fluxo inteiro, e a spec é o único artefato que o usuário aprova.
+
+### Adicionado
+
+- **`/tommy` — ponto de entrada único e orquestrador** (comando `/tommy` no Claude Code, regra `tommy.mdc` no Cursor, prompt `tommy.prompt.md` no Copilot): recebe o pedido em linguagem natural, roteia (feature, bug, retomada a partir de uma spec existente), conduz a especificação interativa e pede ao usuário a **aprovação da spec — a única aprovação do fluxo**. Depois dela, arquitetura, planos (um ou mais, em ordem de dependência), análise dos planos, código, quality gate e aceite rodam de forma autônoma; o usuário só é interrompido em escaladas bloqueantes (decisão que a spec não resolve, MUST impossível de cumprir, API de biblioteca incompatível, mudança UNREQUESTED necessária, NEEDS WORK após os ciclos de convergência). Execuções interrompidas retomam a partir dos artefatos em `FEATURE_DIR`.
+- **Agente `tommy-spec`** (Claude Code): elicitação em **modo relay** — nunca fala com o usuário; cada rodada de perguntas (IDs estáveis `Q-###`, respostas recomendadas) volta ao orquestrador, e o estado fica em `FEATURE_DIR/elicitation.md`, para que uma nova invocação retome corretamente. Modos: elicit, write, revise, refine.
+- **Agente `tommy-planner`** (Claude Code): escreve os planos de implementação a partir da spec aprovada e do plano de arquitetura, valida o checklist de cada plano e devolve os planos em ordem de execução. Padrões técnicos são decididos com evidência e registrados em `### Autonomous Decisions`; só perguntas bloqueantes são devolvidas.
+- **README — "Atualizar para uma nova versão"**: como atualizar o Tommy em projetos existentes (o que é atualizado e onde, o que é preservado, backups, reinício).
+
+### Alterado
+
+- **Subagentes falam só com quem os chamou**: o `tommy-architect` registra as decisões autônomas e devolve só perguntas bloqueantes (§8 "Decided autonomously" / "Blocking"); `tommy-codegen` e `tommy-product-review` encaminham escaladas pelo chamador em vez de se dirigir ao usuário.
+- **Matriz de aceite com vários planos**: `checklists/acceptance.md` tem uma seção `## Plan: …` por plano (acrescentada, nunca sobrescrita).
+- `/tommy-specify`, `/tommy-prompt`, `/tommy-run-codegen` e `/tommy-bugfix` (e seus espelhos no Cursor/Copilot) continuam como **modo manual**; o `/tommy-prompt` agora repassa ao usuário as perguntas bloqueantes do arquiteto.
+- A skill `tommy-business-analyst` documenta o modo relay usado pelo `tommy-spec`.
 
 ## [0.3.0] — 2026-11-02
 
@@ -309,7 +346,8 @@ Primeira versão publicada no npm como **`sdd-tommy`**. Consolida o trabalho de 
 
 > Histórico anterior ao pacote npm (2026-07-17/18): o projeto nasceu como configuração "Makuco" para Claude Code e foi renomeado para **Tommy** antes da primeira publicação.
 
-[0.3.0]: https://github.com/rwmsousa/sdd-tommy/compare/v0.2.3...HEAD
+[0.4.0]: https://github.com/rwmsousa/sdd-tommy/compare/v0.3.0...HEAD
+[0.3.0]: https://github.com/rwmsousa/sdd-tommy/compare/v0.2.3...v0.3.0
 [0.2.3]: https://github.com/rwmsousa/sdd-tommy/compare/v0.2.2...v0.2.3
 [0.2.2]: https://github.com/rwmsousa/sdd-tommy/compare/v0.2.1...v0.2.2
 [0.2.1]: https://github.com/rwmsousa/sdd-tommy/compare/v0.2.0...v0.2.1
