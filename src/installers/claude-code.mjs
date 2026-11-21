@@ -16,6 +16,8 @@ const OBSOLETE_PATHS = [
   "agents/tommy-specify.md",
   "agents/tommy-prompt.md",
   "agents/tommy-business-analyst.md",
+  // removed in 0.5.0: the independent reviewer agent no longer exists
+  "agents/tommy-product-review.md",
 ];
 
 function removeObsoleteFiles(claudeDir, report) {

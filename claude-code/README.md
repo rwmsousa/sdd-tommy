@@ -27,9 +27,9 @@ Rode `npx sdd-tommy@latest` e escolha "Claude Code" no prompt (pode combinar com
 
 `/tommy <o que precisa ser feito>` é o **orquestrador**: roda na conversa principal, é o único que fala com o usuário e aciona os subagentes (subagentes não invocam outros subagentes nem falam com o usuário — devolvem resultados estruturados ao orquestrador).
 
-1. **Spec (interativa)** — o `tommy-spec` pesquisa o projeto e devolve rodadas de perguntas com resposta recomendada; o orquestrador pergunta ao usuário e repassa as respostas (estado persistido em `FEATURE_DIR/elicitation.md`). Confirmado o entendimento, o `tommy-spec` escreve a spec e o `tommy-product-review` a revisa.
+1. **Spec (interativa)** — o `tommy-spec` pesquisa o projeto e devolve rodadas de perguntas com resposta recomendada; o orquestrador pergunta ao usuário e repassa as respostas (estado persistido em `FEATURE_DIR/elicitation.md`). Confirmado o entendimento, o `tommy-spec` escreve a spec e marca o checklist de requisitos.
 2. **Aprovação** — o usuário aprova a spec (`**Status**: Approved`). É a **única** aprovação do fluxo.
-3. **Entrega autônoma** — sem novas aprovações: `tommy-architect` (arquitetura) → `tommy-planner` (um ou mais planos) → `tommy-product-review` (análise de cada plano; CRITICAL/HIGH voltam ao planner) → `tommy-codegen` (um plano por vez, na ordem do planner). Decisões técnicas sem resposta na spec são tomadas com evidência e registradas; o usuário só é interrompido em **escaladas bloqueantes** (decisão de comportamento/escopo/dados/segurança que a spec não resolve, princípio MUST impossível de respeitar, API incompatível com a versão instalada, mudança UNREQUESTED necessária, NEEDS WORK após os ciclos).
+3. **Entrega autônoma** — sem novas aprovações: `tommy-architect` (arquitetura) → `tommy-planner` (um ou mais planos) → `tommy-codegen` (um plano por vez, na ordem do planner). Decisões técnicas sem resposta na spec são tomadas com evidência e registradas; o usuário só é interrompido em **escaladas bloqueantes** (decisão de comportamento/escopo/dados/segurança que a spec não resolve, princípio MUST impossível de respeitar, API incompatível com a versão instalada, mudança UNREQUESTED necessária, NEEDS WORK após os ciclos).
 
 Bugs descritos ao `/tommy` seguem o fluxo de bugfix. Com o caminho de um `spec.md`, o `/tommy` retoma do primeiro passo incompleto (derivado dos artefatos em `FEATURE_DIR`).
 
@@ -37,9 +37,10 @@ Bugs descritos ao `/tommy` seguem o fluxo de bugfix. Com o caminho de um `spec.m
 
 Os comandos de fase continuam disponíveis para rodar uma etapa à mão; nesse modo, Specify e Prompt orquestram na conversa principal:
 
-- `/tommy-specify` — cria/atualiza a especificação: elicita requisitos com a skill `tommy-business-analyst` (árvore de decisão, perguntas com resposta recomendada), escreve a spec com log de decisões (`## Clarifications`) e submete à revisão independente do `tommy-product-review`. Com o caminho de um `spec.md` existente, faz um passe de clarificação.
-- `/tommy-prompt` — cria o plano de execução detalhado (com rastreabilidade requisito→etapa), invocando o agente `tommy-architect` para o desenho de arquitetura e o `tommy-product-review` para a análise de consistência do plano.
-- `/tommy-run-codegen` — invoca **somente** o agente `tommy-codegen`, que cuida da fase inteira.
+- `/tommy-specify` — cria/atualiza a especificação: elicita requisitos com a skill `tommy-business-analyst` (árvore de decisão, perguntas com resposta recomendada), escreve a spec com log de decisões (`## Clarifications`) e valida o checklist de requisitos. Com o caminho de um `spec.md` existente, faz um passe de clarificação.
+- `/tommy-prompt` — cria o plano de execução detalhado (com rastreabilidade requisito→etapa), invocando o agente `tommy-architect` para o desenho de arquitetura.
+- `/tommy-run-codegen` — invoca **somente** o agente `tommy-codegen`, que cuida da fase de cada plano. Aceita um plano ou a feature inteira (pasta, número ou slug): roda todos os planos sem interrupção, em ondas, com paralelismo seguro (worktrees) quando os arquivos não se sobrepõem.
+- `/tommy-run-feature` — atalho para o `/tommy-run-codegen` sobre uma feature (ex.: `/tommy-run-feature 039`).
 - `/tommy-bugfix` — avalia o bug na conversa principal (reprodução, causa raiz, confirmação) e delega a correção ao `tommy-codegen` em modo bugfix.
 
 Agentes (subagentes com `tools:` restrito por papel):
@@ -47,7 +48,6 @@ Agentes (subagentes com `tools:` restrito por papel):
 - `tommy-spec` — elicitação em modo relay (perguntas devolvidas ao orquestrador) e escrita/revisão da spec (invocado por `/tommy`).
 - `tommy-planner` — planos de implementação com rastreabilidade requisito→etapa, decidindo padrões técnicos de forma autônoma (invocado por `/tommy`).
 - `tommy-architect` — desenho de arquitetura da feature (invocado por `/tommy` e `/tommy-prompt`); em modo autônomo registra as decisões tomadas e só devolve perguntas bloqueantes.
-- `tommy-product-review` — revisor independente com contexto novo, em dois modos: **spec-review** (varredura de cobertura, lente de PM, gera e marca os checklists de domínio — único autorizado a marcar os checklists da spec) e **plan-analysis** (análise somente leitura spec ↔ arquitetura ↔ plano ↔ princípios, com achados por severidade; CRITICAL/HIGH bloqueiam o codegen).
 - `tommy-codegen` — implementa o plano (ou o bug confirmado), gera testes, roda o quality gate e fecha com o ciclo de aceite e convergência spec→código (`checklists/acceptance.md`).
 - `tommy-git` — commita mudanças locais (Conventional Commits) e abre Pull/Merge Request no provedor detectado do projeto. Ver seção [Versionamento (commit e PR/MR)](#versionamento-commit-e-prmr) abaixo.
 

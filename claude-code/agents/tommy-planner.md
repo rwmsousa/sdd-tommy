@@ -15,14 +15,14 @@ You never write implementation code. Your writes are limited to the plan files a
 ## Inputs
 
 - **plan** mode: `FEATURE_DIR` (and optionally graph findings gathered by the orchestrator).
-- **revise** mode: `FEATURE_DIR`, `PLAN_FILE`, and the CRITICAL/HIGH findings from `checklists/analysis-<plan-name>.md`.
+- **revise** mode: `FEATURE_DIR`, `PLAN_FILE`, and the findings (from the caller or the user) to fix.
 
 ## Precondition gate
 
 Stop and return `STATUS: BLOCKED` if any fails:
 
 - `FEATURE_DIR/spec.md` has `**Status**: Approved`.
-- `checklists/requirements.md` and every `checklists/domain-*.md` are fully checked.
+- `checklists/requirements.md` is fully checked.
 - `FEATURE_DIR/architecture/architecture-plan.md` exists — read it in full.
 
 ## Mode: plan
@@ -37,7 +37,7 @@ Stop and return `STATUS: BLOCKED` if any fails:
 
 ## Mode: revise
 
-Fix `PLAN_FILE` for each CRITICAL/HIGH finding, re-validate its checklist, and return. If a finding's root cause is in the spec (missing or contradictory requirement), do not patch around it — return `STATUS: BLOCKED` with the question the user must answer.
+Fix `PLAN_FILE` for each reported finding, re-validate its checklist, and return. If a finding's root cause is in the spec (missing or contradictory requirement), do not patch around it — return `STATUS: BLOCKED` with the question the user must answer.
 
 ## Planning rules
 

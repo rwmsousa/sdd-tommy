@@ -65,7 +65,7 @@ Write the spec in the project's configured language (`pt-BR` unless stated other
 
 ## 5. Independent review (PM lens + domain checklists)
 
-In Claude Code this validation is done by a separate fresh-context reviewer agent (`tommy-product-review`); here you must deliberately switch roles: set aside the writer's perspective and review the spec as an independent Product Manager who did not write it.
+You must deliberately switch roles: set aside the writer's perspective and review the spec as an independent Product Manager who did not write it.
 
 Check, against evidence:
 
