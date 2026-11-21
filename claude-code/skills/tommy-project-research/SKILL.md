@@ -264,11 +264,11 @@ When investigating a codebase, use these approaches:
 
 | File | Read by | When |
 |---|---|---|
-| `project_goal_context.md` | `tommy-business-analyst`, `tommy-specify`, `tommy-product-review` | Always, before eliciting, writing, or reviewing requirements — establishes problem, objective, users, and business context. |
-| `scope_features_context.md` | `tommy-business-analyst`, `tommy-specify`, `tommy-product-review` | Always — check the requested feature against the existing roadmap and the "Fora do Escopo" list before treating it as new. |
-| `glossary_context.md` | `tommy-business-analyst`, `tommy-specify`, `tommy-architect`, `tommy-codegen`, `tommy-product-review` | Always — domain terms and their EN mapping must stay consistent; pairs with `tommy-ubiquitous-language`. |
+| `project_goal_context.md` | `tommy-business-analyst`, `tommy-specify` | Always, before eliciting, writing, or reviewing requirements — establishes problem, objective, users, and business context. |
+| `scope_features_context.md` | `tommy-business-analyst`, `tommy-specify` | Always — check the requested feature against the existing roadmap and the "Fora do Escopo" list before treating it as new. |
+| `glossary_context.md` | `tommy-business-analyst`, `tommy-specify`, `tommy-architect`, `tommy-codegen` | Always — domain terms and their EN mapping must stay consistent; pairs with `tommy-ubiquitous-language`. |
 | `tech_stack_context.md` | `tommy-architect`, `tommy-prompt`, `tommy-codegen` | When the feature touches a specific technology, integration, or infrastructure decision. For exhaustive dependency versions, prefer `.tommy/codebase/stack.md` and `.tommy/codebase/integrations.md` — this file is the narrative summary, not the inventory. |
-| `tech_restrictions_context.md` | `tommy-architect`, `tommy-prompt`, `tommy-codegen`, `tommy-product-review` (plan-analysis) | Always, before proposing or reviewing any technical approach — this is the one file with hard constraints (Project Principles MUST/SHOULD, forbidden tech, locked decisions) that override generic best practice. |
+| `tech_restrictions_context.md` | `tommy-architect`, `tommy-prompt`, `tommy-codegen` | Always, before proposing or reviewing any technical approach — this is the one file with hard constraints (Project Principles MUST/SHOULD, forbidden tech, locked decisions) that override generic best practice. |
 | `architecture_definition_context.md` | `tommy-architect` | Always when designing architecture for a feature. Captures the "why" behind decisions; `.tommy/codebase/architecture.md` captures the current structural "how." |
 | `project_management_context.md` | `tommy-specify`, `tommy-prompt` | When sizing a spec into stories/PBIs or a plan into steps — this file may define project-specific sizing/DoD conventions that override generic defaults (e.g. `tommy-prompt`'s "5-10 files per plan" rule). |
 

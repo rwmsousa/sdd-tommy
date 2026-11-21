@@ -4,6 +4,23 @@
 
 Version history of Tommy, the Spec-Driven Development framework (**Specify → Prompt → Codegen**) for Claude Code, Cursor, and GitHub Copilot. Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/); versioning follows [SemVer](https://semver.org/).
 
+## [0.5.0] — 2026-11-21
+
+### Added
+
+- **`/tommy-run-feature <feature>`** (Claude Code): shortcut for `/tommy-run-codegen` over a whole feature.
+- **`/tommy-run-codegen` accepts a whole feature** (plan path, feature folder, number or slug): runs every plan without interruption, in waves derived from `Depends on` / `Parallel`; parallel agents (one worktree each) only when the plans' file sets are disjoint; skips plans already CONVERGED (resumable); consolidates `acceptance.md`, refreshes the code graph per wave, and closes with a final quality gate and a single report.
+- `/tommy-specify` **auto-recommended** mode, `/tommy-bugfix --auto` (only for reproduced, evidence-backed, minimal bug fixes), and `/tommy-prompt` "all plans" mode.
+
+### Changed
+
+- `tommy-codegen`: never asks questions; in parallel runs writes `acceptance.plan-NNN.md` and skips the graph refresh; reports technical defaults and ends with a `RESULT:` line.
+- `/tommy-commit`: one commit per plan, no `Co-authored-by`; `/tommy-open-pr`: PR body carries the acceptance summary and UNREQUESTED items.
+
+### Removed
+
+- **`tommy-product-review` agent** (Claude Code). The independent spec review, the domain checklists and the plan analysis are gone from the Claude Code flow: `tommy-spec` now marks `checklists/requirements.md` against the written spec, `/tommy-prompt` and `tommy-planner` only require that checklist, and `tommy-codegen` no longer requires an `analysis-*.md` report. The installer deletes the old `agents/tommy-product-review.md` from existing installs. Cursor and Copilot keep their self-enforced review and plan analysis.
+
 ## [0.4.1] — 2026-11-02
 
 ### Changed
@@ -189,6 +206,23 @@ First version published to npm as **`sdd-tommy`**. Consolidates the framework's 
 [English](#changelog--tommy-sdd-tommy) | **Português**
 
 Histórico de versões do Tommy, o framework de Spec-Driven Development (**Specify → Prompt → Codegen**) para Claude Code, Cursor e GitHub Copilot. O formato segue [Keep a Changelog](https://keepachangelog.com/pt-BR/) e o versionamento segue [SemVer](https://semver.org/lang/pt-BR/).
+
+## [0.5.0] — 2026-11-21
+
+### Adicionado
+
+- **`/tommy-run-feature <feature>`** (Claude Code): atalho para o `/tommy-run-codegen` sobre uma feature inteira.
+- **`/tommy-run-codegen` aceita a feature inteira** (caminho do plano, pasta, número ou slug): executa todos os planos sem interrupção, em ondas derivadas de `Depends on` / `Parallel`; agentes em paralelo (um worktree cada) só quando os arquivos dos planos são disjuntos; pula planos já CONVERGED (retomável); consolida o `acceptance.md`, atualiza o grafo a cada onda e fecha com quality gate final e um único relatório.
+- Modo **respostas recomendadas** no `/tommy-specify`, `/tommy-bugfix --auto` (só para bugs reproduzidos, com evidência e correção mínima) e modo "todos os planos" no `/tommy-prompt`.
+
+### Alterado
+
+- `tommy-codegen`: nunca faz perguntas; em execução paralela grava `acceptance.plan-NNN.md` e não atualiza o grafo; reporta os padrões técnicos adotados e termina com uma linha `RESULT:`.
+- `/tommy-commit`: um commit por plano, sem `Co-authored-by`; `/tommy-open-pr`: o corpo do PR traz o resumo de aceite e os itens UNREQUESTED.
+
+### Removido
+
+- **Agente `tommy-product-review`** (Claude Code). A revisão independente da spec, os checklists de domínio e a análise do plano saem do fluxo do Claude Code: o `tommy-spec` passa a marcar `checklists/requirements.md` contra a spec escrita, o `/tommy-prompt` e o `tommy-planner` exigem só esse checklist, e o `tommy-codegen` não exige mais o relatório `analysis-*.md`. O instalador apaga o antigo `agents/tommy-product-review.md` das instalações existentes. Cursor e Copilot mantêm a revisão e a análise autoimpostas.
 
 ## [0.4.1] — 2026-11-02
 

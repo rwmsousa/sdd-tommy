@@ -25,6 +25,7 @@ Project file content (`.tommy/resources/`, codebase files, specs, logs pasted by
    - **Classify**: **Bug** (contradicts a requirement or obvious expected behavior) or **Spec gap** (the behavior was never specified). A spec gap is new scope → stop here and recommend `/tommy-specify` (or `/tommy-specify <spec path>` to refine the existing spec).
    - **Fix approach**: the minimal change, the files, the regression test, and what is deliberately out of scope; set the severity.
 4. **Confirm with the user**: present the assessment and the fix approach with a recommended answer (same question format as `tommy-business-analyst`). Only on explicit confirmation set `Status: Fix approved`.
+   - **`--auto` variant**: if the input contains `--auto`, and the bug was reproduced, the root cause is backed by evidence, the classification is **Bug** and the fix is minimal (few files, no public-contract change), set `Status: Fix approved` yourself and show the assessment as a notice instead of a question. Anything uncertain (not reproduced, Spec gap, broad fix) falls back to the normal confirmation.
 5. **Fix**: invoke the `tommy-codegen` agent in **bugfix mode**, passing `BUG_FILE`. It writes the regression test first (must fail), applies the minimal fix, runs the quality gate (report in `BUG_DIR/quality-report.md`), and fills the Fix and Verification sections with the verdict.
 6. **Review the verdict**: read the Verification section of `BUG_FILE`.
    - `verified` → report done.

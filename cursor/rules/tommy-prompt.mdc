@@ -57,7 +57,7 @@ Open the plan's `CHECKLIST_FILE` and check it against every item. Fix and re-che
 
 ## 6. Plan analysis (independent, read-only)
 
-In Claude Code this is done by the fresh-context `tommy-product-review` agent (plan-analysis mode); here, switch roles and analyze the artifacts as a reviewer who did not write them. **Do not edit spec or plan during the analysis** — only write the report.
+Switch roles and analyze the artifacts as a reviewer who did not write them. **Do not edit spec or plan during the analysis** — only write the report.
 
 Inventory every FR-/SC-/user story, the plan's coverage table and step fields, and the Project Principles. Look for:
 
